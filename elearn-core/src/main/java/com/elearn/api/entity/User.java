@@ -1,0 +1,35 @@
+package com.elearn.api.entity;
+
+import java.util.Date;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Data;
+
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "platform_users")
+public class User {
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private String id;
+
+  private String firstName;
+  private String lastName;
+  private String username;
+  private String email;
+  private String password;
+  private Date dateOfBirth;
+
+  @Enumerated(EnumType.STRING)
+  private Role role;
+}
+
