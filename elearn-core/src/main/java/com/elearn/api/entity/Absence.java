@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Data;
@@ -21,5 +23,9 @@ public class Absence {
   private LocalDateTime dateTime;
   private AbsenceType type;
   private boolean isJustified;
+
+  @ManyToOne()
+  @JoinColumn(name = "student_id")
+  private User student;
 }
 
