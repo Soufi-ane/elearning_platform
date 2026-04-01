@@ -53,5 +53,8 @@ public class User {
 
   @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
   private List<Payment> payments;
+
+  @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
+  private List<Element> elements;
 }
 

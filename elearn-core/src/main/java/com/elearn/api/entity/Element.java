@@ -32,5 +32,9 @@ public class Element {
 
   @OneToMany(mappedBy = "element")
   private List<Result> results;
+
+  @ManyToOne()
+  @JoinColumn(name = "teacher_id")
+  private User teacher;
 }
 
