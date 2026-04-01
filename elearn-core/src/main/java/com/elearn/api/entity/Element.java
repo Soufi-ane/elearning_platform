@@ -29,5 +29,8 @@ public class Element {
 
   @OneToMany(mappedBy = "element")
   private List<Absence> absences;
+
+  @OneToMany(mappedBy = "element")
+  private List<Result> results;
 }
 

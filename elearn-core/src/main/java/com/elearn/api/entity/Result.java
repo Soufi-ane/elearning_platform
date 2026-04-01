@@ -24,5 +24,9 @@ public class Result {
   @ManyToOne()
   @JoinColumn(name = "student_id")
   private User student;
+
+  @ManyToOne()
+  @JoinColumn(name = "element_id")
+  private Element element;
 }
 
