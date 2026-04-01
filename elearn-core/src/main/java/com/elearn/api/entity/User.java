@@ -42,7 +42,10 @@ public class User {
   @JoinColumn(name = "department_id")
   private Department department;
 
-  @OneToMany(mappedBy = "student", cascade =  CascadeType.ALL)
+  @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
   private List<Absence> absences;
+
+  @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+  private List<Result> results;
 }
 
