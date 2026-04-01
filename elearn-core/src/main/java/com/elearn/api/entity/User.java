@@ -50,5 +50,8 @@ public class User {
 
   @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
   private List<Request> requests;
+
+  @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+  private List<Payment> payments;
 }
 
