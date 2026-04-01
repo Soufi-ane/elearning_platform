@@ -21,6 +21,10 @@ public class Department {
   private String id;
 
   private String name;
+
+  public Department(String name){
+    this.name = name;
+  }
   
   @OneToMany(mappedBy = "department",cascade = CascadeType.ALL)
   private List<User> users;
