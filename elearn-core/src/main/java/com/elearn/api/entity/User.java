@@ -47,5 +47,8 @@ public class User {
 
   @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
   private List<Result> results;
+
+  @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+  private List<Request> requests;
 }
 
