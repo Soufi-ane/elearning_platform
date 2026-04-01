@@ -1,8 +1,7 @@
 package com.elearn.api.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -33,7 +32,21 @@ public class User {
   private String username;
   private String email;
   private String password;
-  private Date dateOfBirth;
+  private LocalDate dateOfBirth;
+
+  public User(
+    String firstName, String lastName, String username, Department department,
+    String email, String password, LocalDate dateOfBirth, Role role
+  ){
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.username = username;
+    this.department = department;
+    this.email = email;
+    this.password = password;
+    this.dateOfBirth = dateOfBirth;
+    this.role = role;
+  }
 
   @Enumerated(EnumType.STRING)
   private Role role;
