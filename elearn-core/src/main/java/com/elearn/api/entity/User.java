@@ -38,10 +38,17 @@ public class User {
     String firstName, String lastName, String username, Department department,
     String email, String password, LocalDate dateOfBirth, Role role
   ){
+    this(firstName,lastName,username,email,password,dateOfBirth,role);
+    this.department = department;
+  }
+
+  public User(
+    String firstName, String lastName, String username,
+    String email, String password, LocalDate dateOfBirth, Role role
+  ){
     this.firstName = firstName;
     this.lastName = lastName;
     this.username = username;
-    this.department = department;
     this.email = email;
     this.password = password;
     this.dateOfBirth = dateOfBirth;
