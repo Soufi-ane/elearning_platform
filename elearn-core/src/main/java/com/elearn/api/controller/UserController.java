@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.elearn.api.entity.Schemas.LoginRequest;
+import com.elearn.api.entity.Schemas.LoginResponse;
 import com.elearn.api.entity.Schemas.RegisterRequest;
 import com.elearn.api.entity.Schemas.UserBaseResponse;
 import com.elearn.api.service.UserService;
@@ -24,4 +26,10 @@ public class UserController {
   public UserBaseResponse register(@RequestBody RegisterRequest request){
     return userService.register(request);
   }
+
+  @PostMapping("/login")
+  public LoginResponse login(@RequestBody LoginRequest request){
+    return userService.login(request);
+  }
+
 }
