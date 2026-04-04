@@ -6,9 +6,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.elearn.api.entity.Department;
 import com.elearn.api.entity.User;
+import com.elearn.api.entity.Schemas.LoginRequest;
+import com.elearn.api.entity.Schemas.LoginResponse;
 import com.elearn.api.entity.Schemas.RegisterRequest;
 import com.elearn.api.entity.Schemas.UserBaseResponse;
 import com.elearn.api.exception.DepartmentNotFoundException;
+import com.elearn.api.exception.InvalidCredentialsException;
 import com.elearn.api.exception.UsernameOrEmailTakenException;
 import com.elearn.api.repository.DepartmentRepository;
 import com.elearn.api.repository.UserRepository;
@@ -18,16 +21,19 @@ public class UserService {
   private final UserRepository userRepository;
   private final DepartmentRepository departmentRepository;
   private final PasswordEncoder passwordEncoder;
+  private final JwtService jwtService;
 
   @Autowired
   public UserService(
     UserRepository userRepository,
     DepartmentRepository departmentRepository,
-    PasswordEncoder passwordEncoder
+    PasswordEncoder passwordEncoder,
+    JwtService jwtService
   ){
     this.userRepository = userRepository;
     this.departmentRepository = departmentRepository;
     this.passwordEncoder = passwordEncoder;
+    this.jwtService = jwtService;
   }
 
   public UserBaseResponse register(RegisterRequest request){
@@ -47,4 +53,17 @@ public class UserService {
     else throw new DepartmentNotFoundException("Department not found");
     return new UserBaseResponse(userRepository.save(user));
   }
+
+  public LoginResponse login(LoginRequest request){
+    Optional<User> optUser = userRepository
+      .findByUsernameOrEmail(request.usernameOrEmail(),request.usernameOrEmail());
+    if(!optUser.isPresent()) throw new InvalidCredentialsException("Invalid username or password");
+    User user = optUser.get();
+    if(!passwordEncoder.matches(request.password(), user.getPassword())){
+      throw new InvalidCredentialsException("Invalid username or password");
+    }
+    String token = jwtService.generateToken(user.getEmail(), user.getId(), user.getRole());
+    return new LoginResponse(new UserBaseResponse(user), token);
+  }
+
 }
