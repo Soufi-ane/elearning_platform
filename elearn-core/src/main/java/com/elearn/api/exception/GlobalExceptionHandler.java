@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
 
   }
 
-  @ExceptionHandler(UsernameOrEmailTakenException.class)
+  @ExceptionHandler({UsernameOrEmailTakenException.class, InvalidCredentialsException.class})
   public ResponseEntity<Map<String, Object>> handleUniqueFields(RuntimeException ex){
 
     Map<String, Object> body = generateBody(ex.getMessage(), HttpStatus.CONFLICT);
