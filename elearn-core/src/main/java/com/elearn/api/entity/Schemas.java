@@ -30,4 +30,8 @@ public class Schemas {
     }
   }
 
+  public record LoginRequest(String usernameOrEmail,String password){}
+
+  public record LoginResponse(UserBaseResponse user,String token){}
+
 }
