@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.elearn.api.entity.Department;
+import com.elearn.api.entity.Role;
 import com.elearn.api.entity.User;
 import com.elearn.api.entity.Schemas.LoginRequest;
 import com.elearn.api.entity.Schemas.LoginResponse;
 import com.elearn.api.entity.Schemas.RegisterRequest;
 import com.elearn.api.entity.Schemas.UserBaseResponse;
+import com.elearn.api.exception.BadRequestException;
 import com.elearn.api.exception.DepartmentNotFoundException;
 import com.elearn.api.exception.InvalidCredentialsException;
 import com.elearn.api.exception.UsernameOrEmailTakenException;
@@ -52,6 +54,10 @@ public class UserService {
       Optional<Department> optDepartment = departmentRepository.findById(request.departmentId());
       if(optDepartment.isPresent()) user.setDepartment(optDepartment.get());
       else throw new DepartmentNotFoundException("Department not found");
+    }else {
+      if(request.role() == Role.STUDENT || request.role() == Role.TEACHER) {
+        throw new BadRequestException("A department is required for this role");
+      }
     }
     return new UserBaseResponse(userRepository.save(user));
   }
