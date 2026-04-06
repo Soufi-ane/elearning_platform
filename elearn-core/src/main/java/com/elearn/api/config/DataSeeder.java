@@ -22,7 +22,6 @@ public class DataSeeder implements CommandLineRunner {
   public void run(String... args) throws Exception {
     List<Department> departments = seedDepartments();
     seedUsers(departments);
-    System.out.println("test is working\n");
   }
 
   private List<Department> seedDepartments(){
