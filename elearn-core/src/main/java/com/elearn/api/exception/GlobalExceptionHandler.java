@@ -27,6 +27,14 @@ public class GlobalExceptionHandler {
 
   }
 
+  @ExceptionHandler(BadRequestException.class)
+  public ResponseEntity<Map<String, Object>> handleBadRequests(RuntimeException ex){
+
+    Map<String, Object> body = generateBody(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+
+  }
+
   private Map<String, Object> generateBody(String message, HttpStatus status){
     Map<String, Object> body = new HashMap<>();
     body.put("timestamp", LocalDateTime.now());
