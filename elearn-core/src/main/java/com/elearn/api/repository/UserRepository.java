@@ -9,5 +9,7 @@ import com.elearn.api.entity.User;
 public interface UserRepository extends JpaRepository<User, String> {
 
   public Optional<User> findByUsernameOrEmail(String username, String email);
+
+  public Optional<User> findByEmail(String email);
   
 }
