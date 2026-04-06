@@ -48,9 +48,11 @@ public class UserService {
       request.email(), passwordEncoder.encode(request.password()),
       request.dateOfBirth(),request.role()
     );
-    Optional<Department> optDepartment = departmentRepository.findById(request.departmentId());
-    if(optDepartment.isPresent()) user.setDepartment(optDepartment.get());
-    else throw new DepartmentNotFoundException("Department not found");
+    if(request.departmentId() != null) {
+      Optional<Department> optDepartment = departmentRepository.findById(request.departmentId());
+      if(optDepartment.isPresent()) user.setDepartment(optDepartment.get());
+      else throw new DepartmentNotFoundException("Department not found");
+    }
     return new UserBaseResponse(userRepository.save(user));
   }
 
