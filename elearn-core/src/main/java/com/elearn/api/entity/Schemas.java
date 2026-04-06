@@ -1,6 +1,7 @@
 package com.elearn.api.entity;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -23,9 +24,9 @@ public class Schemas {
   ){
     public UserBaseResponse(User user){
       this(
-        user.getFirstName(), user.getLastName(), user.getUsername(),
-        user.getEmail(), user.getDateOfBirth(), user.getRole(),
-        user.getDepartment().getId()
+        user.getFirstName(), user.getLastName(), user.getDbUsername(),
+        user.getUsername(), user.getDateOfBirth(), user.getRole(),
+        user.getDepartment() == null ? null : user.getDepartment().getId()
       );
     }
   }
