@@ -1,7 +1,11 @@
 package com.elearn.api.entity;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,7 +26,7 @@ import lombok.Data;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "platform_users")
-public class User {
+public class User implements UserDetails {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private String id;
@@ -59,7 +63,7 @@ public class User {
   private Role role;
 
   @ManyToOne()
-  @JoinColumn(name = "department_id")
+  @JoinColumn(name = "department_id", nullable = true)
   private Department department;
 
   @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
@@ -76,5 +80,20 @@ public class User {
 
   @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
   private List<Element> elements;
+
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return List.of(new SimpleGrantedAuthority(role.name()));
+  }
+
+  @Override
+  public String getUsername(){
+    return this.email;
+  }
+
+  public String getDbUsername(){
+    return this.username;
+  }
+
 }
 
