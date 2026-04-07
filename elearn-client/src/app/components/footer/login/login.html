@@ -1,0 +1,56 @@
+<div class="flex min-h-[70vh] items-center justify-center p-8">
+  <div class="w-full max-w-md rounded-lg bg-[#0E1A14]  p-10">
+
+    <p class="mb-8 text-center font-sans text-[#EAE3D5]">
+      Sign in to your e-learning account
+    </p>
+
+    <form class="flex flex-col gap-6">
+
+      <div class="flex flex-col">
+        <label
+          for="email"
+          class="mb-2 font-sans text-sm font-medium text-[#EAE3D5]">
+          Email or username
+        </label>
+        <input
+          type="text"
+          id="emailOrUsername"
+          placeholder="Enter your email or username"
+          required
+          class="border border-gray-300 p-3 text-[#8FA68C] font-sans
+           outline-none transition-colors focus:border-[#C8A96E]"/>
+      </div>
+
+      <div class="flex flex-col">
+        <label
+          for="password"
+          class="mb-2 font-sans text-sm font-medium text-[#EAE3D5]">
+          Password
+        </label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Enter your password"
+          required
+          class="border border-gray-300 p-3 text-[#8FA68C] font-sans
+           outline-none transition-colors focus:border-[#C8A96E]"/>
+      </div>
+
+      <div class="mt-2 flex flex-col gap-4">
+        <button
+          type="submit"
+          class="font-['DM_Sans',sans-serif] text-sm px-5 py-2 border border-[#C8A96E]
+          text-[#C8A96E] hover:bg-[#C8A96E] hover:text-[#0E1A14] transition-all
+          duration-300 tracking-wide cursor-pointer">
+          Log In
+        </button>
+        <a routerLink="/forgot-password"
+          class="text-[#C8A96E] text-xs text-center mb-6">
+          Forgot password?
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>
