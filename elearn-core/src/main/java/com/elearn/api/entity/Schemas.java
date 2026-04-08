@@ -1,8 +1,6 @@
 package com.elearn.api.entity;
 
 import java.time.LocalDate;
-import java.util.Optional;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class Schemas {
@@ -32,7 +30,5 @@ public class Schemas {
   }
 
   public record LoginRequest(String usernameOrEmail,String password){}
-
-  public record LoginResponse(UserBaseResponse user,String token){}
 
 }

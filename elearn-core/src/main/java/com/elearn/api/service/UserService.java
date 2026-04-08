@@ -1,14 +1,17 @@
 package com.elearn.api.service;
 
+import java.time.Duration;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.elearn.api.entity.Department;
 import com.elearn.api.entity.Role;
 import com.elearn.api.entity.User;
 import com.elearn.api.entity.Schemas.LoginRequest;
-import com.elearn.api.entity.Schemas.LoginResponse;
 import com.elearn.api.entity.Schemas.RegisterRequest;
 import com.elearn.api.entity.Schemas.UserBaseResponse;
 import com.elearn.api.exception.BadRequestException;
@@ -18,12 +21,16 @@ import com.elearn.api.exception.UsernameOrEmailTakenException;
 import com.elearn.api.repository.DepartmentRepository;
 import com.elearn.api.repository.UserRepository;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 @Service 
 public class UserService {
   private final UserRepository userRepository;
   private final DepartmentRepository departmentRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
+  @Value("${ENVIRONMENT}")
+  private String environment;
 
   @Autowired
   public UserService(
@@ -62,7 +69,7 @@ public class UserService {
     return new UserBaseResponse(userRepository.save(user));
   }
 
-  public LoginResponse login(LoginRequest request){
+  public UserBaseResponse login(LoginRequest request,HttpServletResponse reponse){
     Optional<User> optUser = userRepository
       .findByUsernameOrEmail(request.usernameOrEmail(),request.usernameOrEmail());
     if(!optUser.isPresent()) throw new InvalidCredentialsException("Invalid username or password");
@@ -70,8 +77,19 @@ public class UserService {
     if(!passwordEncoder.matches(request.password(), user.getPassword())){
       throw new InvalidCredentialsException("Invalid username or password");
     }
+
     String token = jwtService.generateToken(user.getEmail(), user.getId(), user.getRole());
-    return new LoginResponse(new UserBaseResponse(user), token);
+    ResponseCookie cookie = ResponseCookie.from("jwt",token)
+      .httpOnly(true)
+      .secure(!environment.equals("DEV"))
+      .path("/")
+      .maxAge(Duration.ofDays(1))
+      .sameSite("Strict")
+      .build();
+
+    reponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    
+    return new UserBaseResponse(user);
   }
 
 }

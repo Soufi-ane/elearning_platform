@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.elearn.api.entity.Schemas.LoginRequest;
-import com.elearn.api.entity.Schemas.LoginResponse;
 import com.elearn.api.entity.Schemas.RegisterRequest;
 import com.elearn.api.entity.Schemas.UserBaseResponse;
 import com.elearn.api.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -28,8 +28,8 @@ public class UserController {
   }
 
   @PostMapping("/login")
-  public LoginResponse login(@RequestBody LoginRequest request){
-    return userService.login(request);
+  public UserBaseResponse login(@RequestBody LoginRequest request, HttpServletResponse response){
+    return userService.login(request,response);
   }
 
 }
