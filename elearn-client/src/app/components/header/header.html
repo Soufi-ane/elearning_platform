@@ -18,7 +18,7 @@
   </ul>
   @if (profile()){
   <a class ="font-['DM_Sans',sans-serif] text-sm px-5 py-2 text-[#C8A96E] cursor-pointer">
-    {{ profile()?.user?.email }}</a>
+    {{ profile()?.email }}</a>
   }@else {
     <a routerLink="/login"
     class="font-['DM_Sans',sans-serif] text-sm px-5 py-2 border border-[#C8A96E]

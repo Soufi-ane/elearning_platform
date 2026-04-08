@@ -9,7 +9,7 @@ import { LoginService } from "./login.service";
 })
 export class Login {
   private fb = inject(FormBuilder);
-  private loginService =inject(LoginService);
+  private loginService = inject(LoginService);
 
   form = this.fb.group({
     usernameOrEmail : ['',[Validators.required]],
