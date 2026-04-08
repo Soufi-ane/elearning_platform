@@ -5,8 +5,8 @@
       Sign in to your e-learning account
     </p>
 
-    <form class="flex flex-col gap-6">
-
+    <form [formGroup]="form" (ngSubmit)="submit()"
+      class="flex flex-col gap-6">
       <div class="flex flex-col">
         <label
           for="email"
@@ -15,7 +15,7 @@
         </label>
         <input
           type="text"
-          id="emailOrUsername"
+          formControlName="usernameOrEmail"
           placeholder="Enter your email or username"
           required
           class="border border-gray-300 p-3 text-[#8FA68C] font-sans
@@ -30,7 +30,7 @@
         </label>
         <input
           type="password"
-          id="password"
+          formControlName="password"
           placeholder="Enter your password"
           required
           class="border border-gray-300 p-3 text-[#8FA68C] font-sans
