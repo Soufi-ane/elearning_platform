@@ -20,7 +20,6 @@ import com.elearn.api.exception.InvalidCredentialsException;
 import com.elearn.api.exception.UsernameOrEmailTakenException;
 import com.elearn.api.repository.DepartmentRepository;
 import com.elearn.api.repository.UserRepository;
-
 import jakarta.servlet.http.HttpServletResponse;
 
 @Service 

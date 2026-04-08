@@ -15,14 +15,14 @@ public class Schemas {
   ){}
 
   public record UserBaseResponse(
-    String firstName, String lastName, 
+    String id, String firstName, String lastName, 
     String username, String email,
     LocalDate dateOfBirth, Role role,
     String departmentId
   ){
     public UserBaseResponse(User user){
       this(
-        user.getFirstName(), user.getLastName(), user.getDbUsername(),
+        user.getId(), user.getFirstName(), user.getLastName(), user.getDbUsername(),
         user.getUsername(), user.getDateOfBirth(), user.getRole(),
         user.getDepartment() == null ? null : user.getDepartment().getId()
       );
