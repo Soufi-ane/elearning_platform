@@ -1,7 +1,6 @@
 package com.elearn.api.config;
 
 import java.util.Arrays;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,7 +26,7 @@ public class SecurityConfig {
       .csrf(csrf -> csrf.disable())
       .authorizeHttpRequests(auth -> auth
           .requestMatchers("/api/v1/departments").permitAll()
-          .requestMatchers("/api/v1/users/login").permitAll()
+          .requestMatchers("/api/v1/users/login","/api/v1/users/auth").permitAll()
           .requestMatchers("/api/v1/users/register").hasRole("ADMIN")
           .anyRequest().authenticated()
         )
