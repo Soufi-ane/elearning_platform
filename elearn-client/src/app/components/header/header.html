@@ -16,11 +16,15 @@
     <a routerLink="/about"
       class="hover:text-[#EAE3D5] cursor-pointer transition-colors">About</a>
   </ul>
-  <a
-  routerLink="/login"
-  class="font-['DM_Sans',sans-serif] text-sm px-5 py-2 border border-[#C8A96E]
-    text-[#C8A96E] hover:bg-[#C8A96E] hover:text-[#0E1A14] transition-all
-    duration-300 tracking-wide cursor-pointer">
-    Log In
-  </a>
+  @if (profile()){
+  <a class ="font-['DM_Sans',sans-serif] text-sm px-5 py-2 text-[#C8A96E] cursor-pointer">
+    {{ profile()?.user?.email }}</a>
+  }@else {
+    <a routerLink="/login"
+    class="font-['DM_Sans',sans-serif] text-sm px-5 py-2 border border-[#C8A96E]
+      text-[#C8A96E] hover:bg-[#C8A96E] hover:text-[#0E1A14] transition-all
+      duration-300 tracking-wide cursor-pointer">
+      Log In
+    </a>
+  }
 </nav>

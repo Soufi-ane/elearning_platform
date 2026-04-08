@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { LoginService } from '../login/login.service';
 
 @Component({
   selector: 'app-header',
@@ -7,5 +8,7 @@ import { RouterLink } from '@angular/router';
   templateUrl: './header.html',
 })
 export class Header {
+  private loginSerice = inject(LoginService);
 
+  profile = this.loginSerice.userProfile;
 }
