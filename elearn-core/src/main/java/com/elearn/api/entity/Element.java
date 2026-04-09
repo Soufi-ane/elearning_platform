@@ -40,5 +40,8 @@ public class Element {
   @OneToMany(mappedBy = "element")
   private List<Material> materials;
 
+  @OneToMany(mappedBy = "element")
+  private List<DayPlan> timeTable;
+
 }
 
