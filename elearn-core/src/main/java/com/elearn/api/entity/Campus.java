@@ -23,5 +23,10 @@ public class Campus {
 
   @OneToMany(mappedBy = "campus")
   private List<Room> rooms;
+
+  public Campus(String name, String location){
+    this.name = name;
+    this.location = location;
+  }
 }
 

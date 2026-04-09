@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import com.elearn.api.entity.Campus;
 import com.elearn.api.entity.DayPlan;
 import com.elearn.api.entity.Department;
 import com.elearn.api.entity.Element;
@@ -13,6 +14,7 @@ import com.elearn.api.entity.Module;
 import com.elearn.api.entity.PlanType;
 import com.elearn.api.entity.Role;
 import com.elearn.api.entity.User;
+import com.elearn.api.repository.CampusRepository;
 import com.elearn.api.repository.DayPlanRepository;
 import com.elearn.api.repository.DepartmentRepository;
 import com.elearn.api.repository.ElementRepository;
@@ -29,6 +31,7 @@ public class DataSeeder implements CommandLineRunner {
   private final ModuleRepository moduleRepository;
   private final ElementRepository elementRepository;
   private final DayPlanRepository dayPlanRepository;
+  private final CampusRepository campusRepository;
   private final PasswordEncoder passwordEncoder;
 
   @Override
@@ -40,6 +43,9 @@ public class DataSeeder implements CommandLineRunner {
       List<Module> modules = seedModules(departments);
       List<Element> elements = seedElements(modules,users);
       seedTimeTables(elements);
+      if(campusRepository.count() == 0) {
+        seedCampuses();
+      }
     }
   }
 
@@ -166,4 +172,13 @@ public class DataSeeder implements CommandLineRunner {
     );
     return dayPlanRepository.saveAll(plans);
   }
+
+  private List<Campus> seedCampuses(){
+    List<Campus> campuses = List.of(
+      new Campus("Agdal 1","22 Av. Omar Ibn Al Khattab, Rabat 10090"),
+      new Campus("Medina 1","98 Av. Allal Ben Abdellah, Rabat 10000")
+    );
+    return campusRepository.saveAll(campuses);
+  }
+
 }
