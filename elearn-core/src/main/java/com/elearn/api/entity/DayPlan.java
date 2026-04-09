@@ -1,6 +1,8 @@
 package com.elearn.api.entity;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,12 +24,25 @@ public class DayPlan {
   private String id;
 
   private LocalDate date;
-  private LocalDate startsAt;
-  private LocalDate endsAt;
+  private LocalTime startsAt;
+  private LocalTime endsAt;
   private int weeklyRepeats;
   private PlanType type; 
 
   @ManyToOne
   @JoinColumn(name = "element_id")
   private Element element;
+
+  public DayPlan( 
+    LocalDate date, LocalTime startsAt, LocalTime endsAt,
+    int weeklyRepeats, PlanType type, Element element
+  ){
+    this.date = date;
+    this.startsAt = startsAt;
+    this.endsAt = endsAt;
+    this.weeklyRepeats = weeklyRepeats;
+    this.type = type;
+    this.element = element;
+  }
+
 }
