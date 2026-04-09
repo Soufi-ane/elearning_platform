@@ -26,9 +26,9 @@ public class DataSeeder implements CommandLineRunner {
 
   private final DepartmentRepository departmentRepository;
   private final UserRepository userRepository;
-  private final ModuleRepository moduleRepository;;
-  private final ElementRepository elementRepository;;
-  private final DayPlanRepository dayPlanRepository;;
+  private final ModuleRepository moduleRepository;
+  private final ElementRepository elementRepository;
+  private final DayPlanRepository dayPlanRepository;
   private final PasswordEncoder passwordEncoder;
 
   @Override
