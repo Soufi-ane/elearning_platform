@@ -1,7 +1,6 @@
 package com.elearn.api.entity;
 
 import java.util.List;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,5 +30,12 @@ public class Module {
 
   @OneToMany(mappedBy = "module")
   private List<Element> elements;
+
+  public Module(String name, int semester, Department department){
+    this.name = name;
+    this.semester = semester;
+    this.department = department;
+  }
+
 }
 
