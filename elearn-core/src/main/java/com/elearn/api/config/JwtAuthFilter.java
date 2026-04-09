@@ -51,19 +51,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     String username = jwtService.extractUsername(jwtToken);
 
     if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
-      UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+      try {
+        UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-      if(jwtService.isTokenValid(jwtToken, userDetails)){
-        String role = (String) jwtService.extractAllClaims(jwtToken).get("role");
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+        if(jwtService.isTokenValid(jwtToken, userDetails)){
+          String role = (String) jwtService.extractAllClaims(jwtToken).get("role");
+          SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
 
-        UsernamePasswordAuthenticationToken authToken =
-          new UsernamePasswordAuthenticationToken(userDetails, null,List.of(authority));
+          UsernamePasswordAuthenticationToken authToken =
+            new UsernamePasswordAuthenticationToken(userDetails, null,List.of(authority));
 
-        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+          authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-        SecurityContextHolder.getContext().setAuthentication(authToken);
-      }
+          SecurityContextHolder.getContext().setAuthentication(authToken);
+        }
+      }catch(Exception e) { }
     }
     filterChain.doFilter(request, response);
   }
