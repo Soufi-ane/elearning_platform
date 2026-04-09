@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.elearn.api.entity.User;
 import com.elearn.api.entity.Schemas.LoginRequest;
 import com.elearn.api.entity.Schemas.RegisterRequest;
-import com.elearn.api.entity.Schemas.UserBaseResponse;
+import com.elearn.api.entity.Schemas.UserResponse;
 import com.elearn.api.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -27,18 +27,18 @@ public class UserController {
   }
 
   @PostMapping("/register")
-  public UserBaseResponse register(@RequestBody RegisterRequest request){
+  public UserResponse register(@RequestBody RegisterRequest request){
     return userService.register(request);
   }
 
   @GetMapping("/auth")
   public ResponseEntity<?> authenticate(@AuthenticationPrincipal UserDetails userDetails){
     if(userDetails == null) return ResponseEntity.status(401).build();
-    return ResponseEntity.ok(new UserBaseResponse((User) userDetails));
+    return ResponseEntity.ok(new UserResponse((User) userDetails));
   }
 
   @PostMapping("/login")
-  public UserBaseResponse login(@RequestBody LoginRequest request, HttpServletResponse response){
+  public UserResponse login(@RequestBody LoginRequest request, HttpServletResponse response){
     return userService.login(request,response);
   }
 

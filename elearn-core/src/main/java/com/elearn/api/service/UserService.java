@@ -13,7 +13,7 @@ import com.elearn.api.entity.Role;
 import com.elearn.api.entity.User;
 import com.elearn.api.entity.Schemas.LoginRequest;
 import com.elearn.api.entity.Schemas.RegisterRequest;
-import com.elearn.api.entity.Schemas.UserBaseResponse;
+import com.elearn.api.entity.Schemas.UserResponse;
 import com.elearn.api.exception.BadRequestException;
 import com.elearn.api.exception.DepartmentNotFoundException;
 import com.elearn.api.exception.InvalidCredentialsException;
@@ -44,7 +44,7 @@ public class UserService {
     this.jwtService = jwtService;
   }
 
-  public UserBaseResponse register(RegisterRequest request){
+  public UserResponse register(RegisterRequest request){
     Optional<User> optUser = userRepository
       .findByUsernameOrEmail(request.username(),request.email());
     if(optUser.isPresent()) throw new UsernameOrEmailTakenException(
@@ -65,10 +65,10 @@ public class UserService {
         throw new BadRequestException("A department is required for this role");
       }
     }
-    return new UserBaseResponse(userRepository.save(user));
+    return new UserResponse(userRepository.save(user));
   }
 
-  public UserBaseResponse login(LoginRequest request,HttpServletResponse reponse){
+  public UserResponse login(LoginRequest request,HttpServletResponse reponse){
     Optional<User> optUser = userRepository
       .findByUsernameOrEmail(request.usernameOrEmail(),request.usernameOrEmail());
     if(!optUser.isPresent()) throw new InvalidCredentialsException("Invalid username or password");
@@ -88,7 +88,7 @@ public class UserService {
 
     reponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     
-    return new UserBaseResponse(user);
+    return new UserResponse(user);
   }
 
 }
