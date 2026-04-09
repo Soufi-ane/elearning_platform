@@ -59,7 +59,7 @@ public class DataSeeder implements CommandLineRunner {
         passwordEncoder.encode("12341234"), LocalDate.of(1990, 5, 15), Role.ADMIN
       ),
       new User(
-        "soufiane", "jaber", "soufiane.jb", departments.get(0), "soufianejb@mail.ma",
+        "soufiane", "jaber", "soufiane", departments.get(0), "soufianejb@mail.ma",
         passwordEncoder.encode("12341234"), LocalDate.of(2005, 11, 12), Role.STUDENT
       ),
       new User(

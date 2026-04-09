@@ -4,11 +4,16 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.elearn.api.entity.Role;
+import com.elearn.api.entity.User;
 import com.elearn.api.entity.Schemas.TimeTableResponse;
 import com.elearn.api.service.DayPlanService;
 
@@ -25,9 +30,18 @@ public class TimeTableController {
 
   @GetMapping("/{startDate}")
   public List<TimeTableResponse> getPlanningByRange(
+    @AuthenticationPrincipal UserDetails userDetails,
     @PathVariable("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-    @RequestParam(value = "range") int rangeInDays
+    @RequestParam(value = "range") int rangeInDays,
+    @RequestParam(value = "departmentId") String departmentId
   ){
+
+    User user = (User) userDetails;
+    boolean isAdmin = user.getRole() == Role.ADMIN;
+    boolean isDepartmentValid = false;
+    if(!isAdmin) isDepartmentValid = user.getDepartment().getId().equals(departmentId);
+    if(!isAdmin && !isDepartmentValid) return List.of();
+
     return dayPlanService.getByRange(startDate,rangeInDays);
   }
 
