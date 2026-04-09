@@ -2,7 +2,6 @@ package com.elearn.api.entity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -44,5 +43,9 @@ public class DayPlan {
     this.type = type;
     this.element = element;
   }
+
+  @ManyToOne()
+  @JoinColumn(name = "room_id")
+  private Room room;
 
 }
