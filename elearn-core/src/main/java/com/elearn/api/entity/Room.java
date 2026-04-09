@@ -32,5 +32,12 @@ public class Room {
 
   @OneToMany(mappedBy = "room")
   private List<DayPlan> plannings;
+
+  public Room(String label, int capacity, int floor, RoomType type, Campus campus){
+    this.label = label;
+    this.capacity = capacity;
+    this.floor = floor;
+    this.campus = campus;
+  }
 }
 

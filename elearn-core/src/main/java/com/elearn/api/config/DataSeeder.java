@@ -6,20 +6,10 @@ import java.util.List;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import com.elearn.api.entity.Campus;
-import com.elearn.api.entity.DayPlan;
-import com.elearn.api.entity.Department;
-import com.elearn.api.entity.Element;
+import com.elearn.api.entity.*;
+import com.elearn.api.repository.*;
 import com.elearn.api.entity.Module;
-import com.elearn.api.entity.PlanType;
-import com.elearn.api.entity.Role;
-import com.elearn.api.entity.User;
-import com.elearn.api.repository.CampusRepository;
-import com.elearn.api.repository.DayPlanRepository;
-import com.elearn.api.repository.DepartmentRepository;
-import com.elearn.api.repository.ElementRepository;
-import com.elearn.api.repository.ModuleRepository;
-import com.elearn.api.repository.UserRepository;
+import com.elearn.api.entity.Room;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -32,6 +22,7 @@ public class DataSeeder implements CommandLineRunner {
   private final ElementRepository elementRepository;
   private final DayPlanRepository dayPlanRepository;
   private final CampusRepository campusRepository;
+  private final RoomRepository roomRepository;
   private final PasswordEncoder passwordEncoder;
 
   @Override
@@ -44,7 +35,8 @@ public class DataSeeder implements CommandLineRunner {
       List<Element> elements = seedElements(modules,users);
       seedTimeTables(elements);
       if(campusRepository.count() == 0) {
-        seedCampuses();
+        List<Campus> campuses = seedCampuses();
+        seedRooms(campuses);
       }
     }
   }
@@ -179,6 +171,16 @@ public class DataSeeder implements CommandLineRunner {
       new Campus("Medina 1","98 Av. Allal Ben Abdellah, Rabat 10000")
     );
     return campusRepository.saveAll(campuses);
+  }
+
+  private List<Room> seedRooms(List<Campus> campuses){
+    List<Room> rooms = List.of(
+      new Room("TP2", 35, 3, RoomType.TP, campuses.get(0)),
+      new Room("AMPHI 7", 50, 3, RoomType.AMPHI, campuses.get(0)),
+      new Room("AMPHI 3", 50, 3, RoomType.AMPHI, campuses.get(1)),
+      new Room("Salle Polyvalente", 120, 0, RoomType.POLYVALENTE, campuses.get(1))
+    );
+    return roomRepository.saveAll(rooms);
   }
 
 }
