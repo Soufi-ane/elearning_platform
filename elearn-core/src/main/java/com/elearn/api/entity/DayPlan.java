@@ -34,7 +34,7 @@ public class DayPlan {
 
   public DayPlan( 
     LocalDate date, LocalTime startsAt, LocalTime endsAt,
-    int weeklyRepeats, PlanType type, Element element
+    int weeklyRepeats, PlanType type, Element element, Room room
   ){
     this.date = date;
     this.startsAt = startsAt;
@@ -42,6 +42,7 @@ public class DayPlan {
     this.weeklyRepeats = weeklyRepeats;
     this.type = type;
     this.element = element;
+    this.room = room;
   }
 
   @ManyToOne()

@@ -2,7 +2,6 @@ package com.elearn.api.entity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class Schemas {
@@ -57,15 +56,27 @@ public class Schemas {
     }
   }
 
+  public record CampusBaseResponse(String name){}
+
+  public record RoomBaseResponse(String label,int floor, CampusBaseResponse campus){
+    public RoomBaseResponse(Room room){
+      this(
+        room.getLabel(), room.getFloor(),
+        new CampusBaseResponse(room.getCampus().getName())
+      );
+    }
+  }
+
   public record TimeTableResponse(
     String id, LocalDate date, LocalTime startsAt, LocalTime endsAt,
-    int weeklyRepeats, PlanType type, ElementResponse element
+    int weeklyRepeats, PlanType type, ElementResponse element, RoomBaseResponse room
   ){
     public TimeTableResponse(DayPlan plan){
       this(
         plan.getId(), plan.getDate(), plan.getStartsAt(),
         plan.getEndsAt(), plan.getWeeklyRepeats(), plan.getType(),
-        new ElementResponse(plan.getElement())
+        new ElementResponse(plan.getElement()),
+        new RoomBaseResponse(plan.getRoom())
       );
     }
   }
