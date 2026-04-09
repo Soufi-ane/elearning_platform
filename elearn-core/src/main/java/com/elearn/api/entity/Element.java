@@ -43,5 +43,11 @@ public class Element {
   @OneToMany(mappedBy = "element")
   private List<DayPlan> timeTable;
 
+  public Element(String name, Module module, User teacher){
+    this.name = name;
+    this.module = module;
+    this.teacher = teacher;
+  }
+
 }
 
