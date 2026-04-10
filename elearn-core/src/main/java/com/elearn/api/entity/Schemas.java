@@ -12,7 +12,7 @@ public class Schemas {
     String firstName, String lastName, 
     String username, String email, String password, 
     @JsonFormat(pattern = "dd-MM-yyyy") LocalDate dateOfBirth,
-    Role role, String departmentId
+    Role role, String departmentId, StudyMode studyMode
   ){}
 
   public record UserBaseResponse(String id, String firstName, String lastName){}
@@ -21,13 +21,14 @@ public class Schemas {
     String id, String firstName, String lastName, 
     String username, String email,
     LocalDate dateOfBirth, Role role,
-    String departmentId
+    String departmentId, StudyMode studyMode
   ){
     public UserResponse(User user){
       this(
         user.getId(), user.getFirstName(), user.getLastName(), user.getDbUsername(),
         user.getUsername(), user.getDateOfBirth(), user.getRole(),
-        user.getDepartment() == null ? null : user.getDepartment().getId()
+        user.getDepartment() == null ? null : user.getDepartment().getId(),
+        user.getStudyMode()
       );
     }
   }

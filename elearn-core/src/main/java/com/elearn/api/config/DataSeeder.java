@@ -54,23 +54,28 @@ public class DataSeeder implements CommandLineRunner {
     List<User> users = List.of(
       new User(
         "Abujad", "abdellah", "abu-jad", null, "abujad@supmti.ac.ma",
-        passwordEncoder.encode("12341234"), LocalDate.of(1990, 5, 15), Role.ADMIN
+        passwordEncoder.encode("12341234"), LocalDate.of(1990, 5, 15),
+        Role.ADMIN, null
       ),
       new User(
         "soufiane", "jaber", "soufiane", departments.get(0), "soufianejb@mail.ma",
-        passwordEncoder.encode("12341234"), LocalDate.of(2005, 11, 12), Role.STUDENT
+        passwordEncoder.encode("12341234"), LocalDate.of(2005, 11, 12),
+        Role.STUDENT, StudyMode.HYBRID
       ),
       new User(
         "Yasmine", "Tazi", "yasmine-t", departments.get(1), "tazi.yasmine@um5.ac.ma",
-        passwordEncoder.encode("qwerty"), LocalDate.of(2002, 10, 10), Role.STUDENT
+        passwordEncoder.encode("qwerty"), LocalDate.of(2002, 10, 10),
+        Role.STUDENT, StudyMode.ON_SITE
       ),
       new User(
         "Rachid", "Saadane", "saadane", departments.get(0), "saadane@supmti.ac.ma",
-        passwordEncoder.encode("saadane1324"), LocalDate.of(1985, 1, 5), Role.TEACHER
+        passwordEncoder.encode("saadane1324"), LocalDate.of(1985, 1, 5), 
+        Role.TEACHER, null
       ),
       new User(
         "Ahmed", "Zellou", "zellou", departments.get(0), "ahmed.zellou@ensias.ac.ma",
-        passwordEncoder.encode("zellou1234"), LocalDate.of(1985, 1, 5), Role.TEACHER
+        passwordEncoder.encode("zellou1234"), LocalDate.of(1985, 1, 5),
+        Role.TEACHER, null
       )
     );
     return userRepository.saveAll(users);

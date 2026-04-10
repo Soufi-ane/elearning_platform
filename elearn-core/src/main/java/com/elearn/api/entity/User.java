@@ -37,18 +37,20 @@ public class User implements UserDetails {
   private String email;
   private String password;
   private LocalDate dateOfBirth;
+  private StudyMode studyMode;
 
   public User(
     String firstName, String lastName, String username, Department department,
-    String email, String password, LocalDate dateOfBirth, Role role
+    String email, String password, LocalDate dateOfBirth, Role role,StudyMode studyMode
   ){
-    this(firstName,lastName,username,email,password,dateOfBirth,role);
+    this(firstName,lastName,username,email,password,dateOfBirth,role,studyMode);
     this.department = department;
   }
 
   public User(
     String firstName, String lastName, String username,
-    String email, String password, LocalDate dateOfBirth, Role role
+    String email, String password, LocalDate dateOfBirth,
+    Role role, StudyMode studyMode
   ){
     this.firstName = firstName;
     this.lastName = lastName;
@@ -57,6 +59,7 @@ public class User implements UserDetails {
     this.password = password;
     this.dateOfBirth = dateOfBirth;
     this.role = role;
+    this.studyMode = studyMode;
   }
 
   @Enumerated(EnumType.STRING)
