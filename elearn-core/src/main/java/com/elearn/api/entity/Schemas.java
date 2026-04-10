@@ -12,23 +12,26 @@ public class Schemas {
     String firstName, String lastName, 
     String username, String email, String password, 
     @JsonFormat(pattern = "dd-MM-yyyy") LocalDate dateOfBirth,
-    Role role, String departmentId, StudyMode studyMode
+    Role role, String departmentId, StudyMode studyMode, int year
   ){}
 
   public record UserBaseResponse(String id, String firstName, String lastName){}
 
   public record UserResponse(
     String id, String firstName, String lastName, 
-    String username, String email,
-    LocalDate dateOfBirth, Role role,
-    String departmentId, StudyMode studyMode
+    String username, String email, LocalDate dateOfBirth,
+    Role role, DepartmentBaseResponse department,
+    StudyMode studyMode, int year
   ){
     public UserResponse(User user){
       this(
         user.getId(), user.getFirstName(), user.getLastName(), user.getDbUsername(),
         user.getUsername(), user.getDateOfBirth(), user.getRole(),
-        user.getDepartment() == null ? null : user.getDepartment().getId(),
-        user.getStudyMode()
+        user.getDepartment() == null ? null : 
+        new DepartmentBaseResponse(
+          user.getDepartment().getId(),user.getDepartment().getName()
+        ),
+        user.getStudyMode(), user.getYear()
       );
     }
   }

@@ -54,7 +54,7 @@ public class UserService {
     User user = new User(
       request.firstName(),request.lastName(),request.username(),
       request.email(), passwordEncoder.encode(request.password()),
-      request.dateOfBirth(),request.role(),request.studyMode()
+      request.dateOfBirth(),request.role(),request.studyMode(),request.year()
     );
     if(request.departmentId() != null) {
       Optional<Department> optDepartment = departmentRepository.findById(request.departmentId());
