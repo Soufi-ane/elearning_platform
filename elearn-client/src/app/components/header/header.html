@@ -1,4 +1,5 @@
-<nav class="flex items-center justify-between px-10 py-6 border-b border-[#2A3D30]">
+<nav class="flex items-center z-50 justify-between fixed w-full
+    px-10 py-3 border-b bg-[#1A3025] border-[#2A3D30]">
   <div class="flex items-center gap-3">
     <div class="w-8 h-8 bg-[#C8A96E] rounded-sm flex items-center justify-center">
       <span class="text-[#0E1A14] font-['DM_Sans',sans-serif] font-500 text-sm">E</span>
@@ -17,7 +18,8 @@
       class="hover:text-[#EAE3D5] cursor-pointer transition-colors">About</a>
   </ul>
   @if (profile()){
-  <a class ="font-['DM_Sans',sans-serif] text-sm px-5 py-2 text-[#C8A96E] cursor-pointer">
+  <a routerLink="dashboard"
+  class ="font-['DM_Sans',sans-serif] text-sm px-5 py-2 text-[#C8A96E] cursor-pointer">
     {{ profile()?.email }}</a>
   }@else {
     <a routerLink="/login"
