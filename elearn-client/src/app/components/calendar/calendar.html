@@ -1,0 +1,54 @@
+<div class="h-[100dvh] pt-28 text-center text-[#8FA68C] px-12">
+  <div class="flex">
+    <div class="flex border-b flex-col">
+      <div class="border w-34 h-10 leading-9">Time</div>
+        @for(slot of timeSlots; track slot) {
+          @if($index % 2 != 0){
+            <div class="w-34 border-l border-r h-10 leading-10">-----  {{ slot }}  -----</div>
+          }
+        }
+    </div>
+      @for(array of planningWithSplan | keyvalue; track array.key) {
+        <div class="border-b">
+          <div class="w-34 border h-10 flex-col leading-9">{{ days[asDate(array.key).getDay()] }}</div>
+            @for(slot of timeSlots; track slot) {
+              @if(array.value.length == 0){
+                @for(slot of timeSlots; track slot) {
+                  <div class="w-34 border-r h-5 leading-5">-</div>
+                }
+              }
+              @if(array.value.length < 2){
+                @if($index >= array.value[0].rowSpan[0] && $index < array.value[0].rowSpan[1]) {
+                  @if($index == array.value[0].rowSpan[0] + 1){
+                    <div class="w-34 bg-[#1A302F] border-r h-5
+                    leading-5">{{ array.value[0].name }}</div>
+                  }@else {
+                    <div class="w-34 bg-[#1A302F] border-r h-5 leading-5"></div>
+                  }
+                }@else {
+                  <div class="w-34 border-r h-5 leading-5">-</div>
+                }
+              }@else {
+                @if($index >= array.value[0].rowSpan[0] &&
+                  $index < array.value[0].rowSpan[1]){
+                  @if($index == array.value[0].rowSpan[0] + 1){
+                    <div class="w-34 bg-[#1A302F] border-r h-5 leading-5">{{ array.value[0].name }}</div>
+                  }@else {
+                    <div class="w-34 bg-[#1A302F] border-r h-5 leading-5"></div>
+                  }
+                }@else if($index >= array.value[1].rowSpan[0] &&
+                  $index < array.value[1].rowSpan[1]){
+                  @if($index == array.value[1].rowSpan[0] + 1){
+                    <div class="w-34 bg-[#1A302F] border-r h-5 leading-5">{{ array.value[1].name }}</div>
+                  }@else {
+                    <div class="w-34 bg-[#1A302F] border-r h-5 leading-5"></div>
+                  }
+                } @else {
+                  <div class="w-34 border-r h-5 leading-5">-</div>
+                }
+              }
+            }
+        </div>
+      }
+  </div>
+</div>
