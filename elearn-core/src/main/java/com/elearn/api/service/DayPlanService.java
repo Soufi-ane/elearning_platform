@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.elearn.api.entity.DayPlan;
@@ -24,11 +23,19 @@ public class DayPlanService {
 
   public Map<LocalDate, List<PlanResponse>> getByWeek(LocalDate startDate){
     Map<LocalDate,List<PlanResponse>> timeTable = new TreeMap<>();
-    List<DayPlan> plans = dayPlanRepository.findByDateBetweenOrderByDateAsc(startDate, startDate.plusDays(7));
+    LocalDate startOfYear = LocalDate.of(startDate.getYear(),1,1);
+    LocalDate endOfYear = startOfYear.plusDays(365);
+    List<DayPlan> plans = dayPlanRepository.findByDateBetween(startOfYear, endOfYear);
     LocalDate currentDay = LocalDate.now();
     if(!plans.isEmpty()) currentDay = plans.get(0).getDate();
     List<PlanResponse> currentPlans = new ArrayList<>();
     for(int i=0; i < plans.size(); i++){
+      int repeats = plans.get(i).getWeeklyRepeats();
+      LocalDate firstRepeat = plans.get(i).getDate();
+      LocalDate lastRepeat = firstRepeat.plusDays(7 * repeats);
+      if(startDate.plusDays(5).isBefore(firstRepeat) || startDate.isAfter(lastRepeat)){
+        continue;
+      }
       if(!plans.get(i).getDate().isEqual(currentDay)) {
         timeTable.put(currentDay, currentPlans);
         currentDay = plans.get(i).getDate();
