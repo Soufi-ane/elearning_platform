@@ -14,7 +14,12 @@ type User = {
   email : string,
   dateOfBirth : Date,
   role : Role,
-  departmentId : string
+  department : Department
+}
+
+type Department = {
+  id : string,
+  name : string
 }
 
 enum Role {

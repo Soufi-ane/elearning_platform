@@ -8,7 +8,7 @@
           }
         }
     </div>
-      @for(array of planningWithSplan | keyvalue; track array.key) {
+      @for(array of planningWithSplan() | keyvalue; track array.key) {
         <div class="border-b">
           <div class="w-34 border h-10 flex-col leading-9">{{ days[asDate(array.key).getDay()] }}</div>
             @for(slot of timeSlots; track slot) {
@@ -21,7 +21,7 @@
                 @if($index >= array.value[0].rowSpan[0] && $index < array.value[0].rowSpan[1]) {
                   @if($index == array.value[0].rowSpan[0] + 1){
                     <div class="w-34 bg-[#1A302F] border-r h-5
-                    leading-5">{{ array.value[0].name }}</div>
+                    leading-5">{{ array.value[0].element.name }}</div>
                   }@else {
                     <div class="w-34 bg-[#1A302F] border-r h-5 leading-5"></div>
                   }
@@ -32,14 +32,16 @@
                 @if($index >= array.value[0].rowSpan[0] &&
                   $index < array.value[0].rowSpan[1]){
                   @if($index == array.value[0].rowSpan[0] + 1){
-                    <div class="w-34 bg-[#1A302F] border-r h-5 leading-5">{{ array.value[0].name }}</div>
+                    <div class="w-34 bg-[#1A302F] border-r h-5
+                    leading-5">{{ array.value[0].element.name }}</div>
                   }@else {
                     <div class="w-34 bg-[#1A302F] border-r h-5 leading-5"></div>
                   }
                 }@else if($index >= array.value[1].rowSpan[0] &&
                   $index < array.value[1].rowSpan[1]){
                   @if($index == array.value[1].rowSpan[0] + 1){
-                    <div class="w-34 bg-[#1A302F] border-r h-5 leading-5">{{ array.value[1].name }}</div>
+                    <div class="w-34 bg-[#1A302F] border-r h-5
+                    leading-5">{{ array.value[1].element.name }}</div>
                   }@else {
                     <div class="w-34 bg-[#1A302F] border-r h-5 leading-5"></div>
                   }
