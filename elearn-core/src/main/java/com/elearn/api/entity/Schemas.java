@@ -60,24 +60,22 @@ public class Schemas {
     }
   }
 
-  public record CampusBaseResponse(String name){}
-
-  public record RoomBaseResponse(String label,int floor, CampusBaseResponse campus){
+  public record RoomBaseResponse(String label,int floor, String campus){
     public RoomBaseResponse(Room room){
       this(
         room.getLabel(), room.getFloor(),
-        new CampusBaseResponse(room.getCampus().getName())
+        room.getCampus().getName()
       );
     }
   }
 
   public record PlanResponse(
-    LocalDate date, LocalTime startsAt, LocalTime endsAt,
-    PlanType type, ElementResponse element, RoomBaseResponse room
+    LocalTime startsAt, LocalTime endsAt, PlanType type,
+    ElementResponse element, RoomBaseResponse room
   ){
     public PlanResponse(DayPlan plan){
       this(
-        plan.getDate(), plan.getStartsAt(), plan.getEndsAt(), plan.getType(),
+        plan.getStartsAt(), plan.getEndsAt(), plan.getType(),
         new ElementResponse(plan.getElement()), new RoomBaseResponse(plan.getRoom())
       );
     }
