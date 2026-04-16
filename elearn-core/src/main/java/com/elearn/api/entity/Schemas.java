@@ -71,16 +71,14 @@ public class Schemas {
     }
   }
 
-  public record TimeTableResponse(
-    String id, LocalDate date, LocalTime startsAt, LocalTime endsAt,
-    int weeklyRepeats, PlanType type, ElementResponse element, RoomBaseResponse room
+  public record PlanResponse(
+    LocalDate date, LocalTime startsAt, LocalTime endsAt,
+    PlanType type, ElementResponse element, RoomBaseResponse room
   ){
-    public TimeTableResponse(DayPlan plan){
+    public PlanResponse(DayPlan plan){
       this(
-        plan.getId(), plan.getDate(), plan.getStartsAt(),
-        plan.getEndsAt(), plan.getWeeklyRepeats(), plan.getType(),
-        new ElementResponse(plan.getElement()),
-        new RoomBaseResponse(plan.getRoom())
+        plan.getDate(), plan.getStartsAt(), plan.getEndsAt(), plan.getType(),
+        new ElementResponse(plan.getElement()), new RoomBaseResponse(plan.getRoom())
       );
     }
   }

@@ -9,6 +9,6 @@ import com.elearn.api.entity.DayPlan;
 @Repository
 public interface DayPlanRepository extends JpaRepository<DayPlan, String> {
 
-  List<DayPlan> findByDateBetween(LocalDate startDate, LocalDate endDate);
+  List<DayPlan> findByDateBetweenOrderByDateAsc(LocalDate startDate, LocalDate endDate);
 
 }

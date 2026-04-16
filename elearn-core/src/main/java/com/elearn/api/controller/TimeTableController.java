@@ -1,7 +1,9 @@
 package com.elearn.api.controller;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,10 +13,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.elearn.api.entity.Role;
 import com.elearn.api.entity.User;
-import com.elearn.api.entity.Schemas.TimeTableResponse;
+import com.elearn.api.entity.Schemas.PlanResponse;
 import com.elearn.api.service.DayPlanService;
 
 @RestController
@@ -29,10 +30,9 @@ public class TimeTableController {
   }
 
   @GetMapping("/{startDate}")
-  public List<TimeTableResponse> getPlanningByRange(
+  public Map<LocalDate, List<PlanResponse>> getPlanningByRange(
     @AuthenticationPrincipal UserDetails userDetails,
     @PathVariable("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-    @RequestParam(value = "range") int rangeInDays,
     @RequestParam(value = "departmentId") String departmentId
   ){
 
@@ -40,9 +40,9 @@ public class TimeTableController {
     boolean isAdmin = user.getRole() == Role.ADMIN;
     boolean isDepartmentValid = false;
     if(!isAdmin) isDepartmentValid = user.getDepartment().getId().equals(departmentId);
-    if(!isAdmin && !isDepartmentValid) return List.of();
+    if(!isAdmin && !isDepartmentValid) return new HashMap<>();
 
-    return dayPlanService.getByRange(startDate,rangeInDays);
+    return dayPlanService.getByWeek(startDate);
   }
 
 }
