@@ -134,7 +134,7 @@ public class DataSeeder implements CommandLineRunner {
   private List<DayPlan> seedTimeTables(List<Element> elements, List<Room> rooms){
     List<DayPlan> plans = List.of(
       new DayPlan(LocalDate.of(2026, 2, 6), LocalTime.of(9, 0),
-        LocalTime.of(11, 0),14 ,PlanType.LECTURE,elements.get(0), rooms.get(3)
+        LocalTime.of(11, 0),0 ,PlanType.LECTURE,elements.get(0), rooms.get(3)
       ),
       new DayPlan(LocalDate.of(2026, 2, 6), LocalTime.of(14, 30),
         LocalTime.of(16, 30),14 ,PlanType.LECTURE,elements.get(1), rooms.get(0)
