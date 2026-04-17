@@ -11,42 +11,50 @@
       @for(array of planningWithSplan() | keyvalue; track array.key) {
         <div class="border-b">
           <div class="w-34 border h-10 flex-col leading-9">{{ days[asDate(array.key).getDay()] }}</div>
-            @for(slot of timeSlots; track slot) {
+            @for(slot of timeSlots; track slot; let slotIndex = $index) {
               @if(array.value.length == 0){
                 @for(slot of timeSlots; track slot) {
-                  <div class="w-34 border-r h-5 leading-5">-</div>
+                  <div class="w-34 border-r h-5 leading-5"></div>
                 }
               }
               @if(array.value.length < 2){
                 @if($index >= array.value[0].rowSpan[0] && $index < array.value[0].rowSpan[1]) {
                   @if($index == array.value[0].rowSpan[0] + 1){
-                    <div class="w-34 bg-[#1A302F] border-r h-5
+                    <div class="w-34 bg-[#1A302F] h-5 border-r
                     leading-5">{{ array.value[0].element.name }}</div>
                   }@else {
-                    <div class="w-34 bg-[#1A302F] border-r h-5 leading-5"></div>
+                    <div class="w-34 bg-[#1A302F] h-5 border-r leading-5"></div>
                   }
                 }@else {
-                  <div class="w-34 border-r h-5 leading-5">-</div>
+                  @if(slotIndex % 2 == 0) {
+                    <div class="w-34 border-b border-r h-5 leading-5"></div>
+                  }@else {
+                    <div class="w-34 h-5 border-r leading-5"></div>
+                  }
                 }
               }@else {
                 @if($index >= array.value[0].rowSpan[0] &&
                   $index < array.value[0].rowSpan[1]){
                   @if($index == array.value[0].rowSpan[0] + 1){
-                    <div class="w-34 bg-[#1A302F] border-r h-5
+                    <div class="w-34 bg-[#1A302F] h-5 border-r
                     leading-5">{{ array.value[0].element.name }}</div>
                   }@else {
-                    <div class="w-34 bg-[#1A302F] border-r h-5 leading-5"></div>
+                    <div class="w-34 bg-[#1A302F] h-5 border-r leading-5"></div>
                   }
                 }@else if($index >= array.value[1].rowSpan[0] &&
                   $index < array.value[1].rowSpan[1]){
                   @if($index == array.value[1].rowSpan[0] + 1){
-                    <div class="w-34 bg-[#1A302F] border-r h-5
+                    <div class="w-34 bg-[#1A302F] h-5 border-r
                     leading-5">{{ array.value[1].element.name }}</div>
                   }@else {
-                    <div class="w-34 bg-[#1A302F] border-r h-5 leading-5"></div>
+                    <div class="w-34 bg-[#1A302F] h-5 border-r leading-5"></div>
                   }
                 } @else {
-                  <div class="w-34 border-r h-5 leading-5">-</div>
+                  @if(slotIndex % 2 == 0) {
+                    <div class="w-34 border-b border-r h-5 leading-5-"></div>
+                  }@else {
+                    <div class="w-34 h-5 border-r leading-5"></div>
+                  }
                 }
               }
             }
