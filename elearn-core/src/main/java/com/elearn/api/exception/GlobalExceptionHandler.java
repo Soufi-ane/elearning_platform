@@ -11,7 +11,7 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(DepartmentNotFoundException.class)
+  @ExceptionHandler({DepartmentNotFoundException.class, NoPlansFoundException.class})
   public ResponseEntity<Map<String, Object>> handleEntityNotFound(RuntimeException ex){
 
     Map<String, Object> body = generateBody(ex.getMessage(), HttpStatus.NOT_FOUND);
