@@ -1,4 +1,4 @@
-import { KeyValuePipe } from '@angular/common';
+import {KeyValuePipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CalendarService, Plan, PlanWithSpan } from './calendar.service';
 import { LoginService } from '../login/login.service';
@@ -13,13 +13,22 @@ export class Calendar implements OnInit {
   private loginService = inject(LoginService);
 
   currentWeekStart = signal<Date>(new Date());
+  currentWeekStr = '';
+  endOfWeekStr = '';
 
   planningWithSplan = signal<Record<string, PlanWithSpan[]>>({});
 
   ngOnInit(): void {
-    this.currentWeekStart.set(this.getPreviousMonday());
+    const prevMonday = this.getPreviousMonday(new Date());
+    this.init(prevMonday);
+  }
+
+  init(startDate : Date) {
+    this.currentWeekStart.set(startDate);
+    this.currentWeekStr = this.getCurrentWeekStr();
+    this.endOfWeekStr = this.getEndOfWeekStr()
     this.calendarService.getByWeek(
-      this.currentWeekStart(),
+      startDate,
       this.loginService.userProfile()!.department.id
     ).subscribe({
       next: (res) => {
@@ -29,12 +38,34 @@ export class Calendar implements OnInit {
     });
   }
 
+  onPrevious() {
+    const prevWeek = new Date(this.currentWeekStart().getTime());
+    prevWeek.setDate(prevWeek.getDate() - 1);
+    this.init(this.getPreviousMonday(prevWeek));
+  }
 
-  getPreviousMonday(): Date {
-    const today = new Date();
-    const daysToshiftBy = 1 - today.getDay();
-    const newDate = new Date();
-    newDate.setDate(today.getDate() + daysToshiftBy);
+  onNext() {
+    const nextWeek = this.currentWeekStart();
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    this.init(nextWeek);
+  }
+
+  getCurrentWeekStr() : string {
+    return this.formatDate(this.currentWeekStart());
+  }
+
+  getEndOfWeekStr() : string {
+    const nextWeek = new Date(this.currentWeekStart());
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    return this.formatDate(nextWeek);
+  }
+
+  getPreviousMonday(startDate : Date): Date {
+    const day = startDate.getDay();
+    const daysToshiftBy = day == 0 ? 6 : day - 1;
+    const newDate = new Date(startDate.getTime());
+    newDate.setDate(newDate.getDate() - daysToshiftBy);
+    newDate.setHours(0, 0, 0, 0);
     return newDate;
   }
 
@@ -49,10 +80,22 @@ export class Calendar implements OnInit {
 
   days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-
-
   asDate(dateString: string): Date {
     return new Date(dateString);
+  }
+
+  formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2,'0');
+    const day = String(date.getDate()).padStart(2,'0');
+    const result = `${day}/${month}/${year}`;
+    return result;
+  }
+
+  datePlus(date: Date, days : number): Date {
+    const newDate = date;
+    newDate.setDate(newDate.getDate() + days);
+    return newDate;
   }
 
   generatePlanWithSpan(plannings: Record<string, Plan[]>): Record<string, PlanWithSpan[]> {
@@ -78,7 +121,6 @@ export class Calendar implements OnInit {
       if (this.timeSlots[i] == start) newPlan.rowSpan[0] = i;
       if (this.timeSlots[i] == end) newPlan.rowSpan[1] = i;
     }
-    console.log(newPlan.rowSpan);
     return newPlan;
   }
 

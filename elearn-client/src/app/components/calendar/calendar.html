@@ -1,4 +1,32 @@
 <div class="h-[100dvh] pt-28 text-center text-[#8FA68C] px-12">
+
+  <div class="flex items-center gap-4 p-4 bg-[#0E1A14]">
+  <p>
+    {{ currentWeekStr }}
+  to
+    {{ endOfWeekStr }}
+  </p>
+    <button
+    (click)="onPrevious()"
+      type="button"
+      class="flex items-center gap-2 font-['DM_Sans',sans-serif] text-sm px-4 py-2 border border-[#C8A96E] text-[#C8A96E] hover:bg-[#C8A96E] hover:text-[#0E1A14] transition-all duration-300 tracking-wide cursor-pointer group">
+      <svg class="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Previous</span>
+    </button>
+
+    <button
+    (click)="onNext()"
+      type="button"
+      class="flex items-center gap-2 font-['DM_Sans',sans-serif] text-sm px-4 py-2 border border-[#C8A96E] text-[#C8A96E] hover:bg-[#C8A96E] hover:text-[#0E1A14] transition-all duration-300 tracking-wide cursor-pointer group">
+      <span>Next</span>
+      <svg class="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
   <div class="flex">
     <div class="flex border-b flex-col">
       <div class="border w-34 h-10 leading-9">Time</div>
