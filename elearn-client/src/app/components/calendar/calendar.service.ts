@@ -48,7 +48,7 @@ export class CalendarService {
   private http = inject(HttpClient);
   private apiUrl = "/api";
 
-  getByWeek(date:Date, departmentId : string): Observable<Record<string,Plan[]>> {
+  getByWeek(date:Date, departmentId : string) {
     return this.http.get<Record<string,Plan[]>>(
       `${this.apiUrl}/timeTable/${date.toISOString().split('T')[0]}?departmentId=${departmentId}`
     );
