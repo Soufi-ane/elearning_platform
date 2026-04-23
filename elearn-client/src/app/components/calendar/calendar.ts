@@ -2,6 +2,8 @@ import {KeyValuePipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CalendarService, Plan, PlanWithSpan } from './calendar.service';
 import { LoginService } from '../login/login.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { start } from 'repl';
 
 @Component({
   selector: 'app-calendar',
@@ -12,15 +14,25 @@ export class Calendar implements OnInit {
   private calendarService = inject(CalendarService);
   private loginService = inject(LoginService);
 
+  constructor(private router : Router,private route : ActivatedRoute){}
+
   currentWeekStart = signal<Date>(new Date());
   currentWeekStr = '';
   endOfWeekStr = '';
 
   planningWithSplan = signal<Record<string, PlanWithSpan[]>>({});
 
+  updateStartDate(){
+    this.router.navigate(
+      ["/dashboard/calendar"],
+      { queryParams : { d : this.formatDate(this.currentWeekStart(),"-")}}
+    );
+  }
+
   ngOnInit(): void {
     const prevMonday = this.getPreviousMonday(new Date());
-    this.init(prevMonday);
+    const urlDate = this.route.snapshot.queryParamMap.get("d");
+    this.init(urlDate ? this.urlStrToDate(urlDate) : prevMonday);
   }
 
   init(startDate : Date) {
@@ -36,6 +48,8 @@ export class Calendar implements OnInit {
       },
       error: (err) => console.log("Error:", err)
     });
+
+    this.updateStartDate();
   }
 
   onPrevious() {
@@ -51,13 +65,13 @@ export class Calendar implements OnInit {
   }
 
   getCurrentWeekStr() : string {
-    return this.formatDate(this.currentWeekStart());
+    return this.formatDate(this.currentWeekStart(),"/");
   }
 
   getEndOfWeekStr() : string {
     const nextWeek = new Date(this.currentWeekStart());
     nextWeek.setDate(nextWeek.getDate() + 7);
-    return this.formatDate(nextWeek);
+    return this.formatDate(nextWeek, "/");
   }
 
   getPreviousMonday(startDate : Date): Date {
@@ -84,11 +98,16 @@ export class Calendar implements OnInit {
     return new Date(dateString);
   }
 
-  formatDate(date: Date): string {
+  urlStrToDate(str : string) : Date {
+    const [day, month, year] = str.split("-");
+    return new Date(+year, +month - 1, +day);
+  }
+
+  formatDate(date: Date, seperator : string): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2,'0');
     const day = String(date.getDate()).padStart(2,'0');
-    const result = `${day}/${month}/${year}`;
+    const result = `${day}${seperator}${month}${seperator}${year}`;
     return result;
   }
 
