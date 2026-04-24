@@ -1,6 +1,7 @@
 package com.elearn.api.config;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.boot.CommandLineRunner;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component;
 import com.elearn.api.entity.*;
 import com.elearn.api.repository.*;
 import com.elearn.api.entity.Module;
-import com.elearn.api.entity.Room;
+
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -24,6 +25,7 @@ public class DataSeeder implements CommandLineRunner {
   private final CampusRepository campusRepository;
   private final RoomRepository roomRepository;
   private final PasswordEncoder passwordEncoder;
+  private final AbsenceRepository absenceRepository;
 
   @Override
   public void run(String... args) throws Exception {
@@ -38,7 +40,22 @@ public class DataSeeder implements CommandLineRunner {
         List<Room> rooms = seedRooms(campuses);
         seedTimeTables(elements,rooms);
       }
+      if(absenceRepository.count() == 0) seedAbsence(users,elements);
     }
+  }
+
+  private List<Absence> seedAbsence(List<User> users, List<Element> elements){
+    List<Absence> absences = List.of(
+      new Absence(
+        LocalDateTime.now(),AbsenceType.CLASS,
+        true,users.get(1),elements.get(0)
+      ),
+      new Absence(
+        LocalDateTime.now(),AbsenceType.EXAM,
+        false,users.get(2),elements.get(1)
+      )
+    );
+    return absenceRepository.saveAll(absences);
   }
 
   private List<Department> seedDepartments(){
@@ -53,7 +70,7 @@ public class DataSeeder implements CommandLineRunner {
   private List<User> seedUsers(List<Department> departments){
     List<User> users = List.of(
       new User(
-        "Abujad", "abdellah", "abu-jad", null, "abujad@supmti.ac.ma",
+        "Abujad", "abdellah", "abujad", null, "abujad@supmti.ac.ma",
         passwordEncoder.encode("12341234"), LocalDate.of(1990, 5, 15),
         Role.ADMIN, null, 0
       ),
