@@ -14,7 +14,15 @@ type User = {
   email : string,
   dateOfBirth : Date,
   role : Role,
-  department : Department
+  department : Department,
+  studyMode : StudyMode,
+  year : number
+}
+
+enum StudyMode {
+  HYBRID,
+  ON_SITE,
+  REMOTE
 }
 
 type Department = {

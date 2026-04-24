@@ -48,52 +48,42 @@
               stroke-width="1.2" stroke-linecap="round"/>
           </svg>
           <div>
-            <p class="text-sm text-[#EAE3D5]">Computer Science</p>
-            <p class="text-xs text-[#8FA68C] mt-0.5">Faculty of Engineering</p>
+            <p class="text-sm text-[#EAE3D5]">
+            {{ user.department.name }}
+            </p>
           </div>
         </div>
       </div>
-
-      <div class="bg-[#0B1610] border border-[#2A3D30] p-5">
-        <p class="text-[#8FA68C] text-[10px] tracking-[0.2em] uppercase mb-4">
-          Mode of Learning
-        </p>
-        <div class="space-y-2">
-          <div class="flex items-center gap-3 p-2 border border-[#2A3D30]">
-            <div class="w-1.5 h-1.5 rounded-full bg-[#2A3D30]"></div>
-            <span class="text-sm text-[#8FA68C]">Online</span>
-          </div>
-          <div class="flex items-center gap-3 p-2 border border-[#2A3D30]">
-            <div class="w-1.5 h-1.5 rounded-full bg-[#2A3D30]"></div>
-            <span class="text-sm text-[#8FA68C]">In-Person</span>
-          </div>
-          <div class="flex items-center gap-3 p-2 border border-[#C8A96E] bg-[#1A3025]">
-            <div class="w-1.5 h-1.5 rounded-full bg-[#C8A96E]"></div>
-            <span class="text-sm text-[#C8A96E]">Hybrid</span>
-          </div>
-        </div>
+      <div class="flex flex-col gap-4"> <button class="font-['DM_Sans',sans-serif] px-6 py-3 bg-[#C8A96E]
+          text-[#0E1A14] text-sm font-medium tracking-wide
+          hover:bg-[#DFC18A] transition-colors duration-300">
+          Edit Profile
+        </button>
+        <button class="font-['DM_Sans',sans-serif] px-6 py-3 border
+          border-[#2A3D30] text-[#8FA68C] text-sm tracking-wide
+          hover:border-[#C8A96E] hover:text-[#C8A96E] transition-all duration-300">
+          Change Password
+        </button>
       </div>
-
     </div>
 
     <div class="md:col-span-2 flex flex-col gap-6">
-
       <div class="bg-[#0B1610] border border-[#2A3D30] p-6">
         <p class="text-[#8FA68C] text-[10px] tracking-[0.2em] uppercase mb-5">
           Personal Information
         </p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
+            <p class="text-[#8FA68C] text-xs mb-1">Last Name</p>
+            <p class="text-[#EAE3D5] text-sm border-b border-[#2A3D30] pb-2">
+              {{ user.lastName.toUpperCase() }}
+            </p>
+          </div>
+          <div>
             <p class="text-[#8FA68C] text-xs mb-1">First Name</p>
             <p class="text-[#EAE3D5] text-sm border-b border-[#2A3D30] pb-2">
             {{ user.firstName.charAt(0).toUpperCase() +
               user.firstName.substring(1) }}
-            </p>
-          </div>
-          <div>
-            <p class="text-[#8FA68C] text-xs mb-1">Last Name</p>
-            <p class="text-[#EAE3D5] text-sm border-b border-[#2A3D30] pb-2">
-              {{ user.lastName.toUpperCase() }}
             </p>
           </div>
           <div>
@@ -125,28 +115,14 @@
           <div>
             <p class="text-[#8FA68C] text-xs mb-1">Department</p>
             <p class="text-[#EAE3D5] text-sm border-b border-[#2A3D30] pb-2">
-              Computer Science
-            </p>
-          </div>
-          <div>
-            <p class="text-[#8FA68C] text-xs mb-1">Faculty</p>
-            <p class="text-[#EAE3D5] text-sm border-b border-[#2A3D30] pb-2">
-              Faculty of Engineering
-            </p>
-          </div>
-          <div>
-            <p class="text-[#8FA68C] text-xs mb-1">Enrollment Year</p>
-            <p class="text-[#EAE3D5] text-sm border-b border-[#2A3D30] pb-2">2022</p>
-          </div>
-          <div>
-            <p class="text-[#8FA68C] text-xs mb-1">Academic Level</p>
-            <p class="text-[#EAE3D5] text-sm border-b border-[#2A3D30] pb-2">
-              Bachelor's — Year 3
+            {{ user.department.name }}
             </p>
           </div>
           <div>
             <p class="text-[#8FA68C] text-xs mb-1">Mode of Learning</p>
-            <p class="text-[#C8A96E] text-sm border-b border-[#2A3D30] pb-2">Hybrid</p>
+            <p class="text-[#C8A96E] text-sm border-b border-[#2A3D30] pb-2">
+              {{ user.studyMode }}
+            </p>
           </div>
           <div>
             <p class="text-[#8FA68C] text-xs mb-1">Status</p>
@@ -154,21 +130,6 @@
           </div>
         </div>
       </div>
-
-
-    </div>
-
-    <div class="flex flex-col gap-4">
-      <button class="font-['DM_Sans',sans-serif] px-6 py-3 bg-[#C8A96E]
-        text-[#0E1A14] text-sm font-medium tracking-wide
-        hover:bg-[#DFC18A] transition-colors duration-300">
-        Edit Profile
-      </button>
-      <button class="font-['DM_Sans',sans-serif] px-6 py-3 border
-        border-[#2A3D30] text-[#8FA68C] text-sm tracking-wide
-        hover:border-[#C8A96E] hover:text-[#C8A96E] transition-all duration-300">
-        Change Password
-      </button>
     </div>
   </div>
 </div>
