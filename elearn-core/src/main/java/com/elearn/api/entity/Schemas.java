@@ -1,6 +1,7 @@
 package com.elearn.api.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -77,6 +78,22 @@ public class Schemas {
       this(
         plan.getStartsAt(), plan.getEndsAt(), plan.getType(),
         new ElementResponse(plan.getElement()), new RoomBaseResponse(plan.getRoom())
+      );
+    }
+  }
+
+  public record AbsenceResponse( 
+    String id, LocalDateTime dateTime, AbsenceType type, boolean isJustified,
+    UserBaseResponse student,ElementResponse element
+  ){
+    public AbsenceResponse(Absence a) {
+      this(
+        a.getId(), a.getDateTime(), a.getType(), a.isJustified(),
+        new UserBaseResponse(
+          a.getStudent().getId(), a.getStudent().getFirstName(),
+          a.getStudent().getLastName()
+        ),
+        new ElementResponse(a.getElement())
       );
     }
   }
