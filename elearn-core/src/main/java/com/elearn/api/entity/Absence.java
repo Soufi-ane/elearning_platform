@@ -16,6 +16,18 @@ import lombok.Data;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Absence {
+
+  public Absence(
+    LocalDateTime dateTime, AbsenceType type, 
+    boolean isJustified, User student, Element element 
+  ){
+    this.dateTime = dateTime;
+    this.type = type;
+    this.isJustified = isJustified;
+    this.student = student;
+    this.element = element;
+    }
+
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private String id;
