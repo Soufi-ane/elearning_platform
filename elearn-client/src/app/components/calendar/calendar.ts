@@ -3,7 +3,6 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CalendarService, Plan, PlanWithSpan } from './calendar.service';
 import { LoginService } from '../login/login.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { start } from 'repl';
 
 @Component({
   selector: 'app-calendar',
