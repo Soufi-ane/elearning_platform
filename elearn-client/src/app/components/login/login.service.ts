@@ -47,6 +47,12 @@ export class LoginService {
     return this.http.post<User>(`${this.apiUrl}/users/login`,payload);
   }
 
+  logout() {
+    return this.http.post(
+      `${this.apiUrl}/users/logout`
+    ,{});
+  }
+
   checkAuth() {
     return this.http.get<User>(`${this.apiUrl}/users/auth`,{withCredentials : true})
     .pipe(

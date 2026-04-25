@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { LoginService } from '../login/login.service';
 
 @Component({
@@ -8,7 +8,20 @@ import { LoginService } from '../login/login.service';
   templateUrl: './header.html',
 })
 export class Header {
-  private loginSerice = inject(LoginService);
+  private loginService = inject(LoginService);
 
-  profile = this.loginSerice.userProfile;
+  profile = this.loginService.userProfile;
+
+  constructor(private router : Router){}
+
+  logout() {
+    this.loginService.logout()
+    .subscribe({
+      next: (_) => {
+      },
+      error: (_) => {}
+    })
+    this.profile.set(null);
+    this.router.navigate(["/"]);
+  }
 }

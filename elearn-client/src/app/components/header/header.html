@@ -18,9 +18,16 @@
       class="hover:text-[#EAE3D5] cursor-pointer transition-colors">About</a>
   </ul>
   @if (profile()){
-  <a routerLink="dashboard"
-  class ="font-['DM_Sans',sans-serif] text-sm px-5 py-2 text-[#C8A96E] cursor-pointer">
-    {{ profile()?.email }}</a>
+    <div>
+      <a routerLink="dashboard"
+       class ="font-['DM_Sans',sans-serif] text-sm px-5 py-2 text-[#C8A96E] cursor-pointer">
+        {{ profile()?.email }}
+      </a>
+      <button (click)="logout()"
+        class ="font-['DM_Sans',sans-serif] text-sm px-5 py-2 text-[#C8A96E] cursor-pointer">
+        Log out
+      </button>
+    </div>
   }@else {
     <a routerLink="/login"
     class="font-['DM_Sans',sans-serif] text-sm px-5 py-2 border border-[#C8A96E]
