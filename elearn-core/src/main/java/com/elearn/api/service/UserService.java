@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.elearn.api.entity.Department;
@@ -68,7 +69,7 @@ public class UserService {
     return new UserResponse(userRepository.save(user));
   }
 
-  public UserResponse login(LoginRequest request,HttpServletResponse reponse){
+  public UserResponse login(LoginRequest request,HttpServletResponse response){
     Optional<User> optUser = userRepository
       .findByUsernameOrEmail(request.usernameOrEmail(),request.usernameOrEmail());
     if(!optUser.isPresent()) throw new InvalidCredentialsException("Invalid username or password");
@@ -86,9 +87,22 @@ public class UserService {
       .sameSite("Strict")
       .build();
 
-    reponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     
     return new UserResponse(user);
+  }
+
+  public ResponseEntity<?> logout(HttpServletResponse response) {
+    ResponseCookie cookie = ResponseCookie.from("jwt","")
+      .httpOnly(true)
+      .secure(!environment.equals("DEV"))
+      .path("/")
+      .maxAge(0)
+      .sameSite("Strict")
+      .build();
+    
+    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    return ResponseEntity.ok().body("Logged out successfully");
   }
 
 }

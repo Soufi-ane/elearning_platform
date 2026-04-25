@@ -42,4 +42,9 @@ public class UserController {
     return userService.login(request,response);
   }
 
+  @PostMapping("/logout")
+  public ResponseEntity<?> logout(HttpServletResponse response){
+    return userService.logout(response);
+  }
+
 }
