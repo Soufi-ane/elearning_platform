@@ -34,4 +34,15 @@ public class AbsenceController {
     return absenceService.listByUser(id);
   }
 
+  @GetMapping("/{elementId}")
+  public List<AbsenceResponse> getByElementId(
+    @PathVariable String elementId,
+    @RequestParam(required = false) String userId,
+    @AuthenticationPrincipal UserDetails userDetails
+  ){
+    User user = (User) userDetails;
+    String targetUserId = user.getRole() == Role.STUDENT ? user.getId() : userId;
+    return absenceService.getByElementId(elementId, targetUserId);
+  }
+
 }

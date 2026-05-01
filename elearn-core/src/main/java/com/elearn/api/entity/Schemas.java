@@ -82,6 +82,10 @@ public class Schemas {
     }
   }
 
+  public record AbsenceByElementResponse(
+    ElementResponse element, int count, AbsenceStatus status
+  ){}
+
   public record AbsenceResponse( 
     String id, LocalDateTime dateTime, AbsenceType type, boolean isJustified,
     UserBaseResponse student,ElementResponse element
