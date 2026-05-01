@@ -16,8 +16,8 @@ import com.elearn.api.entity.Schemas.LoginRequest;
 import com.elearn.api.entity.Schemas.RegisterRequest;
 import com.elearn.api.entity.Schemas.UserResponse;
 import com.elearn.api.exception.BadRequestException;
-import com.elearn.api.exception.DepartmentNotFoundException;
 import com.elearn.api.exception.InvalidCredentialsException;
+import com.elearn.api.exception.ResourceNotFoundException;
 import com.elearn.api.exception.UsernameOrEmailTakenException;
 import com.elearn.api.repository.DepartmentRepository;
 import com.elearn.api.repository.UserRepository;
@@ -60,7 +60,7 @@ public class UserService {
     if(request.departmentId() != null) {
       Optional<Department> optDepartment = departmentRepository.findById(request.departmentId());
       if(optDepartment.isPresent()) user.setDepartment(optDepartment.get());
-      else throw new DepartmentNotFoundException("Department not found");
+      else throw new ResourceNotFoundException("Department not found");
     }else {
       if(request.role() == Role.STUDENT || request.role() == Role.TEACHER) {
         throw new BadRequestException("A department is required for this role");
