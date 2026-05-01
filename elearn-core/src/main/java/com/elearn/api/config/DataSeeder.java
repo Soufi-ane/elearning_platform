@@ -52,6 +52,18 @@ public class DataSeeder implements CommandLineRunner {
       ),
       new Absence(
         LocalDateTime.now(),AbsenceType.EXAM,
+        false,users.get(1),elements.get(3)
+      ),
+      new Absence(
+        LocalDateTime.now(),AbsenceType.CLASS,
+        false,users.get(1),elements.get(6)
+      ),
+      new Absence(
+        LocalDateTime.now().minusDays(5),AbsenceType.CLASS,
+        false,users.get(1),elements.get(6)
+      ),
+      new Absence(
+        LocalDateTime.now(),AbsenceType.EXAM,
         false,users.get(2),elements.get(1)
       )
     );
