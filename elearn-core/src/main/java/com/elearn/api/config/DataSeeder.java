@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import com.elearn.api.entity.*;
 import com.elearn.api.repository.*;
 import com.elearn.api.entity.Module;
-
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -26,6 +25,7 @@ public class DataSeeder implements CommandLineRunner {
   private final RoomRepository roomRepository;
   private final PasswordEncoder passwordEncoder;
   private final AbsenceRepository absenceRepository;
+  private final ResultRepository resultRepository;
 
   @Override
   public void run(String... args) throws Exception {
@@ -35,6 +35,7 @@ public class DataSeeder implements CommandLineRunner {
       List<User> users = seedUsers(departments);
       List<Module> modules = seedModules(departments);
       List<Element> elements = seedElements(modules,users);
+      seedResults(elements, users);
       if(campusRepository.count() == 0) {
         List<Campus> campuses = seedCampuses();
         List<Room> rooms = seedRooms(campuses);
@@ -42,6 +43,16 @@ public class DataSeeder implements CommandLineRunner {
       }
       if(absenceRepository.count() == 0) seedAbsence(users,elements);
     }
+  }
+
+  private void seedResults(List<Element> elements, List<User> users){
+    List<Result> results = List.of(
+      new Result(14, users.get(1), elements.get(0)),
+      new Result(17, users.get(1), elements.get(1)),
+      new Result(9, users.get(1), elements.get(2)),
+      new Result(4, users.get(1), elements.get(3))
+    );
+    resultRepository.saveAll(results);
   }
 
   private List<Absence> seedAbsence(List<User> users, List<Element> elements){
