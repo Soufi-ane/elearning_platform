@@ -4,11 +4,7 @@
   <aside class="w-60 flex flex-col bg-[#0B1610] border-r border-[#2A3D30]">
 
     <div class="px-4 pt-8 pb-6 border-b border-[#2A3D30] space-y-1">
-      <p class="text-[#8FA68C] text-[10px] tracking-[0.3em] uppercase mb-3 px-2">
-        Main
-      </p>
-
-      <a class="flex items-center gap-3 px-2 py-2 text-sm text-[#C8A96E]
+      <a class="flex mt-3 items-center gap-3 px-2 py-2 text-sm text-[#C8A96E]
         border-l-2 border-[#C8A96E] bg-[#1A3025] cursor-pointer">
         <svg class="w-4 h-4 opacity-100" viewBox="0 0 16 16" fill="none">
           <rect x="1" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/>
@@ -17,16 +13,6 @@
           <rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/>
         </svg>
         Overview
-      </a>
-
-      <a class="flex items-center gap-3 px-2 py-2 text-sm text-[#8FA68C]
-        border-l-2 border-transparent hover:text-[#EAE3D5] hover:bg-[#1A3025]
-        cursor-pointer transition-all duration-200">
-        <svg class="w-4 h-4 opacity-70" viewBox="0 0 16 16" fill="none">
-          <path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor"
-            stroke-width="1.2" stroke-linecap="round"/>
-        </svg>
-        My Courses
       </a>
 
       <a routerLink="calendar"
@@ -55,8 +41,25 @@
         </svg>
         Attendance
       </a>
-
-      <a class="flex items-center gap-3 px-2 py-2 text-sm text-[#8FA68C]
+      <a routerLink="requests"
+         class="flex items-center gap-3 px-2 py-2 text-sm text-[#8FA68C]
+           border-l-2 border-transparent hover:text-[#EAE3D5] hover:bg-[#1A3025]
+           cursor-pointer transition-all duration-200">
+        <svg class="w-4 h-4 opacity-70" viewBox="0 0 16 16" fill="none">
+          <path d="M1.5 4.5A1.5 1.5 0 0 1 3 3h10a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0
+          0 1 13 14H3a1.5 1.5 0 0 1-1.5-1.5v-8z"
+          stroke="currentColor" stroke-width="1.2"/>
+          <path d="M5 8h6M5 11h3"
+          stroke="currentColor" stroke-width="1.2"
+          stroke-linecap="round"/>
+          <path d="M12 2v4m0 0l-1.5-1.5M12 6l1.5-1.5"
+          stroke="currentColor" stroke-width="1.2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Requests
+      </a>
+      <a routerLink="grades"
+        class="flex items-center gap-3 px-2 py-2 text-sm text-[#8FA68C]
         border-l-2 border-transparent hover:text-[#EAE3D5] hover:bg-[#1A3025]
         cursor-pointer transition-all duration-200">
         <svg class="w-4 h-4 opacity-70" viewBox="0 0 16 16" fill="none">
@@ -122,159 +125,9 @@
 
   </aside>
 
-  <main class="flex-1 px-10 py-8 overflow-auto">
+  <div class="w-full">
+    <router-outlet></router-outlet>
+  </div>
 
-    <p class="text-[#C8A96E] text-[10px] tracking-[0.3em] uppercase mb-1">
-      Digital Learning Institute
-    </p>
-    <h1 class="text-[#EAE3D5] text-3xl font-light mb-8">Overview</h1>
-
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-
-      <div class="bg-[#0B1610] border border-[#2A3D30] p-5">
-        <p class="text-[#8FA68C] text-[10px] tracking-[0.2em] uppercase mb-1">
-          Enrolled
-        </p>
-        <p class="text-[#C8A96E] text-3xl font-semibold">4</p>
-        <p class="text-[#8FA68C] text-xs mt-1">Active courses</p>
-      </div>
-
-      <div class="bg-[#0B1610] border border-[#2A3D30] p-5">
-        <p class="text-[#8FA68C] text-[10px] tracking-[0.2em] uppercase mb-1">
-          Completed
-        </p>
-        <p class="text-[#C8A96E] text-3xl font-semibold">12</p>
-        <p class="text-[#8FA68C] text-xs mt-1">Total courses</p>
-      </div>
-
-      <div class="bg-[#0B1610] border border-[#2A3D30] p-5">
-        <p class="text-[#8FA68C] text-[10px] tracking-[0.2em] uppercase mb-1">
-          Average
-        </p>
-        <p class="text-[#C8A96E] text-3xl font-semibold">87%</p>
-        <p class="text-[#8FA68C] text-xs mt-1">Grade average</p>
-      </div>
-
-      <div class="bg-[#0B1610] border border-[#2A3D30] p-5">
-        <p class="text-[#8FA68C] text-[10px] tracking-[0.2em] uppercase mb-1">
-          Hours
-        </p>
-        <p class="text-[#C8A96E] text-3xl font-semibold">142</p>
-        <p class="text-[#8FA68C] text-xs mt-1">This semester</p>
-      </div>
-
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-      <div class="bg-[#0B1610] border border-[#2A3D30] p-5">
-        <p class="text-[#8FA68C] text-[10px] tracking-[0.2em] uppercase mb-4">
-          Current Courses
-        </p>
-
-        <div class="flex items-center gap-3 py-3 border-b border-[#2A3D30]">
-          <div class="w-2 h-2 bg-[#C8A96E] flex-shrink-0"></div>
-          <div class="flex-1">
-            <p class="text-sm text-[#EAE3D5]">Web Architecture</p>
-            <div class="h-[2px] bg-[#2A3D30] mt-2 rounded-sm">
-              <div class="h-full bg-[#C8A96E] rounded-sm" style="width: 72%"></div>
-            </div>
-          </div>
-          <span class="text-xs text-[#8FA68C]">72%</span>
-        </div>
-
-        <div class="flex items-center gap-3 py-3 border-b border-[#2A3D30]">
-          <div class="w-2 h-2 bg-[#8FA68C] flex-shrink-0"></div>
-          <div class="flex-1">
-            <p class="text-sm text-[#EAE3D5]">Data Structures</p>
-            <div class="h-[2px] bg-[#2A3D30] mt-2 rounded-sm">
-              <div class="h-full bg-[#8FA68C] rounded-sm" style="width: 45%"></div>
-            </div>
-          </div>
-          <span class="text-xs text-[#8FA68C]">45%</span>
-        </div>
-
-        <div class="flex items-center gap-3 py-3 border-b border-[#2A3D30]">
-          <div class="w-2 h-2 bg-[#C8A96E] flex-shrink-0"></div>
-          <div class="flex-1">
-            <p class="text-sm text-[#EAE3D5]">UI/UX Fundamentals</p>
-            <div class="h-[2px] bg-[#2A3D30] mt-2 rounded-sm">
-              <div class="h-full bg-[#C8A96E] rounded-sm" style="width: 88%"></div>
-            </div>
-          </div>
-          <span class="text-xs text-[#8FA68C]">88%</span>
-        </div>
-
-        <div class="flex items-center gap-3 py-3">
-          <div class="w-2 h-2 bg-[#8FA68C] flex-shrink-0"></div>
-          <div class="flex-1">
-            <p class="text-sm text-[#EAE3D5]">Algorithms</p>
-            <div class="h-[2px] bg-[#2A3D30] mt-2 rounded-sm">
-              <div class="h-full bg-[#8FA68C] rounded-sm" style="width: 30%"></div>
-            </div>
-          </div>
-          <span class="text-xs text-[#8FA68C]">30%</span>
-        </div>
-
-      </div>
-
-      <div class="bg-[#0B1610] border border-[#2A3D30] p-5">
-        <p class="text-[#8FA68C] text-[10px] tracking-[0.2em] uppercase mb-4">
-          Recent Activity
-        </p>
-
-        <div class="flex gap-3 py-3 border-b border-[#1A3025]">
-          <div class="w-1.5 h-1.5 rounded-full bg-[#C8A96E] mt-1.5 flex-shrink-0"></div>
-          <div>
-            <p class="text-sm text-[#8FA68C] leading-relaxed">
-              Submitted assignment — Web Architecture
-            </p>
-            <p class="text-[11px] text-[#2A3D30] mt-0.5">2 hours ago</p>
-          </div>
-        </div>
-
-        <div class="flex gap-3 py-3 border-b border-[#1A3025]">
-          <div class="w-1.5 h-1.5 rounded-full bg-[#8FA68C] mt-1.5 flex-shrink-0"></div>
-          <div>
-            <p class="text-sm text-[#8FA68C] leading-relaxed">
-              Completed lesson 8 — Data Structures
-            </p>
-            <p class="text-[11px] text-[#2A3D30] mt-0.5">Yesterday</p>
-          </div>
-        </div>
-
-        <div class="flex gap-3 py-3 border-b border-[#1A3025]">
-          <div class="w-1.5 h-1.5 rounded-full bg-[#C8A96E] mt-1.5 flex-shrink-0"></div>
-          <div>
-            <p class="text-sm text-[#8FA68C] leading-relaxed">
-              Grade received — UI/UX Fundamentals: 91%
-            </p>
-            <p class="text-[11px] text-[#2A3D30] mt-0.5">2 days ago</p>
-          </div>
-        </div>
-
-        <div class="flex gap-3 py-3 border-b border-[#1A3025]">
-          <div class="w-1.5 h-1.5 rounded-full bg-[#8FA68C] mt-1.5 flex-shrink-0"></div>
-          <div>
-            <p class="text-sm text-[#8FA68C] leading-relaxed">
-              Joined study group — Algorithms
-            </p>
-            <p class="text-[11px] text-[#2A3D30] mt-0.5">3 days ago</p>
-          </div>
-        </div>
-
-        <div class="flex gap-3 py-3">
-          <div class="w-1.5 h-1.5 rounded-full bg-[#C8A96E] mt-1.5 flex-shrink-0"></div>
-          <div>
-            <p class="text-sm text-[#8FA68C] leading-relaxed">
-              New course material available — Web Architecture
-            </p>
-            <p class="text-[11px] text-[#2A3D30] mt-0.5">4 days ago</p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </main>
 
 </div>

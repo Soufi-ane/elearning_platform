@@ -1,16 +1,16 @@
 import { Component, inject, OnInit, signal } from "@angular/core";
-import { Absence, AttendaceService } from "./attendance.service";
-
+import { AbsenceByElement, AttendaceService } from "./attendance.service";
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'user-attendance',
-  imports: [],
+  imports: [ RouterLink ],
   templateUrl: './attendance.html',
 })
 export class Attendance implements OnInit {
   private attendaceService = inject(AttendaceService);
 
-  userAbsences = signal<Absence[]>([]);
+  userAbsences = signal<AbsenceByElement[]>([]);
 
   ngOnInit(): void {
     this.attendaceService.getByStudent(null)

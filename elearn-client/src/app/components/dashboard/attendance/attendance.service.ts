@@ -11,6 +11,19 @@ export type Absence = {
   element : Element
 }
 
+export type AbsenceByElement = {
+  element : Element,
+  count : number,
+  status : AbsenceStatus
+}
+
+export enum AbsenceStatus {
+  NORMAL,
+  VERBAL_WARNING,
+  WRITTEN_WARNING,
+  DISCIPLINARY_HEARING
+}
+
 export type UserInfo = {
   id: string,
   firstName: string,
@@ -29,8 +42,14 @@ export class AttendaceService {
   private apiUrl = "/api";
 
   getByStudent(studentId : string|null) {
-    return this.http.get<Absence[]>(
+    return this.http.get<AbsenceByElement[]>(
       `${this.apiUrl}/absence?userId=${studentId}`
+    );
+  }
+
+  getByElementId(elementId : string, userId : string|null) {
+    return this.http.get<Absence[]>(
+      `${this.apiUrl}/absence/${elementId}?userId=${userId}`
     );
   }
 

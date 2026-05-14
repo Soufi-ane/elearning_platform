@@ -1,0 +1,35 @@
+<main class="flex-1 pt-28 px-12 h-dvh bg-[#0B1610]">
+  <div class="mb-6">
+    <h1 class="text-xl font-medium text-[#EAE3D5]">Absence Records</h1>
+  </div>
+
+  <div class="overflow-hidden border border-[#2A3D30] rounded-sm bg-[#0B1610]">
+    @if(absences(); as absences){
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-[#2A3D30] bg-[#14261C]">
+            <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Subject</th>
+            <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Module</th>
+            <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Date</th>
+            <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Status</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm text-[#EAE3D5]">
+          @for(absence of absences; track absence){
+            <tr
+              class="border-b border-[#2A3D30] hover:bg-[#14261C] cursor-pointer transition-colors">
+              <td class="px-4 py-4">{{ absence.element.name }}</td>
+              <td class="px-4 py-4 text-[#8FA68C]">{{ absence.element.module.name }}</td>
+              <td class="px-4 py-4">{{ formatDateTime(absence.dateTime) }}</td>
+              <td class="px-4 py-4">
+                <span [class]="absence.isJustified ? 'text-emerald-500' : 'text-rose-500'">
+                  {{ absence.isJustified ? "Justified" : "Not justified" }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</main>

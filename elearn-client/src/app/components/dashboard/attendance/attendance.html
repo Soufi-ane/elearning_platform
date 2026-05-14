@@ -1,0 +1,29 @@
+<main class="flex-1 pt-28 px-12 h-dvh ">
+  <div class="mb-6">
+    <h1 class="text-xl font-medium text-[#EAE3D5]">Absence Records</h1>
+  </div>
+
+  <div class="overflow-hidden border border-[#2A3D30] rounded-sm bg-[#0B1610]">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="border-b border-[#2A3D30] bg-[#14261C]">
+          <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Subject</th>
+          <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Module</th>
+          <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Count</th>
+          <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Status</th>
+        </tr>
+      </thead>
+      <tbody class="text-sm">
+        @for(absence of userAbsences(); track absence){
+          <tr [routerLink] = "['/dashboard/attendance',absence.element.id]"
+            class="border-b border-[#2A3D30]/50 hover:bg-[#1A3025] transition-colors">
+            <td class="px-4 py-4 text-[#8FA68C]">{{ absence.element.name }}</td>
+            <td class="px-4 py-4 text-[#8FA68C]">{{ absence.element.module.name }}</td>
+            <td class="px-4 py-4 text-[#8FA68C]">{{ absence.count }}</td>
+            <td class="px-4 py-4 text-[#8FA68C]">{{ absence.status }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</main>
