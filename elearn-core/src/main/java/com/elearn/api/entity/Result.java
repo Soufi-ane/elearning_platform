@@ -28,5 +28,12 @@ public class Result {
   @ManyToOne()
   @JoinColumn(name = "element_id")
   private Element element;
+
+  public Result(double grade, User student, Element element){
+    this.grade = grade;
+    this.student = student;
+    this.element = element;
+  }
+
 }
 
