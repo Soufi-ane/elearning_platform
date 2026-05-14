@@ -102,4 +102,20 @@ public class Schemas {
     }
   }
 
+  public record ResultResponse(
+    String id, double grade, UserBaseResponse student, ElementResponse element
+  ){
+    public ResultResponse(Result r){
+      this(
+        r.getId(), r.getGrade(), 
+        new UserBaseResponse(
+          r.getStudent().getId(),
+          r.getStudent().getFirstName(),
+          r.getStudent().getLastName()
+        ),
+        new ElementResponse(r.getElement())
+      );
+    }
+  }
+
 }
