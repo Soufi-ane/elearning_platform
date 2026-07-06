@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from "@angular/core";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
-import { Absence, AttendaceService } from "../attendance/attendance.service";
+import { AttendaceService } from "../attendance/attendance.service";
+import { Absence } from "../../../models/models";
 
 
 @Component({

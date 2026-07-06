@@ -1,8 +1,9 @@
 import {KeyValuePipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CalendarService, Plan, PlanWithSpan } from './calendar.service';
+import { CalendarService } from './calendar.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoginService } from '../../login/login.service';
+import { Plan, PlanWithSpan } from '../../../models/models';
 
 @Component({
   selector: 'app-calendar',

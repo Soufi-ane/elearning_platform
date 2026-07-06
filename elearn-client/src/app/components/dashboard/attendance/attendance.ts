@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from "@angular/core";
-import { AbsenceByElement, AttendaceService } from "./attendance.service";
+import { AttendaceService } from "./attendance.service";
 import { RouterLink } from "@angular/router";
+import { AbsenceByElement } from "../../../models/models";
 
 @Component({
   selector: 'user-attendance',

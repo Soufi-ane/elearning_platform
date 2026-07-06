@@ -1,47 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-
-export type Plan = {
-  startsAt: string,
-  endsAt : string,
-  type : PlanType,
-  element : Element,
-  room : Room,
-}
-
-export type Room = {
-  label : string,
-  floor : number,
-  campus : string
-}
-
-export type Element = {
-  id : string,
-  name : string,
-  module : Module,
-  teacher : BaseUser
-}
-
-export type BaseUser = {
-  id : string,
-  firstName : string,
-  lastName : string
-}
-
-export type Module = {
-  id : string,
-  name : string
-}
-
-export enum PlanType {
-  LECTURE,
-  EXAM
-}
-
-export type PlanWithSpan = Plan & {
-  rowSpan : number[]
-};
+import { Plan } from "../../../models/models";
 
 @Injectable({providedIn : "root"})
 export class CalendarService {

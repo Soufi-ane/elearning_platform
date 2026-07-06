@@ -1,40 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable, signal } from "@angular/core";
 import { catchError, Observable, of, tap } from "rxjs";
-
-type LoginRequest = {
-  usernameOrEmail : string,
-  password : string
-}
-
-type User = {
-  firstName : string,
-  lastName : string,
-  username : string,
-  email : string,
-  dateOfBirth : Date,
-  role : Role,
-  department : Department,
-  studyMode : StudyMode,
-  year : number
-}
-
-enum StudyMode {
-  HYBRID,
-  ON_SITE,
-  REMOTE
-}
-
-type Department = {
-  id : string,
-  name : string
-}
-
-enum Role {
-  STUDENT,
-  TEACHER,
-  ADMIN
-}
+import { User } from "../../models/models";
 
 @Injectable({providedIn : "root"})
 export class LoginService {
