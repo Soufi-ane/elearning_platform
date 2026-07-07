@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DataSeeder implements CommandLineRunner {
 
-  private final DepartmentRepository departmentRepository;
   private final UserRepository userRepository;
   private final ModuleRepository moduleRepository;
   private final ElementRepository elementRepository;
@@ -29,19 +28,25 @@ public class DataSeeder implements CommandLineRunner {
 
   @Override
   public void run(String... args) throws Exception {
-    if(departmentRepository.count() == 0) {
+    if (args.length > 0 && "seed".equalsIgnoreCase(args[0])) {
       System.out.println("Seeding data ...");
-      List<Department> departments = seedDepartments();
-      List<User> users = seedUsers(departments);
-      List<Module> modules = seedModules(departments);
+      dayPlanRepository.deleteAllInBatch();
+      absenceRepository.deleteAllInBatch();
+      resultRepository.deleteAllInBatch();
+      elementRepository.deleteAllInBatch();
+      roomRepository.deleteAllInBatch();
+      moduleRepository.deleteAllInBatch();
+      userRepository.deleteAllInBatch();
+      campusRepository.deleteAllInBatch();
+
+      List<User> users = seedUsers();
+      List<Module> modules = seedModules();
       List<Element> elements = seedElements(modules,users);
       seedResults(elements, users);
-      if(campusRepository.count() == 0) {
-        List<Campus> campuses = seedCampuses();
-        List<Room> rooms = seedRooms(campuses);
-        seedTimeTables(elements,rooms);
-      }
-      if(absenceRepository.count() == 0) seedAbsence(users,elements);
+      List<Campus> campuses = seedCampuses();
+      List<Room> rooms = seedRooms(campuses);
+      seedTimeTables(elements,rooms);
+      seedAbsence(users,elements);
     }
   }
 
@@ -89,16 +94,7 @@ public class DataSeeder implements CommandLineRunner {
     return absenceRepository.saveAll(absences);
   }
 
-  private List<Department> seedDepartments(){
-    List<Department> departments = List.of(
-      new Department("Génie Informatique"),
-      new Department("Génie Électrique"),
-      new Department("Génie Civil")
-    );
-    return departmentRepository.saveAll(departments);
-  }
-
-  private List<User> seedUsers(List<Department> departments){
+  private List<User> seedUsers(){
     List<User> users = List.of(
       new User(
         "Abujad", "abdellah", "abujad", null, "abujad@supmti.ac.ma",
@@ -106,22 +102,22 @@ public class DataSeeder implements CommandLineRunner {
         Role.ADMIN, null, 0
       ),
       new User(
-        "soufiane", "jaber", "soufiane", departments.get(0), "soufianejb@mail.ma",
-        passwordEncoder.encode("12341234"), LocalDate.of(2005, 11, 12),
+        "soufiane", "jaber", "soufiane", DepartmentName.GENIE_INFORMATIQUE,
+        "soufianejb@mail.ma", passwordEncoder.encode("12341234"), LocalDate.of(2005, 11, 12),
         Role.STUDENT, StudyMode.HYBRID, 1
       ),
       new User(
-        "Yasmine", "Tazi", "yasmine-t", departments.get(1), "tazi.yasmine@um5.ac.ma",
+        "Yasmine", "Tazi", "yasmine-t",  DepartmentName.GENIE_CIVIL, "tazi.yasmine@um5.ac.ma",
         passwordEncoder.encode("qwerty"), LocalDate.of(2002, 10, 10),
         Role.STUDENT, StudyMode.ON_SITE, 2
       ),
       new User(
-        "Rachid", "Saadane", "saadane", departments.get(0), "saadane@supmti.ac.ma",
+        "Rachid", "Saadane", "saadane", DepartmentName.GENIE_INFORMATIQUE, "saadane@supmti.ac.ma",
         passwordEncoder.encode("saadane1324"), LocalDate.of(1985, 1, 5), 
         Role.TEACHER, null,0
       ),
       new User(
-        "Ahmed", "Zellou", "zellou", departments.get(0), "ahmed.zellou@ensias.ac.ma",
+        "Ahmed", "Zellou", "zellou", DepartmentName.GENIE_INFORMATIQUE, "ahmed.zellou@ensias.ac.ma",
         passwordEncoder.encode("zellou1234"), LocalDate.of(1985, 1, 5),
         Role.TEACHER, null,0
       )
@@ -129,29 +125,29 @@ public class DataSeeder implements CommandLineRunner {
     return userRepository.saveAll(users);
   }
 
-  private List<Module> seedModules(List<Department> departments){
+  private List<Module> seedModules(){
     List<Module> modules = List.of(
-      new Module("Programmation Resaux",1,departments.get(0)),
-      new Module("Programmation Python",1,departments.get(0)),
-      new Module("Programmation OOP",1,departments.get(0)),
-      new Module("Base De donnee",1,departments.get(0)),
-      new Module("Langues entrangères",1,departments.get(0)),
+      new Module("Programmation Resaux",1, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Programmation Python",1, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Programmation OOP",1, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Base De donnee",1, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Langues entrangères",1, DepartmentName.GENIE_INFORMATIQUE),
 
-      new Module("CMS",1,departments.get(0)),
-      new Module("Génie Logiciel",1,departments.get(0)),
+      new Module("CMS",1, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Génie Logiciel",1, DepartmentName.GENIE_INFORMATIQUE),
 
-      new Module("UML",1,departments.get(0)),
+      new Module("UML",1, DepartmentName.GENIE_INFORMATIQUE),
 
       //s2
-      new Module("Mysql",2,departments.get(0)),
-      new Module("Python Machine learning",2,departments.get(0)),
-      new Module("Java EE",2,departments.get(0)),
-      new Module("ENGLISH 2",2,departments.get(0)),
-      new Module("FRENCH 2",2,departments.get(0)),
-      new Module("UML 2",2,departments.get(0)),
-      new Module("Project interdisciplinaire",2,departments.get(0)),
-      new Module("Base de donnee Oracle",2,departments.get(0)),
-      new Module("Inteligence Artificielle",2,departments.get(0))
+      new Module("Mysql",2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Python Machine learning",2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Java EE",2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("ENGLISH 2",2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("FRENCH 2",2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("UML 2",2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Project interdisciplinaire",2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Base de donnee Oracle",2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Inteligence Artificielle",2, DepartmentName.GENIE_INFORMATIQUE)
     );
     return moduleRepository.saveAll(modules);
   }
