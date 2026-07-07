@@ -3,8 +3,7 @@
   @if (currentUser()) {
     <div class="border border-[#1A302F] bg-[#0E1A14]/20">
 
-      <div class="grid grid-cols-12 bg-[#0E1A14] text-[10px]
-        uppercase tracking-wider border-b border-[#1A302F] px-4 py-3 text-[#C8A96E] font-medium">
+      <div class="grid grid-cols-12 bg-[#0E1A14] text-[10px] uppercase tracking-wider border-b border-[#1A302F] px-4 py-3 text-[#C8A96E] font-medium">
         <div class="col-span-5">Module</div>
         <div class="col-span-5">Element</div>
         <div class="col-span-2 text-right">Grade</div>
@@ -12,9 +11,8 @@
 
       <div class="flex flex-col">
 
-        @for(result of results; track result.id) {
-          <div class="grid grid-cols-12 items-center px-4 py-3.5 border-b
-          border-[#1A302F] last:border-none hover:bg-[#1A302F]/20 transition-colors duration-200">
+        @for(result of results(); track result.id) {
+          <div class="grid grid-cols-12 items-center px-4 py-3.5 border-b border-[#1A302F] last:border-none hover:bg-[#1A302F]/20 transition-colors duration-200">
 
             <div class="col-span-5 pr-4 text-xs font-medium text-white/70">
               {{ result.element.module.name }}
@@ -30,14 +28,14 @@
 
           </div>
         } @empty {
-          @if (!isLoading) {
+          @if (!isLoading()) {
             <div class="p-12 text-center text-xs opacity-40 uppercase tracking-widest">
               No academic records found for Semester {{ semester }}.
             </div>
           }
         }
 
-        @if (isLoading) {
+        @if (isLoading()) {
           <div class="p-12 text-center text-xs opacity-50 animate-pulse tracking-widest">
             Syncing marks ledger...
           </div>
@@ -47,8 +45,7 @@
 
     </div>
   } @else {
-    <div class="border border-[#1A302F] bg-[#0E1A14]/20 p-12 text-center
-    text-xs opacity-50 uppercase tracking-widest animate-pulse">
+    <div class="border border-[#1A302F] bg-[#0E1A14]/20 p-12 text-center text-xs opacity-50 uppercase tracking-widest animate-pulse">
       Verifying profile credentials...
     </div>
   }
