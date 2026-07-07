@@ -104,9 +104,10 @@ export enum StudyMode {
   REMOTE
 }
 
-export type Department = {
-  id : string,
-  name : string
+export enum Department {
+  GENIE_INFORMATIQUE,
+  GENIE_ELECTRIQUE,
+  GENIE_CIVIL,
 }
 
 export enum Role {

@@ -41,7 +41,7 @@ export class Calendar implements OnInit {
     this.endOfWeekStr = this.getEndOfWeekStr();
     this.calendarService.getByWeek(
       startDate,
-      this.loginService.userProfile()!.department.id
+      this.loginService.userProfile()!.department
     ).subscribe({
       next: (res) => {
         this.planningWithSplan.set(this.generatePlanWithSpan(res));
