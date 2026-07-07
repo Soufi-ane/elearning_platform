@@ -14,7 +14,7 @@ import com.elearn.api.entity.User;
 import com.elearn.api.service.ResultService;
 
 @RestController
-@RequestMapping("/api/v1/reuslts")
+@RequestMapping("/api/v1/results")
 public class ResultController {
   private final ResultService resultService;
 

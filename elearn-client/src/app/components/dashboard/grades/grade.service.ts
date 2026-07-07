@@ -8,7 +8,7 @@ import { Result } from '../../../models/models';
 })
 export class GradeService {
   private http = inject(HttpClient);
-  private baseUrl = "/api/reuslts";
+  private baseUrl = "/api/results";
 
   listStudentResultsBySemester(studentId: string, semester: number): Observable<Result[]> {
     return this.http.get<Result[]>(`${this.baseUrl}/${studentId}/${semester}`);
