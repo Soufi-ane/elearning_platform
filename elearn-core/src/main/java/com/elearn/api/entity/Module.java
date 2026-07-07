@@ -2,11 +2,11 @@ package com.elearn.api.entity;
 
 import java.util.List;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -24,14 +24,13 @@ public class Module {
   private String name;
   private int semester;
 
-  @ManyToOne()
-  @JoinColumn(name = "department_id")
-  private Department department;
+  @Enumerated(EnumType.STRING)
+  private DepartmentName department;
 
   @OneToMany(mappedBy = "module")
   private List<Element> elements;
 
-  public Module(String name, int semester, Department department){
+  public Module(String name, int semester, DepartmentName department){
     this.name = name;
     this.semester = semester;
     this.department = department;

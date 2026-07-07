@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.elearn.api.entity.DepartmentName;
 import com.elearn.api.entity.Role;
 import com.elearn.api.entity.User;
 import com.elearn.api.entity.Schemas.PlanResponse;
@@ -33,13 +35,13 @@ public class TimeTableController {
   public Map<LocalDate, List<PlanResponse>> getPlanningByRange(
     @AuthenticationPrincipal UserDetails userDetails,
     @PathVariable("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-    @RequestParam(value = "departmentId") String departmentId
+    @RequestParam(value = "department") DepartmentName department
   ){
 
     User user = (User) userDetails;
     boolean isAdmin = user.getRole() == Role.ADMIN;
     boolean isDepartmentValid = false;
-    if(!isAdmin) isDepartmentValid = user.getDepartment().getId().equals(departmentId);
+    if(!isAdmin) isDepartmentValid = user.getDepartment() == department;
     if(!isAdmin && !isDepartmentValid) return new HashMap<>();
 
     return dayPlanService.getByWeek(startDate);

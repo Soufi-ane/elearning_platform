@@ -41,7 +41,7 @@ public class User implements UserDetails {
   private int year;
 
   public User(
-    String firstName, String lastName, String username, Department department,
+    String firstName, String lastName, String username, DepartmentName department,
     String email, String password, LocalDate dateOfBirth, 
     Role role,StudyMode studyMode, int year
   ){
@@ -68,9 +68,8 @@ public class User implements UserDetails {
   @Enumerated(EnumType.STRING)
   private Role role;
 
-  @ManyToOne()
-  @JoinColumn(name = "department_id", nullable = true)
-  private Department department;
+  @Enumerated(EnumType.STRING)
+  private DepartmentName department;
 
   @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
   private List<Absence> absences;

@@ -7,13 +7,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class Schemas {
 
-  public record DepartmentBaseResponse(String id, String name){}
-
   public record RegisterRequest(
     String firstName, String lastName, 
     String username, String email, String password, 
     @JsonFormat(pattern = "dd-MM-yyyy") LocalDate dateOfBirth,
-    Role role, String departmentId, StudyMode studyMode, int year
+    Role role, DepartmentName department, StudyMode studyMode, int year
   ){}
 
   public record UserBaseResponse(String id, String firstName, String lastName){}
@@ -21,17 +19,14 @@ public class Schemas {
   public record UserResponse(
     String id, String firstName, String lastName, 
     String username, String email, LocalDate dateOfBirth,
-    Role role, DepartmentBaseResponse department,
+    Role role, DepartmentName department,
     StudyMode studyMode, int year
   ){
     public UserResponse(User user){
       this(
         user.getId(), user.getFirstName(), user.getLastName(), user.getDbUsername(),
         user.getUsername(), user.getDateOfBirth(), user.getRole(),
-        user.getDepartment() == null ? null : 
-        new DepartmentBaseResponse(
-          user.getDepartment().getId(),user.getDepartment().getName()
-        ),
+        user.getDepartment() == null ? null : user.getDepartment(),
         user.getStudyMode(), user.getYear()
       );
     }

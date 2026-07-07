@@ -9,7 +9,6 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.elearn.api.entity.Department;
 import com.elearn.api.entity.Role;
 import com.elearn.api.entity.User;
 import com.elearn.api.entity.Schemas.LoginRequest;
@@ -17,16 +16,13 @@ import com.elearn.api.entity.Schemas.RegisterRequest;
 import com.elearn.api.entity.Schemas.UserResponse;
 import com.elearn.api.exception.BadRequestException;
 import com.elearn.api.exception.InvalidCredentialsException;
-import com.elearn.api.exception.ResourceNotFoundException;
 import com.elearn.api.exception.UsernameOrEmailTakenException;
-import com.elearn.api.repository.DepartmentRepository;
 import com.elearn.api.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Service 
 public class UserService {
   private final UserRepository userRepository;
-  private final DepartmentRepository departmentRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   @Value("${ENVIRONMENT}")
@@ -35,12 +31,10 @@ public class UserService {
   @Autowired
   public UserService(
     UserRepository userRepository,
-    DepartmentRepository departmentRepository,
     PasswordEncoder passwordEncoder,
     JwtService jwtService
   ){
     this.userRepository = userRepository;
-    this.departmentRepository = departmentRepository;
     this.passwordEncoder = passwordEncoder;
     this.jwtService = jwtService;
   }
@@ -57,14 +51,10 @@ public class UserService {
       request.email(), passwordEncoder.encode(request.password()),
       request.dateOfBirth(),request.role(),request.studyMode(),request.year()
     );
-    if(request.departmentId() != null) {
-      Optional<Department> optDepartment = departmentRepository.findById(request.departmentId());
-      if(optDepartment.isPresent()) user.setDepartment(optDepartment.get());
-      else throw new ResourceNotFoundException("Department not found");
-    }else {
-      if(request.role() == Role.STUDENT || request.role() == Role.TEACHER) {
-        throw new BadRequestException("A department is required for this role");
-      }
+    user.setDepartment(request.department());
+    if(request.role() == Role.STUDENT || request.role() == Role.TEACHER) {
+      if(request.department() == null)
+      throw new BadRequestException("A department is required for this role");
     }
     return new UserResponse(userRepository.save(user));
   }
