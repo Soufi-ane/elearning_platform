@@ -1,12 +1,12 @@
 import { Component, inject, OnInit, signal } from "@angular/core";
-import { ActivatedRoute, Router, RouterLink } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { AttendaceService } from "../attendance/attendance.service";
 import { Absence } from "../../../models/models";
 
 
 @Component({
   selector: 'user-absence',
-  imports: [ RouterLink ],
+  imports: [],
   templateUrl: './absence_view.html',
 })
 export class AbsenceView implements OnInit {
