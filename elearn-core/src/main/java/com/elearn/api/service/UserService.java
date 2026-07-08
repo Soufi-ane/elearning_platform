@@ -46,11 +46,7 @@ public class UserService {
       optUser.get().getUsername().equals(request.username()) ?
       "Username taken" : "Email taken"
     );
-    User user = new User(
-      request.firstName(),request.lastName(),request.username(),
-      request.email(), passwordEncoder.encode(request.password()),
-      request.dateOfBirth(),request.role(),request.studyMode(),request.year()
-    );
+    User user = new User(request, passwordEncoder.encode(request.password()));
     user.setDepartment(request.department());
     if(request.role() == Role.STUDENT || request.role() == Role.TEACHER) {
       if(request.department() == null)
