@@ -1,6 +1,38 @@
 <div class="w-full py-6 pl-9 pr-28 text-left text-[#8FA68C] tracking-wide">
 
   @if (currentUser()) {
+
+    <div class="flex items-center justify-between mb-4 px-1">
+      <h2 class="text-xs font-medium uppercase tracking-widest text-[#C8A96E]">
+        Grades
+      </h2>
+
+      <div class="flex items-center gap-3">
+        @if (availableSemesters().length > 0) {
+          <select
+            id="semesterSelect"
+            [value]="semester()"
+            (change)="onSemesterChange($event)"
+            class="bg-[#0E1A14] text-xs text-[#C8A96E] border border-[#1A302F] px-3 py-1.5
+            rounded focus:outline-none focus:border-[#C8A96E]/40 cursor-pointer font-mono tracking-wide">
+
+            @for (sem of availableSemesters(); track sem) {
+              <option [value]="sem" [selected]="sem === semester()">
+                Semester {{ sem }}
+              </option>
+            }
+          </select>
+        } @else {
+          <select
+            id="semesterSelect"
+            disabled
+            class="bg-[#0E1A14]/40 text-xs text-[#8FA68C]/40 border border-[#1A302F]/60 px-3 py-1.5 rounded cursor-not-allowed font-mono tracking-wide italic">
+            <option>None Available</option>
+          </select>
+        }
+      </div>
+    </div>
+
     <div class="border border-[#1A302F] bg-[#0E1A14]/20">
 
       <div class="grid grid-cols-12 bg-[#0E1A14] text-[10px] uppercase tracking-wider border-b border-[#1A302F] px-4 py-3 text-[#C8A96E] font-medium">
@@ -30,7 +62,11 @@
         } @empty {
           @if (!isLoading()) {
             <div class="p-12 text-center text-xs opacity-40 uppercase tracking-widest">
-              No academic records found for Semester {{ semester }}.
+              @if (availableSemesters().length === 0) {
+                Not available yet. You are currently in Semester 1.
+              } @else {
+                None Available for semester {{ semester() }}.
+              }
             </div>
           }
         }
@@ -49,5 +85,5 @@
       Verifying profile credentials...
     </div>
   }
-
 </div>
+
