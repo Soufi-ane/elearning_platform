@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import com.elearn.api.entity.Schemas.RegisterRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,8 +14,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -39,20 +38,32 @@ public class User implements UserDetails {
   private LocalDate dateOfBirth;
   private StudyMode studyMode;
   private int year;
+  private int semester;
+  private int numSemesters;
 
   public User(
     String firstName, String lastName, String username, DepartmentName department,
     String email, String password, LocalDate dateOfBirth, 
-    Role role,StudyMode studyMode, int year
+    Role role,StudyMode studyMode, int year, int semester
   ){
-    this(firstName,lastName,username,email,password,dateOfBirth,role,studyMode,year);
+    this(firstName,lastName,username,email,password,dateOfBirth,role,studyMode,year,semester);
     this.department = department;
+    this.numSemesters = department != null ?
+    department.getTotalSemesters() : 0;
+  }
+
+  public User(RegisterRequest request, String encodedPassword){
+    this(
+      request.firstName(),request.lastName(),request.username(),
+      request.email(), encodedPassword, request.dateOfBirth(),
+      request.role(),request.studyMode(),request.year(), request.semester()
+    );
   }
 
   public User(
     String firstName, String lastName, String username,
     String email, String password, LocalDate dateOfBirth,
-    Role role, StudyMode studyMode, int year
+    Role role, StudyMode studyMode, int year, int semester
   ){
     this.firstName = firstName;
     this.lastName = lastName;
@@ -63,6 +74,7 @@ public class User implements UserDetails {
     this.role = role;
     this.studyMode = studyMode;
     this.year = year;
+    this.semester = semester;
   }
 
   @Enumerated(EnumType.STRING)
