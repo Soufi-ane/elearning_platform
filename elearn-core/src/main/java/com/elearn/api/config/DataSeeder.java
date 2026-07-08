@@ -99,27 +99,27 @@ public class DataSeeder implements CommandLineRunner {
       new User(
         "Abujad", "abdellah", "abujad", null, "abujad@supmti.ac.ma",
         passwordEncoder.encode("12341234"), LocalDate.of(1990, 5, 15),
-        Role.ADMIN, null, 0
+        Role.ADMIN, null, 0,0
       ),
       new User(
         "soufiane", "jaber", "soufiane", DepartmentName.GENIE_INFORMATIQUE,
         "soufianejb@mail.ma", passwordEncoder.encode("12341234"), LocalDate.of(2005, 11, 12),
-        Role.STUDENT, StudyMode.HYBRID, 1
+        Role.STUDENT, StudyMode.HYBRID, 1, 3
       ),
       new User(
         "Yasmine", "Tazi", "yasmine-t",  DepartmentName.GENIE_CIVIL, "tazi.yasmine@um5.ac.ma",
         passwordEncoder.encode("qwerty"), LocalDate.of(2002, 10, 10),
-        Role.STUDENT, StudyMode.ON_SITE, 2
+        Role.STUDENT, StudyMode.ON_SITE, 2, 2
       ),
       new User(
         "Rachid", "Saadane", "saadane", DepartmentName.GENIE_INFORMATIQUE, "saadane@supmti.ac.ma",
         passwordEncoder.encode("saadane1324"), LocalDate.of(1985, 1, 5), 
-        Role.TEACHER, null,0
+        Role.TEACHER, null, 0, 0
       ),
       new User(
         "Ahmed", "Zellou", "zellou", DepartmentName.GENIE_INFORMATIQUE, "ahmed.zellou@ensias.ac.ma",
         passwordEncoder.encode("zellou1234"), LocalDate.of(1985, 1, 5),
-        Role.TEACHER, null,0
+        Role.TEACHER, null, 0 , 0
       )
     );
     return userRepository.saveAll(users);
