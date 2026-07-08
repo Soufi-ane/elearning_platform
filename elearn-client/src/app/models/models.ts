@@ -50,13 +50,7 @@ export type Element = {
   id : string,
   name : string,
   module : Module,
-  teacher : BaseUser
-}
-
-export type BaseUser = {
-  id : string,
-  firstName : string,
-  lastName : string
+  teacher : UserInfo
 }
 
 export type Module = {
@@ -96,6 +90,8 @@ export type User = {
   department : Department,
   studyMode : StudyMode,
   year : number
+  currentSemester : number,
+  numSemesters : number
 }
 
 export enum StudyMode {
