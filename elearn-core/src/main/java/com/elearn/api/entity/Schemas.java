@@ -2,6 +2,7 @@ package com.elearn.api.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.time.LocalTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -109,6 +110,23 @@ public class Schemas {
           r.getStudent().getLastName()
         ),
         new ElementResponse(r.getElement())
+      );
+    }
+  }
+  public record UserRequest(
+    String id, String title, String state,
+    Date requestDate, Date forcastDate, UserBaseResponse student
+  ) {
+    public UserRequest(Request r){
+      this(
+        r.getId(), r.getTitle(),
+        r.getState() != null ? r.getState().name() : null,
+        r.getRequestDate(), r.getForcastDate(),
+        new UserBaseResponse(
+          r.getStudent().getId(),
+          r.getStudent().getFirstName(),
+          r.getStudent().getLastName()
+        )
       );
     }
   }
