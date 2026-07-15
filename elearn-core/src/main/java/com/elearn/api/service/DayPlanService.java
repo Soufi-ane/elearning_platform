@@ -39,6 +39,9 @@ public class DayPlanService {
     LocalDate endOfYear = startOfYear.plusDays(365);
     List<DayPlan> plans = dayPlanRepository.findByDateBetween(startOfYear, endOfYear);
     LocalDate currentDay = LocalDate.now();
+
+    if (plans.isEmpty()) return timeTable;
+
     int dayOfWeek = plans.get(0).getDate().getDayOfWeek().getValue();
     if(!plans.isEmpty()) currentDay = startDate.with(ChronoField.DAY_OF_WEEK, dayOfWeek);
     List<PlanResponse> currentPlans = new ArrayList<>();
