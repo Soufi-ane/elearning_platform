@@ -112,3 +112,12 @@ export enum Role {
   ADMIN
 }
 
+export type UserRequest = {
+  id: string;
+  title: string;
+  state: string;
+  requestDate: Date;
+  forcastDate: Date | null;
+  student: UserInfo;
+}
+
