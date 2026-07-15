@@ -1,0 +1,47 @@
+<div class="w-full py-6 pl-9 pr-28 text-left text-[#8FA68C] tracking-wide">
+  <div class="flex items-center justify-between mb-4 px-1">
+    <h2 class="text-xs font-medium uppercase tracking-widest text-[#C8A96E]">My Requests</h2>
+  </div>
+
+  <div class="border border-[#1A302F] bg-[#0E1A14]/20">
+    <div class="grid grid-cols-12 bg-[#0E1A14] text-[10px] uppercase
+      tracking-wider border-b border-[#1A302F] px-4 py-3 text-[#C8A96E] font-medium">
+      <div class="col-span-4">Title</div>
+      <div class="col-span-2">State</div>
+      <div class="col-span-3 text-right">Requested On</div>
+      <div class="col-span-3 text-right">Forecasted For</div>
+    </div>
+
+    <div class="flex flex-col">
+      @for(req of requests(); track req.id) {
+        <div class="grid grid-cols-12 items-center px-4 py-3.5 border-b border-[#1A302F]
+          hover:bg-[#1A302F]/20 transition-colors">
+          <div class="col-span-4 text-xs font-medium text-white/70">{{ req.title }}</div>
+          <div class="col-span-2">
+            <span [class]="getStateClasses(req.state)">
+              {{ formatState(req.state) }}
+            </span>
+          </div>
+          <div class="col-span-3 text-right text-xs font-mono text-white/50">
+            {{ req.requestDate | date:'shortDate' }}
+          </div>
+          <div class="col-span-3 text-right text-xs font-mono text-[#C8A96E]">
+            {{ req.forcastDate ? (req.forcastDate | date:'shortDate') : '-' }}
+          </div>
+        </div>
+      } @empty {
+        @if (!isLoading()) {
+          <div class="p-12 text-center text-xs opacity-40 uppercase tracking-widest">
+            No requests found.
+          </div>
+        }
+      }
+
+      @if (isLoading()) {
+        <div class="p-12 text-center text-xs opacity-50 animate-pulse tracking-widest">
+          Syncing requests...
+        </div>
+      }
+    </div>
+  </div>
+</div>
