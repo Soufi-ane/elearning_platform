@@ -1,6 +1,8 @@
 package com.elearn.api.config;
 
 import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Date;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -25,6 +27,7 @@ public class DataSeeder implements CommandLineRunner {
   private final PasswordEncoder passwordEncoder;
   private final AbsenceRepository absenceRepository;
   private final ResultRepository resultRepository;
+  private final RequestRepository requestRepository;
 
   @Override
   public void run(String... args) throws Exception {
@@ -38,6 +41,7 @@ public class DataSeeder implements CommandLineRunner {
       moduleRepository.deleteAllInBatch();
       userRepository.deleteAllInBatch();
       campusRepository.deleteAllInBatch();
+      requestRepository.deleteAllInBatch();
 
       List<User> users = seedUsers();
       List<Module> modules = seedModules();
@@ -47,6 +51,7 @@ public class DataSeeder implements CommandLineRunner {
       List<Room> rooms = seedRooms(campuses);
       seedTimeTables(elements,rooms);
       seedAbsence(users,elements);
+      seedRequests(users);
     }
   }
 
@@ -230,6 +235,42 @@ public class DataSeeder implements CommandLineRunner {
       new Room("Salle Polyvalente", 120, 0, RoomType.POLYVALENTE, campuses.get(1))
     );
     return roomRepository.saveAll(rooms);
+  }
+  
+  private void seedRequests(List<User> users) {
+    User student1 = users.get(1);
+    User student2 = users.get(2);
+
+    List<Request> requests = List.of(
+      new Request(null, "Document Request A", RequestState.PENDING, new Date(), null, student1),
+      new Request(null, "Transcript Request", RequestState.IN_PROGRESS, addDays(new Date(), -2), null, student1),
+      new Request(
+        null, "Absence Justification", RequestState.COMPLETED, 
+        addDays(new Date(), -5), new Date(), student1
+      ),
+      new Request(null, "Library Access", RequestState.PENDING, new Date(), null, student1),
+      new Request(null, "Course Change", RequestState.IN_PROGRESS, addDays(new Date(), -1), null, student1),
+      
+      new Request(null, "Exam Retake", RequestState.PENDING, new Date(), null, student2),
+      new Request(
+        null, "Medical Certificate", RequestState.COMPLETED, 
+        addDays(new Date(), -10), addDays(new Date(), -8), student2
+      ),
+      new Request(null, "Hardware Loan", RequestState.IN_PROGRESS, addDays(new Date(), -3), null, student2),
+      new Request(null, "Study Abroad Inquiry", RequestState.PENDING, new Date(), null, student2),
+      new Request(
+        null, "Software License Request", RequestState.COMPLETED,
+        addDays(new Date(), -7), addDays(new Date(), -6), student2
+      )
+    );
+    
+    requestRepository.saveAll(requests);
+  }
+  private Date addDays(Date date, int days) {
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(date);
+    cal.add(Calendar.DAY_OF_YEAR, days);
+    return cal.getTime();
   }
 
 }
