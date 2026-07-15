@@ -9,6 +9,7 @@ import { Calendar } from './components/dashboard/calendar/calendar';
 import { Attendance } from './components/dashboard/attendance/attendance';
 import { AbsenceView } from './components/dashboard/absence/absence';
 import { Grades } from './components/dashboard/grades/grades';
+import { Requests } from './components/dashboard/requests/requests';
 
 export const routes: Routes = [
   { path : '', component : Home },
@@ -24,6 +25,7 @@ export const routes: Routes = [
       { path : 'attendance', component : Attendance },
       { path : 'attendance/:id', component : AbsenceView },
       { path : 'grades', component : Grades },
+      { path : 'requests', component : Requests },
     ]
   },
   { path : '**', redirectTo : "/" },
