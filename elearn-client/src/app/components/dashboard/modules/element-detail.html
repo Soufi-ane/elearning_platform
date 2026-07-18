@@ -1,0 +1,25 @@
+<div class="w-full p-4 pt-24">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+    @for (e of elements; track e.id) {
+      <div class="p-3 border border-[#1A3025] rounded-lg bg-[#1A3025]/80
+                  hover:border-[#C8A96E] transition-all hover:bg-[#1A3025]
+                  flex flex-col justify-between">
+
+        <h3 class="font-semibold text-sm text-[#EAE3D5] leading-tight mb-4">
+          {{ e.name }}
+        </h3>
+
+        <div class="flex flex-col gap-0.5">
+          <div class="text-[10px] text-[#8FA68C] font-mono tracking-wider uppercase">
+            Instructor
+          </div>
+          <div class="text-xs text-[#EAE3D5]/80 font-medium truncate">
+            {{ e.teacher.firstName }} {{ e.teacher.lastName }}
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <p class="text-[#8FA68C] text-sm italic">No elements available.</p>
+    }
+  </div>
+</div>
