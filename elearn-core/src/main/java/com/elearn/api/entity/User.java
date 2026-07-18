@@ -14,6 +14,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -97,6 +100,14 @@ public class User implements UserDetails {
 
   @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
   private List<Element> elements;
+
+  @ManyToMany
+  @JoinTable(
+    name = "user_modules",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "module_id")
+  )
+  private List<Module> enrolledModules;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
