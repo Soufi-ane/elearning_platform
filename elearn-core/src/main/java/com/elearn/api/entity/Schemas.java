@@ -131,4 +131,8 @@ public class Schemas {
     }
   }
 
+  public record ModuleResponse(String id, String name, int semester) {
+    public ModuleResponse(Module m) { this(m.getId(), m.getName(), m.getSemester()); }
+  }
+
 }
