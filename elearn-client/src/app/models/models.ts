@@ -56,6 +56,7 @@ export type Element = {
 export type Module = {
   id : string,
   name : string
+  semester: number;
 }
 
 export enum PlanType {
