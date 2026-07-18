@@ -10,6 +10,8 @@ import { Attendance } from './components/dashboard/attendance/attendance';
 import { AbsenceView } from './components/dashboard/absence/absence';
 import { Grades } from './components/dashboard/grades/grades';
 import { Requests } from './components/dashboard/requests/requests';
+import { ModuleList } from './components/dashboard/modules/module-list';
+import { ElementDetail } from './components/dashboard/modules/element-detail';
 
 export const routes: Routes = [
   { path : '', component : Home },
@@ -26,6 +28,8 @@ export const routes: Routes = [
       { path : 'attendance/:id', component : AbsenceView },
       { path : 'grades', component : Grades },
       { path : 'requests', component : Requests },
+      { path : 'modules', component : ModuleList },
+      { path : 'modules/:id/elements', component : ElementDetail }
     ]
   },
   { path : '**', redirectTo : "/" },
