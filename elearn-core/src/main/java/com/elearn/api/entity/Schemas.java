@@ -134,5 +134,37 @@ public class Schemas {
   public record ModuleResponse(String id, String name, int semester) {
     public ModuleResponse(Module m) { this(m.getId(), m.getName(), m.getSemester()); }
   }
+  public record AbsenceCreateRequest(
+    String studentId,
+    String elementId,
+    LocalDateTime dateTime,
+    AbsenceType type
+  ) {
+    public record AbsenceUpdateRequest(
+      Boolean isJustified,
+      AbsenceType type
+    ) {}
+  }
+
+  public record AbsenceAdminResponse(
+    String id, 
+    LocalDateTime dateTime, 
+    AbsenceType type, 
+    boolean isJustified,
+    UserBaseResponse student,
+    ElementResponse element
+  ){
+    public AbsenceAdminResponse(Absence a) {
+      this(
+        a.getId(), a.getDateTime(), a.getType(), a.isJustified(),
+        new UserBaseResponse(
+          a.getStudent().getId(),
+          a.getStudent().getFirstName(),
+          a.getStudent().getLastName()
+        ),
+        new ElementResponse(a.getElement())
+      );
+    }
+  }
 
 }
