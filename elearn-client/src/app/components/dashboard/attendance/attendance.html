@@ -1,29 +1,91 @@
-<main class="flex-1 pt-8 px-12 h-dvh ">
-  <div class="mb-6">
-    <h1 class="text-xl font-medium text-[#EAE3D5]">Absence Records</h1>
+<main class="flex-1 pt-8 px-12 h-dvh overflow-y-auto">
+  <div class="mb-6 flex justify-between items-center">
+    <h1 class="text-xl font-medium text-[#EAE3D5]">
+      @if (selectedStudent()) {
+        Absences for {{ selectedStudent()?.firstName }} {{ selectedStudent()?.lastName }}
+      } @else if (isAdminOrTeacher) {
+        Students Absence Records
+      } @else {
+        My Absence Records
+      }
+    </h1>
+
+    @if (isAdminOrTeacher && selectedStudent()) {
+      <button
+        (click)="resetStudentSelection()"
+        class="text-sm bg-[#14261C] border border-[#2A3D30] text-[#8FA68C] px-3 py-1.5 rounded-sm hover:bg-[#1A3025] transition-colors cursor-pointer">
+        ← Back to Students
+      </button>
+    }
   </div>
 
-  <div class="overflow-hidden border border-[#2A3D30] rounded-sm bg-[#0B1610]">
-    <table class="w-full text-left border-collapse">
-      <thead>
-        <tr class="border-b border-[#2A3D30] bg-[#14261C]">
-          <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Subject</th>
-          <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Module</th>
-          <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Count</th>
-          <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Status</th>
-        </tr>
-      </thead>
-      <tbody class="text-sm">
-        @for(absence of userAbsences(); track absence){
-          <tr [routerLink] = "['/dashboard/attendance',absence.element.id]"
-            class="border-b border-[#2A3D30]/50 hover:bg-[#1A3025] transition-colors">
-            <td class="px-4 py-4 text-[#8FA68C]">{{ absence.element.name }}</td>
-            <td class="px-4 py-4 text-[#8FA68C]">{{ absence.element.module.name }}</td>
-            <td class="px-4 py-4 text-[#8FA68C]">{{ absence.count }}</td>
-            <td class="px-4 py-4 text-[#8FA68C]">{{ absence.status }}</td>
+  @if (isAdminOrTeacher && !selectedStudent()) {
+    <div class="mb-6">
+      <input
+        type="text"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+        placeholder="Search student by name or username..."
+        class="w-full max-w-md bg-[#0B1610] border border-[#2A3D30] text-[#EAE3D5] px-4 py-2 rounded-sm focus:outline-none focus:border-[#8FA68C]"
+      />
+    </div>
+
+    <div class="overflow-hidden border border-[#2A3D30] rounded-sm bg-[#0B1610]">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-[#2A3D30] bg-[#14261C]">
+            <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">First Name</th>
+            <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Last Name</th>
+            <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Email / Username</th>
           </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody class="text-sm">
+          @for (student of filteredStudents(); track student.id) {
+            <tr
+              (click)="selectStudent(student)"
+              class="border-b border-[#2A3D30]/50 hover:bg-[#1A3025] cursor-pointer transition-colors">
+              <td class="px-4 py-4 text-[#EAE3D5] font-medium">{{ student.firstName }}</td>
+              <td class="px-4 py-4 text-[#EAE3D5] font-medium">{{ student.lastName }}</td>
+              <td class="px-4 py-4 text-[#8FA68C]">{{ student.email }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="3" class="px-4 py-8 text-center text-[#8FA68C]">No student records found.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  @if (!isAdminOrTeacher || selectedStudent()) {
+    <div class="overflow-hidden border border-[#2A3D30] rounded-sm bg-[#0B1610]">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-[#2A3D30] bg-[#14261C]">
+            <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Subject</th>
+            <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Module</th>
+            <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Count</th>
+            <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Status</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm">
+          @for(absence of userAbsences(); track absence.element.id){
+            <tr [routerLink]="['/dashboard/attendance', absence.element.id]"
+              [queryParams]="selectedStudent() ? { userId: selectedStudent()?.id } : {}"
+              class="border-b border-[#2A3D30]/50 hover:bg-[#1A3025] cursor-pointer transition-colors">
+              <td class="px-4 py-4 text-[#8FA68C]">{{ absence.element.name }}</td>
+              <td class="px-4 py-4 text-[#8FA68C]">{{ absence.element.module.name }}</td>
+              <td class="px-4 py-4 text-[#8FA68C] font-bold">{{ absence.count }}</td>
+              <td class="px-4 py-4 text-[#8FA68C]">{{ absence.status }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="px-4 py-8 text-center text-[#8FA68C]">No absence history recorded.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
 </main>
