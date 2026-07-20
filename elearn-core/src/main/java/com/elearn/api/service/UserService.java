@@ -1,6 +1,7 @@
 package com.elearn.api.service;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -89,6 +90,18 @@ public class UserService {
     
     response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     return ResponseEntity.ok().body("Logged out successfully");
+  }
+
+  public List<UserResponse> getUsersByRole(Role role) {
+    List<User> users;
+    if (role != null) {
+      users = userRepository.findByRole(role);
+    } else {
+      users = userRepository.findAll();
+    }
+    return users.stream()
+      .map(UserResponse::new)
+      .toList();
   }
 
 }
