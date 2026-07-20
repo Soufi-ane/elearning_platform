@@ -121,4 +121,10 @@ export type UserRequest = {
   forcastDate: Date | null;
   student: UserInfo;
 }
+export type AbsenceCreateRequest = {
+  studentId: string;
+  elementId: string;
+  type: AbsenceType;
+  dateTime?: string;
+}
 
