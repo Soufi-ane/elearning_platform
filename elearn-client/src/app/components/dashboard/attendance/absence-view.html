@@ -1,0 +1,61 @@
+<main class="flex-1 pt-8 px-12 h-dvh bg-[#0B1610] overflow-y-auto">
+  <div class="mb-6 flex justify-between items-center">
+    <h1 class="text-xl font-medium text-[#EAE3D5]">Absence Records</h1>
+    <button
+      (click)="goBack()"
+      class="text-sm bg-[#14261C] border border-[#2A3D30] text-[#8FA68C] px-3 py-1.5
+      rounded-sm hover:bg-[#1A3025] transition-colors cursor-pointer">
+      ← Back to Summaries
+    </button>
+  </div>
+
+  <div class="overflow-hidden border border-[#2A3D30] rounded-sm bg-[#0B1610]">
+    @if(absences(); as absenceList){
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-[#2A3D30] bg-[#14261C]">
+            <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Subject</th>
+            <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Module</th>
+            <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Date</th>
+            <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C] font-semibold">Status</th>
+            @if (isAdminOrTeacher) {
+              <th class="px-4 py-3 text-[11px] uppercase tracking-wider text-[#8FA68C]
+                font-semibold text-right">Actions</th>
+            }
+          </tr>
+        </thead>
+        <tbody class="text-sm text-[#EAE3D5]">
+          @for(absence of absenceList; track absence.id){
+            <tr class="border-b border-[#2A3D30] hover:bg-[#14261C] transition-colors">
+              <td class="px-4 py-4">{{ absence.element.name }}</td>
+              <td class="px-4 py-4 text-[#8FA68C]">{{ absence.element.module.name }}</td>
+              <td class="px-4 py-4">{{ formatDateTime(absence.dateTime) }}</td>
+              <td class="px-4 py-4">
+                <span [class]="absence.isJustified ? 'text-emerald-500' : 'text-rose-500'">
+                  {{ absence.isJustified ? "Justified" : "Not justified" }}
+                </span>
+              </td>
+              @if (isAdminOrTeacher) {
+                <td class="px-4 py-4 text-right space-x-2">
+                  <button
+                    (click)="toggleJustification(absence)"
+                    class="bg-[#14261C] border border-[#2A3D30] text-[#8FA68C]
+                    px-2.5 py-1 text-xs rounded hover:bg-[#1A3025] transition-colors cursor-pointer">
+                    Toggle Justify
+                  </button>
+                  <button
+                    (click)="deleteAbsence(absence.id)"
+                    class="bg-rose-950/40 border border-rose-900/50 text-rose-400 px-2.5 py-1
+                    text-xs rounded hover:bg-rose-900/40 transition-colors cursor-pointer">
+                    Delete
+                  </button>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</main>
+
