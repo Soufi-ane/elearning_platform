@@ -6,6 +6,8 @@ import java.util.Date;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -29,9 +31,16 @@ public class DataSeeder implements CommandLineRunner {
   private final ResultRepository resultRepository;
   private final RequestRepository requestRepository;
 
+  @Value("${ENVIRONMENT}")
+  private String environment;
+
   @Override
   public void run(String... args) throws Exception {
     if (args.length > 0 && "seed".equalsIgnoreCase(args[0])) {
+      if (!"DEV".equalsIgnoreCase(environment) && userRepository.count() > 0) {
+        System.out.println("Database already contains data. Skipping seeding.");
+        return;
+      }
       System.out.println("Seeding data ...");
       dayPlanRepository.deleteAllInBatch();
       absenceRepository.deleteAllInBatch();
