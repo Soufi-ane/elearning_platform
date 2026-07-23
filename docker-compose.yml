@@ -10,3 +10,28 @@ services:
       POSTGRES_DB: ${DB_NAME}
     ports:
       - "${DB_PORT}:5432"
+
+  backend:
+    build: ./elearn-core
+    container_name: elearn-backend
+    ports:
+      - "8080:8080"
+    command: ["seed"]
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      ENVIRONMENT: ${ENVIRONMENT}
+    depends_on:
+      - postgres
+
+  frontend:
+    build: ./elearn-client
+    container_name: elearn-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
