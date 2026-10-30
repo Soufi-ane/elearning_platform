@@ -57,22 +57,22 @@ public class Schemas {
     }
   }
 
-  public record RoomBaseResponse(String label,int floor, String campus){
+  public record RoomBaseResponse(String id, String label, int floor, String campus){
     public RoomBaseResponse(Room room){
       this(
-        room.getLabel(), room.getFloor(),
+        room.getId(), room.getLabel(), room.getFloor(),
         room.getCampus().getName()
       );
     }
   }
 
   public record PlanResponse(
-    LocalTime startsAt, LocalTime endsAt, PlanType type,
+    String id, LocalTime startsAt, LocalTime endsAt, PlanType type,
     ElementResponse element, RoomBaseResponse room
   ){
     public PlanResponse(DayPlan plan){
       this(
-        plan.getStartsAt(), plan.getEndsAt(), plan.getType(),
+        plan.getId(), plan.getStartsAt(), plan.getEndsAt(), plan.getType(),
         new ElementResponse(plan.getElement()), new RoomBaseResponse(plan.getRoom())
       );
     }
@@ -113,6 +113,7 @@ public class Schemas {
       );
     }
   }
+
   public record UserRequest(
     String id, String title, String state,
     Date requestDate, Date forcastDate, UserBaseResponse student
@@ -134,6 +135,7 @@ public class Schemas {
   public record ModuleResponse(String id, String name, int semester) {
     public ModuleResponse(Module m) { this(m.getId(), m.getName(), m.getSemester()); }
   }
+
   public record AbsenceCreateRequest(
     String studentId,
     String elementId,
@@ -167,4 +169,25 @@ public class Schemas {
     }
   }
 
+  public record ModuleRequest(
+    String name, 
+    int semester, 
+    DepartmentName department
+  ) {}
+
+  public record ElementRequest(
+    String name, 
+    String moduleId, 
+    String teacherId
+  ) {}
+
+  public record DayPlanRequest(
+    LocalDate date, 
+    LocalTime startsAt, 
+    LocalTime endsAt, 
+    int weeklyRepeats, 
+    PlanType type, 
+    String elementId, 
+    String roomId
+  ) {}
 }
