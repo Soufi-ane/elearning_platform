@@ -1,0 +1,114 @@
+<div class="w-full py-6 pl-9 pr-12 text-left text-[#8FA68C] tracking-wide">
+  <div class="flex items-center gap-4 mb-6">
+    <button
+      (click)="activeTab.set('modules')"
+      [class]="activeTab() === 'modules' ? 'bg-[#C8A96E] text-[#0E1A14]' : 'bg-[#0B1610] text-[#8FA68C] border border-[#2A3D30]'"
+      class="px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer">
+      Manage Modules
+    </button>
+    <button
+      (click)="activeTab.set('elements')"
+      [class]="activeTab() === 'elements' ? 'bg-[#C8A96E] text-[#0E1A14]' : 'bg-[#0B1610] text-[#8FA68C] border border-[#2A3D30]'"
+      class="px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer">
+      Manage Elements
+    </button>
+    <button
+      (click)="activeTab.set('seances')"
+      [class]="activeTab() === 'seances' ? 'bg-[#C8A96E] text-[#0E1A14]' : 'bg-[#0B1610] text-[#8FA68C] border border-[#2A3D30]'"
+      class="px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer">
+      Add Seance / Timetable
+    </button>
+  </div>
+
+  @if (activeTab() === 'modules') {
+    <div class="border border-[#2A3D30] bg-[#0B1610] p-6 max-w-xl">
+      <h2 class="text-xs font-medium uppercase tracking-widest text-[#C8A96E] mb-4">Create New Module</h2>
+      <form [formGroup]="moduleForm" (ngSubmit)="onModuleSubmit()" class="flex flex-col gap-4">
+        <div>
+          <label class="block text-xs mb-1 text-[#EAE3D5]">Module Name</label>
+          <input formControlName="name" type="text" class="w-full bg-[#0E1A14] border border-[#2A3D30] text-[#EAE3D5] p-2 text-xs rounded-sm"/>
+        </div>
+        <div>
+          <label class="block text-xs mb-1 text-[#EAE3D5]">Semester</label>
+          <input formControlName="semester" type="number" class="w-full bg-[#0E1A14] border border-[#2A3D30] text-[#EAE3D5] p-2 text-xs rounded-sm"/>
+        </div>
+        <div>
+          <label class="block text-xs mb-1 text-[#EAE3D5]">Department</label>
+          <select formControlName="department" class="w-full bg-[#0E1A14] border border-[#2A3D30] text-[#EAE3D5] p-2 text-xs rounded-sm">
+            <option value="GENIE_INFORMATIQUE">Genie Informatique</option>
+            <option value="GENIE_ELECTRIQUE">Genie Electrique</option>
+            <option value="GENIE_CIVIL">Genie Civil</option>
+          </select>
+        </div>
+        <button type="submit" class="mt-2 px-4 py-2 bg-[#C8A96E] text-[#0E1A14] font-semibold text-xs uppercase tracking-wider cursor-pointer">Save Module</button>
+      </form>
+    </div>
+  }
+
+  @if (activeTab() === 'elements') {
+    <div class="border border-[#2A3D30] bg-[#0B1610] p-6 max-w-xl">
+      <h2 class="text-xs font-medium uppercase tracking-widest text-[#C8A96E] mb-4">Create New Course Element</h2>
+      <form [formGroup]="elementForm" (ngSubmit)="onElementSubmit()" class="flex flex-col gap-4">
+        <div>
+          <label class="block text-xs mb-1 text-[#EAE3D5]">Element Name</label>
+          <input formControlName="name" type="text" class="w-full bg-[#0E1A14] border border-[#2A3D30] text-[#EAE3D5] p-2 text-xs rounded-sm"/>
+        </div>
+        <div>
+          <label class="block text-xs mb-1 text-[#EAE3D5]">Module</label>
+          <select formControlName="moduleId" class="w-full bg-[#0E1A14] border border-[#2A3D30] text-[#EAE3D5] p-2 text-xs rounded-sm">
+            @for (m of modules(); track m.id) {
+              <option [value]="m.id">{{ m.name }} (Sem {{ m.semester }})</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs mb-1 text-[#EAE3D5]">Assigned Teacher</label>
+          <select formControlName="teacherId" class="w-full bg-[#0E1A14] border border-[#2A3D30] text-[#EAE3D5] p-2 text-xs rounded-sm">
+            @for (t of teachers(); track t.id) {
+              <option [value]="t.id">{{ t.firstName }} {{ t.lastName }}</option>
+            }
+          </select>
+        </div>
+        <button type="submit" class="mt-2 px-4 py-2 bg-[#C8A96E] text-[#0E1A14] font-semibold text-xs uppercase tracking-wider cursor-pointer">Save Element</button>
+      </form>
+    </div>
+  }
+
+  @if (activeTab() === 'seances') {
+    <div class="border border-[#2A3D30] bg-[#0B1610] p-6 max-w-xl">
+      <h2 class="text-xs font-medium uppercase tracking-widest text-[#C8A96E] mb-4">Schedule New Seance</h2>
+      <form [formGroup]="seanceForm" (ngSubmit)="onSeanceSubmit()" class="flex flex-col gap-4">
+        <div>
+          <label class="block text-xs mb-1 text-[#EAE3D5]">Date</label>
+          <input formControlName="date" type="date" class="w-full bg-[#0E1A14] border border-[#2A3D30] text-[#EAE3D5] p-2 text-xs rounded-sm"/>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs mb-1 text-[#EAE3D5]">Starts At</label>
+            <input formControlName="startsAt" type="time" class="w-full bg-[#0E1A14] border border-[#2A3D30] text-[#EAE3D5] p-2 text-xs rounded-sm"/>
+          </div>
+          <div>
+            <label class="block text-xs mb-1 text-[#EAE3D5]">Ends At</label>
+            <input formControlName="endsAt" type="time" class="w-full bg-[#0E1A14] border border-[#2A3D30] text-[#EAE3D5] p-2 text-xs rounded-sm"/>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs mb-1 text-[#EAE3D5]">Weekly Repeats</label>
+          <input formControlName="weeklyRepeats" type="number" class="w-full bg-[#0E1A14] border border-[#2A3D30] text-[#EAE3D5] p-2 text-xs rounded-sm"/>
+        </div>
+        <div>
+          <label class="block text-xs mb-1 text-[#EAE3D5]">Type</label>
+          <select formControlName="type" class="w-full bg-[#0E1A14] border border-[#2A3D30] text-[#EAE3D5] p-2 text-xs rounded-sm">
+            <option value="LECTURE">Lecture</option>
+            <option value="EXAM">Exam</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs mb-1 text-[#EAE3D5]">Room ID (UUID)</label>
+          <input formControlName="roomId" type="text" placeholder="Room UUID" class="w-full bg-[#0E1A14] border border-[#2A3D30] text-[#EAE3D5] p-2 text-xs rounded-sm"/>
+        </div>
+        <button type="submit" class="mt-2 px-4 py-2 bg-[#C8A96E] text-[#0E1A14] font-semibold text-xs uppercase tracking-wider cursor-pointer">Schedule Seance</button>
+      </form>
+    </div>
+  }
+</div>

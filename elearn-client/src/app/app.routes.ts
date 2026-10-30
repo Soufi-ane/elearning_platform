@@ -13,6 +13,7 @@ import { roleGuard } from './components/login/auth.guard';
 import { Attendance } from './components/dashboard/attendance/attendance';
 import { AbsenceView } from './components/dashboard/attendance/absence-view';
 import { AdminAbsence } from './components/dashboard/attendance/admin-absence';
+import { AdminManagement } from './src/app/components/dashboard/admin/admin-management/admin-management';
 
 export const routes: Routes = [
   { path : '', component : Home },
@@ -35,7 +36,12 @@ export const routes: Routes = [
       { path : 'grades', component : Grades },
       { path : 'requests', component : Requests },
       { path : 'modules', component : ModuleList },
-      { path : 'modules/:id/elements', component : ElementDetail }
+      { path : 'modules/:id/elements', component : ElementDetail },
+      {
+        path: 'manage',
+        component: AdminManagement,
+        canActivate: [roleGuard(['ADMIN', 'TEACHER'])]
+      }
     ]
   },
   { path : '**', redirectTo : "/" },
