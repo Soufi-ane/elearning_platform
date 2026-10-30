@@ -11,15 +11,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
 import com.elearn.api.entity.*;
 import com.elearn.api.repository.*;
 import com.elearn.api.entity.Module;
+
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class DataSeeder implements CommandLineRunner {
-
   private final UserRepository userRepository;
   private final ModuleRepository moduleRepository;
   private final ElementRepository elementRepository;
@@ -41,6 +42,7 @@ public class DataSeeder implements CommandLineRunner {
         System.out.println("Database already contains data. Skipping seeding.");
         return;
       }
+
       System.out.println("Seeding data ...");
       dayPlanRepository.deleteAllInBatch();
       absenceRepository.deleteAllInBatch();
@@ -57,10 +59,12 @@ public class DataSeeder implements CommandLineRunner {
       List<Campus> campuses = seedCampuses();
       List<Element> elements = seedElements(modules, users);
       List<Room> rooms = seedRooms(campuses);
+
       seedResults(elements, users);
       seedTimeTables(elements, rooms);
       seedAbsence(users, elements);
       seedRequests(users);
+
       System.out.println("Seed complete!");
     }
   }
@@ -71,7 +75,7 @@ public class DataSeeder implements CommandLineRunner {
         passwordEncoder.encode("12341234"), LocalDate.of(1990, 5, 15),
         Role.ADMIN, null, 0, 0
       ),
-      new User("soufiane", "jaber", "soufiane", DepartmentName.GENIE_INFORMATIQUE,
+      new User("Soufiane", "Jaber", "soufiane", DepartmentName.GENIE_INFORMATIQUE,
         "soufianejb@mail.ma", passwordEncoder.encode("12341234"), LocalDate.of(2005, 11, 12),
         Role.STUDENT, StudyMode.HYBRID, 1, 1
       ),
@@ -121,58 +125,58 @@ public class DataSeeder implements CommandLineRunner {
 
   private List<Module> seedModules() {
     List<Module> modules = List.of(
-      new Module("Programmation Resaux", 1, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Programmation Python", 1, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Programmation OOP", 1, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Base De donnee", 1, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Langues entrangères", 1, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("CMS", 1, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Génie Logiciel", 1, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("UML", 1, DepartmentName.GENIE_INFORMATIQUE),
-      
-      new Module("Mysql", 2, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Python Machine learning", 2, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Java EE", 2, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("ENGLISH 2", 2, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("FRENCH 2", 2, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("UML 2", 2, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Project interdisciplinaire", 2, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Base de donnee Oracle", 2, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Inteligence Artificielle", 2, DepartmentName.GENIE_INFORMATIQUE),
+      // Semester 1
+      new Module("Mathématiques pour l'Ingénieur", 1, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Algorithmique et Programmation C", 1, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Architecture et Systèmes d'Exploitation", 1, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Langues et Communication 1", 1, DepartmentName.GENIE_INFORMATIQUE),
 
-      new Module("Backend Java Spring Boot", 3, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Frontend React & Next.js", 3, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Algorithmique avancée et C", 3, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Systèmes d'Exploitation Debian", 3, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("DevOps & CI/CD", 3, DepartmentName.GENIE_INFORMATIQUE)
+      // Semester 2
+      new Module("Bases de Données Relationnelles", 2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Réseaux Informatiques", 2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Programmation Orientée Objet", 2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Développement Web", 2, DepartmentName.GENIE_INFORMATIQUE),
+
+      // Semester 3
+      new Module("Génie Logiciel et UML", 3, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Technologies Java et JEE", 3, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Développement Mobile", 3, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Systèmes d'Information", 3, DepartmentName.GENIE_INFORMATIQUE)
     );
     return moduleRepository.saveAll(modules);
   }
 
   private List<Element> seedElements(List<Module> modules, List<User> users) {
     List<Element> elements = List.of(
-      new Element("TCP/IP", modules.get(0), users.get(6)),
-      new Element("Programmation client serveur", modules.get(0), users.get(7)),
-      new Element("Data Science", modules.get(1), users.get(6)),
-      new Element("Python POO", modules.get(1), users.get(6)),
-      new Element("Java POO", modules.get(2), users.get(8)),
-      new Element("UML", modules.get(2), users.get(8)),
-      new Element("MSSQL Server", modules.get(3), users.get(9)),
-      new Element("ENGLISH 1", modules.get(4), users.get(10)),
-      new Element("FRENCH 1", modules.get(4), users.get(10)),
-      new Element("CMS", modules.get(5), users.get(11)),
-      new Element("Génie Logiciel", modules.get(6), users.get(11)),
-      new Element("Requêtes SQL complexes", modules.get(8), users.get(9)),
-      new Element("Réseaux de Neurones", modules.get(9), users.get(6)),
-      new Element("Architecture MVC Java", modules.get(10), users.get(8)),
-      new Element("Communication pro", modules.get(11), users.get(10)),
-      new Element("Diagrammes de classe", modules.get(13), users.get(8)),
-      new Element("Spring Core & Security", modules.get(17), users.get(7)),
-      new Element("Microservices Spring Cloud", modules.get(17), users.get(7)),
-      new Element("React Hooks & State", modules.get(18), users.get(11)),
-      new Element("Next.js App Router", modules.get(18), users.get(11)),
-      new Element("Pointeurs et GDB Debugging", modules.get(19), users.get(6)),
-      new Element("Linux i3 Config & Scripting", modules.get(20), users.get(9))
+      // S1 Elements
+      new Element("Analyse Mathématique", modules.get(0), users.get(6)),
+      new Element("Algèbre Linéaire", modules.get(0), users.get(6)),
+      new Element("Algorithmique Avancée", modules.get(1), users.get(7)),
+      new Element("Programmation C", modules.get(1), users.get(7)),
+      new Element("Architecture des Ordinateurs", modules.get(2), users.get(8)),
+      new Element("Systèmes d'Exploitation", modules.get(2), users.get(8)),
+      new Element("Français Professionnel", modules.get(3), users.get(9)),
+      new Element("Anglais Technique", modules.get(3), users.get(9)),
+
+      // S2 Elements
+      new Element("Conception des BDD", modules.get(4), users.get(10)),
+      new Element("SQL et PL/SQL", modules.get(4), users.get(10)),
+      new Element("Réseaux Locaux (LAN)", modules.get(5), users.get(11)),
+      new Element("Réseaux Étendus (WAN)", modules.get(5), users.get(11)),
+      new Element("Java Fondamentaux", modules.get(6), users.get(7)),
+      new Element("C++ Avancé", modules.get(6), users.get(7)),
+      new Element("Frontend (HTML/CSS/JS)", modules.get(7), users.get(8)),
+      new Element("Backend (PHP/Node.js)", modules.get(7), users.get(8)),
+
+      // S3 Elements
+      new Element("Modélisation UML", modules.get(8), users.get(9)),
+      new Element("Design Patterns", modules.get(8), users.get(9)),
+      new Element("Spring Boot", modules.get(9), users.get(10)),
+      new Element("Architecture Microservices", modules.get(9), users.get(10)),
+      new Element("Android Natif", modules.get(10), users.get(11)),
+      new Element("Flutter", modules.get(10), users.get(11)),
+      new Element("Merise", modules.get(11), users.get(6)),
+      new Element("Gouvernance IT", modules.get(11), users.get(6))
     );
     return elementRepository.saveAll(elements);
   }
@@ -192,74 +196,46 @@ public class DataSeeder implements CommandLineRunner {
       new Room("AMPHI 7", 50, 3, RoomType.AMPHI, campuses.get(0)),
       new Room("AMPHI 3", 50, 3, RoomType.AMPHI, campuses.get(1)),
       new Room("Salle Polyvalente", 120, 0, RoomType.POLYVALENTE, campuses.get(1)),
-      new Room("Lab Linux S1", 30, 1, RoomType.TP, campuses.get(2)),
+      new Room("Lab Cisco S1", 30, 1, RoomType.TP, campuses.get(2)),
       new Room("Lab Java S2", 30, 2, RoomType.TP, campuses.get(2)),
       new Room("Salle 104", 40, 1, RoomType.POLYVALENTE, campuses.get(0))
     );
     return roomRepository.saveAll(rooms);
   }
 
-private List<DayPlan> seedTimeTables(List<Element> elements, List<Room> rooms) {
+  private List<DayPlan> seedTimeTables(List<Element> elements, List<Room> rooms) {
     List<DayPlan> plans = List.of(
       new DayPlan(
         LocalDate.of(2026, 4, 6), LocalTime.of(9, 0), LocalTime.of(11, 0),
-        1, PlanType.LECTURE, elements.get(0), rooms.get(3)
+        1, PlanType.LECTURE, elements.get(0), rooms.get(1) // Analyse
       ),
       new DayPlan(
         LocalDate.of(2026, 4, 6), LocalTime.of(14, 30), LocalTime.of(16, 30),
-        1, PlanType.LECTURE, elements.get(1), rooms.get(0)
+        1, PlanType.LECTURE, elements.get(2), rooms.get(0) // Algo
       ),
       new DayPlan(
         LocalDate.of(2026, 4, 7), LocalTime.of(9, 0), LocalTime.of(11, 0),
-        1, PlanType.LECTURE, elements.get(2), rooms.get(0)
+        1, PlanType.LECTURE, elements.get(4), rooms.get(1) // Architecture
       ),
       new DayPlan(
         LocalDate.of(2026, 4, 7), LocalTime.of(14, 0), LocalTime.of(16, 0),
-        1, PlanType.LECTURE, elements.get(3), rooms.get(1)
+        1, PlanType.LECTURE, elements.get(6), rooms.get(2) // Français
       ),
       new DayPlan(
         LocalDate.of(2026, 4, 8), LocalTime.of(8, 30), LocalTime.of(11, 0),
-        1, PlanType.LECTURE, elements.get(4), rooms.get(1)
+        1, PlanType.LECTURE, elements.get(1), rooms.get(1) // Algèbre
       ),
       new DayPlan(
         LocalDate.of(2026, 4, 8), LocalTime.of(16, 0), LocalTime.of(18, 0),
-        1, PlanType.LECTURE, elements.get(5), rooms.get(1)
+        1, PlanType.LECTURE, elements.get(3), rooms.get(0) // Prog C
       ),
       new DayPlan(
         LocalDate.of(2026, 4, 9), LocalTime.of(10, 30), LocalTime.of(12, 30),
-        1, PlanType.LECTURE, elements.get(6), rooms.get(1)
+        1, PlanType.LECTURE, elements.get(5), rooms.get(4) // OS
       ),
       new DayPlan(
         LocalDate.of(2026, 4, 9), LocalTime.of(15, 30), LocalTime.of(17, 30),
-        1, PlanType.LECTURE, elements.get(7), rooms.get(2)
-      ),
-      new DayPlan(
-        LocalDate.of(2026, 4, 10), LocalTime.of(8, 30), LocalTime.of(10, 30),
-        1, PlanType.LECTURE, elements.get(8), rooms.get(2)
-      ),
-      new DayPlan(
-        LocalDate.of(2026, 4, 10), LocalTime.of(15, 0), LocalTime.of(17, 0),
-        1, PlanType.LECTURE, elements.get(9), rooms.get(0)
-      ),
-      new DayPlan(
-        LocalDate.of(2026, 4, 11), LocalTime.of(8, 30), LocalTime.of(10, 30),
-        1, PlanType.LECTURE, elements.get(10), rooms.get(1)
-      ),
-      new DayPlan(
-        LocalDate.of(2026, 7, 15), LocalTime.of(9, 0), LocalTime.of(12, 0),
-        3, PlanType.LECTURE, elements.get(16), rooms.get(5)
-      ),
-      new DayPlan(
-        LocalDate.of(2026, 7, 15), LocalTime.of(14, 0), LocalTime.of(17, 0),
-        3, PlanType.LECTURE, elements.get(18), rooms.get(5)
-      ),
-      new DayPlan(
-        LocalDate.of(2026, 7, 16), LocalTime.of(9, 0), LocalTime.of(11, 0),
-        3, PlanType.LECTURE, elements.get(20), rooms.get(4)
-      ),
-      new DayPlan(
-        LocalDate.of(2026, 7, 17), LocalTime.of(14, 0), LocalTime.of(16, 0),
-        3, PlanType.LECTURE, elements.get(21), rooms.get(4)
+        1, PlanType.LECTURE, elements.get(7), rooms.get(2) // Anglais
       )
     );
     return dayPlanRepository.saveAll(plans);
@@ -267,16 +243,18 @@ private List<DayPlan> seedTimeTables(List<Element> elements, List<Room> rooms) {
 
   private void seedResults(List<Element> elements, List<User> users) {
     List<Result> results = List.of(
-      new Result(14, users.get(1), elements.get(0)),
-      new Result(17, users.get(1), elements.get(1)),
-      new Result(16, users.get(1), elements.get(2)),
-      new Result(18, users.get(1), elements.get(4)),
-      new Result(15, users.get(1), elements.get(6)),
-      new Result(12, users.get(3), elements.get(0)),
-      new Result(10, users.get(3), elements.get(1)),
-      new Result(14, users.get(3), elements.get(4)),
-      new Result(16, users.get(2), elements.get(12)),
-      new Result(13, users.get(2), elements.get(13))
+      new Result(14.5, users.get(1), elements.get(0)),
+      new Result(17.0, users.get(1), elements.get(2)),
+      new Result(16.5, users.get(1), elements.get(4)),
+      new Result(18.0, users.get(1), elements.get(6)),
+      new Result(15.0, users.get(1), elements.get(7)),
+      
+      new Result(12.0, users.get(3), elements.get(0)),
+      new Result(10.5, users.get(3), elements.get(2)),
+      new Result(14.0, users.get(3), elements.get(6)),
+      
+      new Result(16.0, users.get(2), elements.get(8)),
+      new Result(13.5, users.get(2), elements.get(10))
     );
     resultRepository.saveAll(results);
   }
@@ -284,13 +262,11 @@ private List<DayPlan> seedTimeTables(List<Element> elements, List<Room> rooms) {
   private List<Absence> seedAbsence(List<User> users, List<Element> elements) {
     List<Absence> absences = List.of(
       new Absence(LocalDateTime.now(), AbsenceType.CLASS, true, users.get(1), elements.get(0)),
-      new Absence(LocalDateTime.now(), AbsenceType.EXAM, false, users.get(1), elements.get(3)),
-      new Absence(LocalDateTime.now(), AbsenceType.CLASS, false, users.get(1), elements.get(6)),
-      new Absence(LocalDateTime.now().minusDays(5), AbsenceType.CLASS, false, users.get(1), elements.get(6)),
-      new Absence(LocalDateTime.now(), AbsenceType.EXAM, false, users.get(2), elements.get(1)),
-      new Absence(LocalDateTime.now().minusDays(2), AbsenceType.CLASS, true, users.get(2), elements.get(1)),
-      new Absence(LocalDateTime.now(), AbsenceType.EXAM, false, users.get(2), elements.get(6)),
-      new Absence(LocalDateTime.now().minusDays(10), AbsenceType.CLASS, true, users.get(3), elements.get(4)),
+      new Absence(LocalDateTime.now().minusDays(5), AbsenceType.CLASS, false, users.get(1), elements.get(2)),
+      new Absence(LocalDateTime.now(), AbsenceType.CLASS, false, users.get(1), elements.get(4)),
+      new Absence(LocalDateTime.now(), AbsenceType.EXAM, false, users.get(2), elements.get(8)),
+      new Absence(LocalDateTime.now().minusDays(2), AbsenceType.CLASS, true, users.get(2), elements.get(10)),
+      new Absence(LocalDateTime.now().minusDays(10), AbsenceType.CLASS, true, users.get(3), elements.get(6)),
       new Absence(LocalDateTime.now().minusDays(1), AbsenceType.CLASS, false, users.get(4), elements.get(16))
     );
     return absenceRepository.saveAll(absences);
@@ -302,23 +278,15 @@ private List<DayPlan> seedTimeTables(List<Element> elements, List<Room> rooms) {
     User student3 = users.get(3);
 
     List<Request> requests = List.of(
-      new Request(null, "Document Request A", RequestState.PENDING, new Date(), null, student1),
-      new Request(null, "Transcript Request", RequestState.IN_PROGRESS, addDays(new Date(), -2), null, student1),
-      new Request(null, "Absence Justification", RequestState.COMPLETED, addDays(new Date(), -5), new Date(), student1),
-      new Request(null, "Library Access", RequestState.PENDING, new Date(), null, student1),
-      new Request(null, "Course Change", RequestState.IN_PROGRESS, addDays(new Date(), -1), null, student1),
-      new Request(null, "Internship Convention (Java Backend)", RequestState.PENDING, new Date(), null, student1),
-      new Request(null, "Exam Retake", RequestState.PENDING, new Date(), null, student2),
-      new Request(null, "Medical Certificate",
-        RequestState.COMPLETED, addDays(new Date(), -10), addDays(new Date(), -8), student2),
-      new Request(null, "Hardware Loan", RequestState.IN_PROGRESS, addDays(new Date(), -3), null, student2),
-      new Request(null, "Study Abroad Inquiry", RequestState.PENDING, new Date(), null, student2),
-      new Request(
-        null, "Software License Request", RequestState.COMPLETED,
-        addDays(new Date(), -7), addDays(new Date(), -6), student2),
-      new Request(null, "Relevé de notes S1", RequestState.PENDING, new Date(), null, student3)
+      new Request(null, "Demande de convention de stage", RequestState.PENDING, new Date(), null, student1),
+      new Request(null, "Demande de relevé de notes S1", RequestState.IN_PROGRESS, addDays(new Date(), -2), null, student1),
+      new Request(null, "Justification d'absence médicale", RequestState.COMPLETED, addDays(new Date(), -5), new Date(), student1),
+      
+      new Request(null, "Changement de groupe de TP", RequestState.PENDING, new Date(), null, student2),
+      new Request(null, "Attestation de scolarité", RequestState.COMPLETED, addDays(new Date(), -10), addDays(new Date(), -8), student2),
+      
+      new Request(null, "Demande de relevé de notes S1", RequestState.PENDING, new Date(), null, student3)
     );
-    
     requestRepository.saveAll(requests);
   }
 
