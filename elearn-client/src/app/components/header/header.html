@@ -3,9 +3,9 @@
   <div class="flex items-center gap-3">
     <a routerLink="/"
     class="text-[#EAE3D5] text-xl tracking-widest uppercase
-      font-['DM_Sans',sans-serif] font-light">E-LEARN</a>
+      font-['Roboto',sans-serif] font-light">E-LEARN</a>
   </div>
-  <ul class="hidden md:flex items-center gap-10 font-['DM_Sans',sans-serif]
+  <ul class="hidden md:flex items-center gap-10 font-['Roboto',sans-serif]
     text-sm text-[#8FA68C] tracking-wide">
     <a routerLink="/programs"
       class="hover:text-[#EAE3D5] cursor-pointer transition-colors">Programs</a>
@@ -17,17 +17,17 @@
   @if (profile()){
     <div>
       <a routerLink="dashboard"
-       class ="font-['DM_Sans',sans-serif] text-sm px-5 py-2 text-[#C8A96E] cursor-pointer">
+       class ="font-['Roboto',sans-serif] text-sm px-5 py-2 text-[#C8A96E] cursor-pointer">
         {{ profile()?.email }}
       </a>
       <button (click)="logout()"
-        class ="font-['DM_Sans',sans-serif] text-sm px-5 py-2 text-[#C8A96E] cursor-pointer">
+        class ="font-['Roboto',sans-serif] text-sm px-5 py-2 text-[#C8A96E] cursor-pointer">
         Log out
       </button>
     </div>
   }@else {
     <a routerLink="/login"
-    class="font-['DM_Sans',sans-serif] text-sm px-5 py-2 border border-[#C8A96E]
+    class="font-['Roboto',sans-serif] text-sm px-5 py-2 border border-[#C8A96E]
       text-[#C8A96E] hover:bg-[#C8A96E] hover:text-[#0E1A14] transition-all
       duration-300 tracking-wide cursor-pointer">
       Log In
