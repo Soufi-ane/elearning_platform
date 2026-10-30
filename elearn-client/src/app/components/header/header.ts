@@ -9,19 +9,15 @@ import { LoginService } from '../login/login.service';
 })
 export class Header {
   private loginService = inject(LoginService);
-
+  public router = inject(Router);
   profile = this.loginService.userProfile;
 
-  constructor(private router : Router){}
-
   logout() {
-    this.loginService.logout()
-    .subscribe({
-      next: (_) => {
-      },
+    this.loginService.logout().subscribe({
+      next: (_) => {},
       error: (_) => {}
-    })
+    });
     this.profile.set(null);
-    this.router.navigate(["/"]);
+    this.router.navigate(['/']);
   }
 }

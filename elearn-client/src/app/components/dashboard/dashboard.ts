@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { LoginService } from '../login/login.service';
 import { Role } from '../../models/models';
 
@@ -10,9 +10,11 @@ import { Role } from '../../models/models';
 })
 export class Dashboard {
   private loginService = inject(LoginService);
+  public router = inject(Router);
   user = this.loginService.userProfile()!;
 
   get isStudent(): boolean {
-    return this.user?.role === Role.STUDENT || (this.user?.role as unknown as string) === 'STUDENT';
+    return this.user?.role === Role.STUDENT ||
+      (this.user?.role as unknown as string) === 'STUDENT';
   }
 }

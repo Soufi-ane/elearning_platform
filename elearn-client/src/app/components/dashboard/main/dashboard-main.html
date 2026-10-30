@@ -1,37 +1,135 @@
-<main class="flex-1 px-10 py-8">
-
-  <!-- Header Header / Breadcrumb -->
+<main class="flex-1 px-10 py-8 text-[#EAE3D5] font-['Roboto',sans-serif]">
   <p class="text-[#C8A96E] text-[10px] tracking-[0.3em] uppercase mb-1">
     Academic Management Workspace
   </p>
   <h1 class="text-[#EAE3D5] text-3xl font-light mb-8">
-   Administrative Dashboard
+    Institutional Workspace Overview
   </h1>
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-      <div class="bg-[#0B1610] border border-[#2A3D30] p-5">
-        <p class="text-[#8FA68C] text-[10px] tracking-[0.2em] uppercase mb-1">Enrolled</p>
-        <p class="text-[#C8A96E] text-3xl font-semibold">6</p>
-        <p class="text-[#8FA68C] text-xs mt-1">Modules</p>
+  @if (user(); as u) {
+    <div
+      class="border border-[#2A3D30] bg-[#0B1610] p-6 mb-8 flex flex-col md:flex-row
+        items-start md:items-center justify-between gap-6">
+      <div class="flex items-center gap-4">
+        <div
+          class="w-16 h-16 rounded-full bg-[#1A3025] border border-[#2A3D30] flex
+            items-center justify-center text-xl text-[#C8A96E] font-semibold">
+          {{ u.lastName.charAt(0) }}{{ u.firstName.charAt(0) }}
+        </div>
+        <div>
+          <div class="flex items-center gap-3">
+            <h2 class="text-xl font-medium text-[#EAE3D5]">
+              {{ u.lastName.toUpperCase() }} {{ u.firstName }}
+            </h2>
+            <span
+              class="px-2.5 py-0.5 border border-[#C8A96E]/40 text-[#C8A96E] text-[10px]
+                tracking-wider uppercase rounded bg-[#1A3025]/50">
+              {{ u.role }}
+            </span>
+          </div>
+          <p class="text-sm text-[#8FA68C] mt-0.5">
+            {{ u.email }} &bull; &#64;{{ u.username }}
+          </p>
+        </div>
       </div>
 
-      <div class="bg-[#0B1610] border border-[#2A3D30] p-5">
-        <p class="text-[#8FA68C] text-[10px] tracking-[0.2em] uppercase mb-1">Attendance</p>
-        <p class="text-[#C8A96E] text-3xl font-semibold">96%</p>
-        <p class="text-[#8FA68C] text-xs mt-1">Presence rate</p>
-      </div>
-
-      <div class="bg-[#0B1610] border border-[#2A3D30] p-5">
-        <p class="text-[#8FA68C] text-[10px] tracking-[0.2em] uppercase mb-1">Absences</p>
-        <p class="text-[#C8A96E] text-3xl font-semibold">2</p>
-        <p class="text-[#8FA68C] text-xs mt-1">Unjustified</p>
-      </div>
-
-      <div class="bg-[#0B1610] border border-[#2A3D30] p-5">
-        <p class="text-[#8FA68C] text-[10px] tracking-[0.2em] uppercase mb-1">Justifications</p>
-        <p class="text-[#C8A96E] text-3xl font-semibold">1</p>
-        <p class="text-[#8FA68C] text-xs mt-1">Approved</p>
+      <div class="flex items-center gap-3">
+        <a
+          routerLink="/dashboard/profile"
+          class="px-4 py-2 border border-[#2A3D30] text-[#8FA68C] text-xs uppercase
+            tracking-wider hover:border-[#C8A96E] hover:text-[#C8A96E] transition-all">
+          View Full Profile
+        </a>
       </div>
     </div>
 
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-[#0B1610] border border-[#2A3D30] p-5">
+        <p class="text-[#8FA68C] text-[10px] tracking-[0.2em] uppercase mb-2">
+          Academic Department
+        </p>
+        <p class="text-base text-[#EAE3D5] font-medium">
+          {{ u.department || 'Not Assigned' }}
+        </p>
+        <p class="text-xs text-[#8FA68C] mt-1">Faculty Affiliation</p>
+      </div>
+
+      <div class="bg-[#0B1610] border border-[#2A3D30] p-5">
+        <p class="text-[#8FA68C] text-[10px] tracking-[0.2em] uppercase mb-2">
+          Study & Instruction Mode
+        </p>
+        <p class="text-base text-[#C8A96E] font-medium">
+          {{ u.studyMode || 'STANDARD' }}
+        </p>
+        <p class="text-xs text-[#8FA68C] mt-1">Delivery Format</p>
+      </div>
+
+      <div class="bg-[#0B1610] border border-[#2A3D30] p-5">
+        <p class="text-[#8FA68C] text-[10px] tracking-[0.2em] uppercase mb-2">
+          Current Standing
+        </p>
+        <p class="text-base text-[#EAE3D5] font-medium">
+          @if (u.role.toString() === 'STUDENT') {
+            Semester {{ u.currentSemester || u.year || 1 }}
+          } @else {
+            Active Staff
+          }
+        </p>
+        <p class="text-xs text-[#8FA68C] mt-1">System Authorization</p>
+      </div>
+    </div>
+
+    <div class="border border-[#2A3D30] bg-[#0E1A14]/30 p-6">
+      <p class="text-[#C8A96E] text-xs font-medium uppercase tracking-wider mb-4">
+        Quick Actions
+      </p>
+      <div class="flex flex-wrap gap-3">
+        @if (u.role.toString() === 'STUDENT') {
+          <a
+            routerLink="/dashboard/calendar"
+            class="px-4 py-2 bg-[#1A3025] border border-[#2A3D30] text-xs text-[#EAE3D5]
+              hover:border-[#C8A96E] transition-colors">
+            Check Timetable
+          </a>
+          <a
+            routerLink="/dashboard/modules"
+            class="px-4 py-2 bg-[#1A3025] border border-[#2A3D30] text-xs text-[#EAE3D5]
+              hover:border-[#C8A96E] transition-colors">
+            Enrolled Modules
+          </a>
+          <a
+            routerLink="/dashboard/grades"
+            class="px-4 py-2 bg-[#1A3025] border border-[#2A3D30] text-xs text-[#EAE3D5]
+              hover:border-[#C8A96E] transition-colors">
+            Marks Ledger
+          </a>
+          <a
+            routerLink="/dashboard/attendance"
+            class="px-4 py-2 bg-[#1A3025] border border-[#2A3D30] text-xs text-[#EAE3D5]
+              hover:border-[#C8A96E] transition-colors">
+            Absence Records
+          </a>
+        } @else {
+          <a
+            routerLink="/dashboard/attendance/manage"
+            class="px-4 py-2 bg-[#1A3025] border border-[#2A3D30] text-xs text-[#EAE3D5]
+              hover:border-[#C8A96E] transition-colors">
+            Manage Absences
+          </a>
+          <a
+            routerLink="/dashboard/modules"
+            class="px-4 py-2 bg-[#1A3025] border border-[#2A3D30] text-xs text-[#EAE3D5]
+              hover:border-[#C8A96E] transition-colors">
+            Curriculum Modules
+          </a>
+        }
+      </div>
+    </div>
+  } @else {
+    <div
+      class="border border-[#1A302F] bg-[#0E1A14]/20 p-12 text-center text-xs opacity-50
+        uppercase tracking-widest animate-pulse">
+      Loading profile session...
+    </div>
+  }
 </main>

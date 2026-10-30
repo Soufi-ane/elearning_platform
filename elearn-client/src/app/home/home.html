@@ -1,57 +1,51 @@
-<div class="relative px-10 pt-24 pb-20 md:pt-32 md:pb-28">
-  <div class="absolute top-10 right-20 w-72 h-72 rounded-full bg-[#1A3025] opacity-40 blur-3xl pointer-events-none"></div>
-  <div class="max-w-5xl mx-auto">
-    <p class="font-['Roboto',sans-serif] text-[#C8A96E] text-xs tracking-[0.3em] uppercase mb-6">
+<div
+  class="relative px-10 pt-24 pb-20 md:pt-32 md:pb-28 bg-cover bg-center bg-no-repeat"
+  style="
+    background-image:
+      linear-gradient(
+        to right,
+        rgba(11, 22, 16, 0.97) 20%,
+        rgba(14, 26, 20, 0.90) 55%,
+        rgba(14, 26, 20, 0.72) 100%
+      ),
+      url('/uni_students.jpg');
+  ">
+  <div class="max-w-5xl mx-auto relative z-10">
+    <p
+      class="font-['Roboto',sans-serif] text-[#C8A96E] text-xs font-medium
+        tracking-[0.35em] uppercase mb-6 drop-shadow-sm">
       Institutional Workspace
     </p>
-    <h1 class="text-[#EAE3D5] text-6xl md:text-8xl font-light leading-none mb-4">
-      E-Learn
+
+    <h1
+      class="text-[#F5F2EB] text-6xl md:text-8xl font-light leading-none mb-4
+        tracking-tight drop-shadow-md">
+      E-Learning
     </h1>
-    <h1 class="text-[#C8A96E] text-6xl md:text-8xl font-semibold italic leading-none mb-10">
-      Portal.
+
+    <h1
+      class="text-[#C8A96E] text-6xl md:text-8xl font-semibold italic leading-none
+        mb-10 tracking-tight drop-shadow-md">
+      Platform.
     </h1>
-    <p class="font-['Roboto',sans-serif] text-[#8FA68C] text-lg md:text-xl font-light max-w-xl leading-relaxed mb-12">
-      The official digital platform for students and faculty. Access class schedules, manage course modules, and track academic attendance records in real time.
+
+    <p
+      class="font-['Roboto',sans-serif] text-[#B8CBB6] text-lg md:text-xl font-light
+        max-w-xl leading-relaxed mb-12 drop-shadow-sm">
+      The official digital platform for students and faculty. Access class schedules,
+      manage course modules, and track academic attendance records in real time.
     </p>
+
     <div class="flex flex-col sm:flex-row gap-4">
-      <button routerLink="/login" class="font-['Roboto',sans-serif] px-8 py-4 bg-[#C8A96E] text-[#0E1A14] font-medium tracking-wide hover:bg-[#DFC18A] transition-colors duration-300 cursor-pointer">
-        Access Portal
+      <button
+        routerLink="/login"
+        class="font-['Roboto',sans-serif] px-9 py-4 bg-[#C8A96E] hover:bg-[#DFC18A]
+          text-[#0E1A14] font-semibold text-sm tracking-wider uppercase
+          border border-[#C8A96E] shadow-[0_4px_20px_rgba(0,0,0,0.35)]
+          hover:shadow-[0_6px_24px_rgba(200,169,110,0.25)] hover:-translate-y-0.5
+          transition-all duration-200 cursor-pointer">
+        Access Platform
       </button>
     </div>
   </div>
 </div>
-
-<div class="px-10 py-10 border-y border-[#2A3D30] bg-[#0B1610]">
-  <div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-    <div class="text-center">
-      <p class="text-[#C8A96E] text-2xl font-medium">Timetables</p>
-      <p class="font-['Roboto',sans-serif] text-[#8FA68C] text-xs mt-1 tracking-wider uppercase">Weekly Planning</p>
-    </div>
-    <div class="text-center">
-      <p class="text-[#C8A96E] text-2xl font-medium">Modules</p>
-      <p class="font-['Roboto',sans-serif] text-[#8FA68C] text-xs mt-1 tracking-wider uppercase">Course Elements</p>
-    </div>
-    <div class="text-center">
-      <p class="text-[#C8A96E] text-2xl font-medium">Attendance</p>
-      <p class="font-['Roboto',sans-serif] text-[#8FA68C] text-xs mt-1 tracking-wider uppercase">Absence Tracking</p>
-    </div>
-    <div class="text-center">
-      <p class="text-[#C8A96E] text-2xl font-medium">Justifications</p>
-      <p class="font-['Roboto',sans-serif] text-[#8FA68C] text-xs mt-1 tracking-wider uppercase">Absence Records</p>
-    </div>
-  </div>
-</div>
-<div class="px-10 py-24 bg-[#121F18]">
-  <div class="max-w-3xl mx-auto text-center">
-    <p class="font-['Roboto',sans-serif] text-[#C8A96E] text-xs tracking-[0.3em] uppercase mb-4">Single Sign-On</p>
-    <h2 class="text-[#EAE3D5] text-4xl md:text-5xl font-light leading-tight mb-6">
-      Student & Faculty <span class="italic text-[#C8A96E]">Authentication.</span>
-    </h2>
-    <p class="font-['Roboto',sans-serif] text-[#8FA68C] text-base md:text-lg font-light leading-relaxed mb-10">
-      Please sign in with your institutional credentials to consult your personalized schedule or review your attendance records.
-    </p>
-    <button routerLink="/login" class="font-['Roboto',sans-serif] px-10 py-4 bg-[#C8A96E] text-[#0E1A14] font-medium tracking-widest uppercase text-xs hover:bg-[#DFC18A] transition-colors duration-300 cursor-pointer">
-      Sign In
-    </button>
-  </div>
-</div>/div>

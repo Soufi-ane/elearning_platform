@@ -1,35 +1,54 @@
-<nav class="flex items-center z-50 justify-between fixed w-full
-    px-10 py-3 border-b bg-[#1A3025] border-[#2A3D30]">
+<nav class="flex items-center z-50 justify-between fixed w-full px-10 py-3 border-b
+  bg-[#1A3025] border-[#2A3D30]">
   <div class="flex items-center gap-3">
     <a routerLink="/"
-    class="text-[#EAE3D5] text-xl tracking-widest uppercase
-      font-['Roboto',sans-serif] font-light">E-LEARN</a>
+      class="text-[#EAE3D5] text-xl tracking-widest uppercase font-['Roboto',sans-serif]
+        font-light">
+      E-LEARN
+    </a>
   </div>
-  <ul class="hidden md:flex items-center gap-10 font-['Roboto',sans-serif]
-    text-sm text-[#8FA68C] tracking-wide">
+
+  <ul class="hidden md:flex items-center gap-10 font-['Roboto',sans-serif] text-sm
+    text-[#8FA68C] tracking-wide">
     <a routerLink="/programs"
-      class="hover:text-[#EAE3D5] cursor-pointer transition-colors">Programs</a>
+      class="hover:text-[#EAE3D5] cursor-pointer transition-colors">
+      Programs
+    </a>
     <a routerLink="/contact"
-      class="hover:text-[#EAE3D5] cursor-pointer transition-colors">Contact</a>
+      class="hover:text-[#EAE3D5] cursor-pointer transition-colors">
+      Contact
+    </a>
     <a routerLink="/about"
-      class="hover:text-[#EAE3D5] cursor-pointer transition-colors">About</a>
+      class="hover:text-[#EAE3D5] cursor-pointer transition-colors">
+      About
+    </a>
   </ul>
-  @if (profile()){
-    <div>
-      <a routerLink="dashboard"
-       class ="font-['Roboto',sans-serif] text-sm px-5 py-2 text-[#C8A96E] cursor-pointer">
-        {{ profile()?.email }}
-      </a>
+
+  @if (profile()) {
+    <div class="flex items-center gap-6">
+      @if (router.url.includes('/dashboard')) {
+        <span class="font-['Roboto',sans-serif] text-sm text-[#EAE3D5] tracking-wide">
+          {{ profile()?.lastName }} {{ profile()?.firstName }}
+        </span>
+      } @else {
+        <a routerLink="/dashboard"
+          class="font-['Roboto',sans-serif] text-sm text-[#C8A96E] hover:text-[#EAE3D5]
+            transition-colors cursor-pointer tracking-wide">
+          Dashboard
+        </a>
+      }
       <button (click)="logout()"
-        class ="font-['Roboto',sans-serif] text-sm px-5 py-2 text-[#C8A96E] cursor-pointer">
-        Log out
+        class="font-['Roboto',sans-serif] text-sm px-5 py-2 border border-[#C8A96E]
+          text-[#C8A96E] hover:bg-[#C8A96E] hover:text-[#0E1A14] transition-all
+          duration-300 tracking-wide cursor-pointer rounded-sm">
+        Log Out
       </button>
     </div>
-  }@else {
+  } @else {
     <a routerLink="/login"
-    class="font-['Roboto',sans-serif] text-sm px-5 py-2 border border-[#C8A96E]
-      text-[#C8A96E] hover:bg-[#C8A96E] hover:text-[#0E1A14] transition-all
-      duration-300 tracking-wide cursor-pointer">
+      class="font-['Roboto',sans-serif] text-sm px-5 py-2 border border-[#C8A96E]
+        text-[#C8A96E] hover:bg-[#C8A96E] hover:text-[#0E1A14] transition-all
+        duration-300 tracking-wide cursor-pointer rounded-sm">
       Log In
     </a>
   }
