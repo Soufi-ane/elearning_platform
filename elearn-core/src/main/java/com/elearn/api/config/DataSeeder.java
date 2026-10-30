@@ -6,21 +6,19 @@ import java.util.Date;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
 import com.elearn.api.entity.*;
 import com.elearn.api.repository.*;
 import com.elearn.api.entity.Module;
-
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class DataSeeder implements CommandLineRunner {
+
   private final UserRepository userRepository;
   private final ModuleRepository moduleRepository;
   private final ElementRepository elementRepository;
@@ -76,48 +74,48 @@ public class DataSeeder implements CommandLineRunner {
         Role.ADMIN, null, 0, 0
       ),
       new User("Soufiane", "Jaber", "soufiane", DepartmentName.GENIE_INFORMATIQUE,
-        "soufianejb@mail.ma", passwordEncoder.encode("12341234"), LocalDate.of(2005, 11, 12),
-        Role.STUDENT, StudyMode.HYBRID, 1, 1
+        "soufianejb@mail.ma", passwordEncoder.encode("12341234"), 
+        LocalDate.of(2005, 11, 12), Role.STUDENT, StudyMode.HYBRID, 1, 1
       ),
-      new User("Sara", "Alaoui", "sara-a", DepartmentName.GENIE_CIVIL, "sara.alaoui@univ-tech.ma",
-        passwordEncoder.encode("12341234"), LocalDate.of(2002, 10, 10),
-        Role.STUDENT, StudyMode.ON_SITE, 2, 2
+      new User("Sara", "Alaoui", "sara-a", DepartmentName.GENIE_CIVIL, 
+        "sara.alaoui@univ-tech.ma", passwordEncoder.encode("12341234"), 
+        LocalDate.of(2002, 10, 10), Role.STUDENT, StudyMode.ON_SITE, 2, 2
       ),
-      new User("Omar", "Fassi", "omar-f", DepartmentName.GENIE_INFORMATIQUE, "omar.fassi@univ-tech.ma",
-        passwordEncoder.encode("12341234"), LocalDate.of(2004, 3, 22),
-        Role.STUDENT, StudyMode.ON_SITE, 1, 1
+      new User("Omar", "Fassi", "omar-f", DepartmentName.GENIE_INFORMATIQUE, 
+        "omar.fassi@univ-tech.ma", passwordEncoder.encode("12341234"), 
+        LocalDate.of(2004, 3, 22), Role.STUDENT, StudyMode.ON_SITE, 1, 1
       ),
-      new User("Lina", "Idrissi", "lina-i", DepartmentName.GENIE_INFORMATIQUE, "lina.idrissi@univ-tech.ma",
-        passwordEncoder.encode("12341234"), LocalDate.of(2003, 7, 8),
-        Role.STUDENT, StudyMode.HYBRID, 3, 2
+      new User("Lina", "Idrissi", "lina-i", DepartmentName.GENIE_INFORMATIQUE, 
+        "lina.idrissi@univ-tech.ma", passwordEncoder.encode("12341234"), 
+        LocalDate.of(2003, 7, 8), Role.STUDENT, StudyMode.HYBRID, 3, 2
       ),
-      new User("Mehdi", "Bennani", "mehdi-b", DepartmentName.GENIE_INFORMATIQUE, "mehdi.bennani@univ-tech.ma",
-        passwordEncoder.encode("12341234"), LocalDate.of(2004, 12, 1),
-        Role.STUDENT, StudyMode.ON_SITE, 1, 1
+      new User("Mehdi", "Bennani", "mehdi-b", DepartmentName.GENIE_INFORMATIQUE, 
+        "mehdi.bennani@univ-tech.ma", passwordEncoder.encode("12341234"), 
+        LocalDate.of(2004, 12, 1), Role.STUDENT, StudyMode.ON_SITE, 1, 1
       ),
-      new User("Driss", "Mansouri", "dmansouri", DepartmentName.GENIE_INFORMATIQUE, "driss.m@univ-tech.ma",
-        passwordEncoder.encode("12341234"), LocalDate.of(1985, 1, 5), 
-        Role.TEACHER, null, 0, 0
+      new User("Driss", "Mansouri", "dmansouri", DepartmentName.GENIE_INFORMATIQUE, 
+        "driss.m@univ-tech.ma", passwordEncoder.encode("12341234"), 
+        LocalDate.of(1985, 1, 5), Role.TEACHER, null, 0, 0
       ),
-      new User("Hassan", "Zaki", "hzaki", DepartmentName.GENIE_INFORMATIQUE, "h.zaki@univ-tech.ma",
-        passwordEncoder.encode("12341234"), LocalDate.of(1985, 1, 5),
-        Role.TEACHER, null, 0 , 0
+      new User("Hassan", "Zaki", "hzaki", DepartmentName.GENIE_INFORMATIQUE, 
+        "h.zaki@univ-tech.ma", passwordEncoder.encode("12341234"), 
+        LocalDate.of(1985, 1, 5), Role.TEACHER, null, 0 , 0
       ),
-      new User("Nadia", "Amrani", "namrani", DepartmentName.GENIE_INFORMATIQUE, "n.amrani@univ-tech.ma",
-        passwordEncoder.encode("12341234"), LocalDate.of(1978, 9, 14),
-        Role.TEACHER, null, 0, 0
+      new User("Nadia", "Amrani", "namrani", DepartmentName.GENIE_INFORMATIQUE, 
+        "n.amrani@univ-tech.ma", passwordEncoder.encode("12341234"), 
+        LocalDate.of(1978, 9, 14), Role.TEACHER, null, 0, 0
       ),
-      new User("Youssef", "Kabbaj", "ykabbaj", DepartmentName.GENIE_INFORMATIQUE, "y.kabbaj@univ-tech.ma",
-        passwordEncoder.encode("12341234"), LocalDate.of(1982, 4, 30),
-        Role.TEACHER, null, 0, 0
+      new User("Youssef", "Kabbaj", "ykabbaj", DepartmentName.GENIE_INFORMATIQUE, 
+        "y.kabbaj@univ-tech.ma", passwordEncoder.encode("12341234"), 
+        LocalDate.of(1982, 4, 30), Role.TEACHER, null, 0, 0
       ),
-      new User("Fatima", "Zahra", "fzahra", DepartmentName.GENIE_INFORMATIQUE, "f.zahra@univ-tech.ma",
-        passwordEncoder.encode("12341234"), LocalDate.of(1975, 11, 22),
-        Role.TEACHER, null, 0, 0
+      new User("Fatima", "Zahra", "fzahra", DepartmentName.GENIE_INFORMATIQUE, 
+        "f.zahra@univ-tech.ma", passwordEncoder.encode("12341234"), 
+        LocalDate.of(1975, 11, 22), Role.TEACHER, null, 0, 0
       ),
-      new User("Karim", "Tazi", "ktazi", DepartmentName.GENIE_INFORMATIQUE, "k.tazi@univ-tech.ma",
-        passwordEncoder.encode("12341234"), LocalDate.of(1988, 2, 18),
-        Role.TEACHER, null, 0, 0
+      new User("Karim", "Tazi", "ktazi", DepartmentName.GENIE_INFORMATIQUE, 
+        "k.tazi@univ-tech.ma", passwordEncoder.encode("12341234"), 
+        LocalDate.of(1988, 2, 18), Role.TEACHER, null, 0, 0
       )
     );
     return userRepository.saveAll(users);
@@ -125,58 +123,56 @@ public class DataSeeder implements CommandLineRunner {
 
   private List<Module> seedModules() {
     List<Module> modules = List.of(
-      // Semester 1
-      new Module("Mathématiques pour l'Ingénieur", 1, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Algorithmique et Programmation C", 1, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Architecture et Systèmes d'Exploitation", 1, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Langues et Communication 1", 1, DepartmentName.GENIE_INFORMATIQUE),
-
-      // Semester 2
-      new Module("Bases de Données Relationnelles", 2, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Réseaux Informatiques", 2, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Programmation Orientée Objet", 2, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Développement Web", 2, DepartmentName.GENIE_INFORMATIQUE),
-
-      // Semester 3
-      new Module("Génie Logiciel et UML", 3, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Technologies Java et JEE", 3, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Développement Mobile", 3, DepartmentName.GENIE_INFORMATIQUE),
-      new Module("Systèmes d'Information", 3, DepartmentName.GENIE_INFORMATIQUE)
+      new Module("Réseaux Informatiques", 1, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Programmation Python", 1, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Algorithmique Avancée", 1, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Bases de Données", 1, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Langues Étrangères", 1, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Systèmes d'Information", 1, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Génie Logiciel", 1, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Modélisation UML", 1, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Administration SGBD", 2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Machine Learning", 2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Développement Java EE", 2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Communication Avancée", 2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Français Technique", 2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Conception Logicielle", 2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Projet Interdisciplinaire", 2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Bases de Données Oracle", 2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Intelligence Artificielle", 2, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Développement Backend", 3, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Développement Frontend", 3, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Structure de Données", 3, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("Systèmes d'Exploitation", 3, DepartmentName.GENIE_INFORMATIQUE),
+      new Module("DevOps & CI/CD", 3, DepartmentName.GENIE_INFORMATIQUE)
     );
     return moduleRepository.saveAll(modules);
   }
 
   private List<Element> seedElements(List<Module> modules, List<User> users) {
     List<Element> elements = List.of(
-      // S1 Elements
-      new Element("Analyse Mathématique", modules.get(0), users.get(6)),
-      new Element("Algèbre Linéaire", modules.get(0), users.get(6)),
-      new Element("Algorithmique Avancée", modules.get(1), users.get(7)),
-      new Element("Programmation C", modules.get(1), users.get(7)),
-      new Element("Architecture des Ordinateurs", modules.get(2), users.get(8)),
-      new Element("Systèmes d'Exploitation", modules.get(2), users.get(8)),
-      new Element("Français Professionnel", modules.get(3), users.get(9)),
-      new Element("Anglais Technique", modules.get(3), users.get(9)),
-
-      // S2 Elements
-      new Element("Conception des BDD", modules.get(4), users.get(10)),
-      new Element("SQL et PL/SQL", modules.get(4), users.get(10)),
-      new Element("Réseaux Locaux (LAN)", modules.get(5), users.get(11)),
-      new Element("Réseaux Étendus (WAN)", modules.get(5), users.get(11)),
-      new Element("Java Fondamentaux", modules.get(6), users.get(7)),
-      new Element("C++ Avancé", modules.get(6), users.get(7)),
-      new Element("Frontend (HTML/CSS/JS)", modules.get(7), users.get(8)),
-      new Element("Backend (PHP/Node.js)", modules.get(7), users.get(8)),
-
-      // S3 Elements
-      new Element("Modélisation UML", modules.get(8), users.get(9)),
-      new Element("Design Patterns", modules.get(8), users.get(9)),
-      new Element("Spring Boot", modules.get(9), users.get(10)),
-      new Element("Architecture Microservices", modules.get(9), users.get(10)),
-      new Element("Android Natif", modules.get(10), users.get(11)),
-      new Element("Flutter", modules.get(10), users.get(11)),
-      new Element("Merise", modules.get(11), users.get(6)),
-      new Element("Gouvernance IT", modules.get(11), users.get(6))
+      new Element("Modèle OSI et TCP/IP", modules.get(0), users.get(6)),
+      new Element("Programmation Socket", modules.get(0), users.get(7)),
+      new Element("Analyse de Données", modules.get(1), users.get(6)),
+      new Element("Structures Python", modules.get(1), users.get(6)),
+      new Element("Concepts Avancés", modules.get(2), users.get(8)),
+      new Element("Arbres et Graphes", modules.get(2), users.get(8)),
+      new Element("SQL Avancé", modules.get(3), users.get(9)),
+      new Element("Anglais Technique", modules.get(4), users.get(10)),
+      new Element("Expression Écrite", modules.get(4), users.get(10)),
+      new Element("Gestion de Projet", modules.get(5), users.get(11)),
+      new Element("Méthodes Agiles", modules.get(6), users.get(11)),
+      new Element("Optimisation SQL", modules.get(8), users.get(9)),
+      new Element("Réseaux de Neurones", modules.get(9), users.get(6)),
+      new Element("Architecture Java", modules.get(10), users.get(8)),
+      new Element("Prise de Parole", modules.get(11), users.get(10)),
+      new Element("Design Patterns", modules.get(13), users.get(8)),
+      new Element("Sécurité Applicative", modules.get(17), users.get(7)),
+      new Element("Microservices", modules.get(17), users.get(7)),
+      new Element("Interfaces Réactives", modules.get(18), users.get(11)),
+      new Element("Gestion d'État", modules.get(18), users.get(11)),
+      new Element("Complexité Avancée", modules.get(19), users.get(6)),
+      new Element("Administration Serveur", modules.get(20), users.get(9))
     );
     return elementRepository.saveAll(elements);
   }
@@ -196,7 +192,7 @@ public class DataSeeder implements CommandLineRunner {
       new Room("AMPHI 7", 50, 3, RoomType.AMPHI, campuses.get(0)),
       new Room("AMPHI 3", 50, 3, RoomType.AMPHI, campuses.get(1)),
       new Room("Salle Polyvalente", 120, 0, RoomType.POLYVALENTE, campuses.get(1)),
-      new Room("Lab Cisco S1", 30, 1, RoomType.TP, campuses.get(2)),
+      new Room("Lab Réseaux S1", 30, 1, RoomType.TP, campuses.get(2)),
       new Room("Lab Java S2", 30, 2, RoomType.TP, campuses.get(2)),
       new Room("Salle 104", 40, 1, RoomType.POLYVALENTE, campuses.get(0))
     );
@@ -207,35 +203,63 @@ public class DataSeeder implements CommandLineRunner {
     List<DayPlan> plans = List.of(
       new DayPlan(
         LocalDate.of(2026, 4, 6), LocalTime.of(9, 0), LocalTime.of(11, 0),
-        1, PlanType.LECTURE, elements.get(0), rooms.get(1) // Analyse
+        1, PlanType.LECTURE, elements.get(0), rooms.get(3)
       ),
       new DayPlan(
         LocalDate.of(2026, 4, 6), LocalTime.of(14, 30), LocalTime.of(16, 30),
-        1, PlanType.LECTURE, elements.get(2), rooms.get(0) // Algo
+        1, PlanType.LECTURE, elements.get(1), rooms.get(0)
       ),
       new DayPlan(
         LocalDate.of(2026, 4, 7), LocalTime.of(9, 0), LocalTime.of(11, 0),
-        1, PlanType.LECTURE, elements.get(4), rooms.get(1) // Architecture
+        1, PlanType.LECTURE, elements.get(2), rooms.get(0)
       ),
       new DayPlan(
         LocalDate.of(2026, 4, 7), LocalTime.of(14, 0), LocalTime.of(16, 0),
-        1, PlanType.LECTURE, elements.get(6), rooms.get(2) // Français
+        1, PlanType.LECTURE, elements.get(3), rooms.get(1)
       ),
       new DayPlan(
         LocalDate.of(2026, 4, 8), LocalTime.of(8, 30), LocalTime.of(11, 0),
-        1, PlanType.LECTURE, elements.get(1), rooms.get(1) // Algèbre
+        1, PlanType.LECTURE, elements.get(4), rooms.get(1)
       ),
       new DayPlan(
         LocalDate.of(2026, 4, 8), LocalTime.of(16, 0), LocalTime.of(18, 0),
-        1, PlanType.LECTURE, elements.get(3), rooms.get(0) // Prog C
+        1, PlanType.LECTURE, elements.get(5), rooms.get(1)
       ),
       new DayPlan(
         LocalDate.of(2026, 4, 9), LocalTime.of(10, 30), LocalTime.of(12, 30),
-        1, PlanType.LECTURE, elements.get(5), rooms.get(4) // OS
+        1, PlanType.LECTURE, elements.get(6), rooms.get(1)
       ),
       new DayPlan(
         LocalDate.of(2026, 4, 9), LocalTime.of(15, 30), LocalTime.of(17, 30),
-        1, PlanType.LECTURE, elements.get(7), rooms.get(2) // Anglais
+        1, PlanType.LECTURE, elements.get(7), rooms.get(2)
+      ),
+      new DayPlan(
+        LocalDate.of(2026, 4, 10), LocalTime.of(8, 30), LocalTime.of(10, 30),
+        1, PlanType.LECTURE, elements.get(8), rooms.get(2)
+      ),
+      new DayPlan(
+        LocalDate.of(2026, 4, 10), LocalTime.of(15, 0), LocalTime.of(17, 0),
+        1, PlanType.LECTURE, elements.get(9), rooms.get(0)
+      ),
+      new DayPlan(
+        LocalDate.of(2026, 4, 11), LocalTime.of(8, 30), LocalTime.of(10, 30),
+        1, PlanType.LECTURE, elements.get(10), rooms.get(1)
+      ),
+      new DayPlan(
+        LocalDate.of(2026, 7, 15), LocalTime.of(9, 0), LocalTime.of(12, 0),
+        3, PlanType.LECTURE, elements.get(16), rooms.get(5)
+      ),
+      new DayPlan(
+        LocalDate.of(2026, 7, 15), LocalTime.of(14, 0), LocalTime.of(17, 0),
+        3, PlanType.LECTURE, elements.get(18), rooms.get(5)
+      ),
+      new DayPlan(
+        LocalDate.of(2026, 7, 16), LocalTime.of(9, 0), LocalTime.of(11, 0),
+        3, PlanType.LECTURE, elements.get(20), rooms.get(4)
+      ),
+      new DayPlan(
+        LocalDate.of(2026, 7, 17), LocalTime.of(14, 0), LocalTime.of(16, 0),
+        3, PlanType.LECTURE, elements.get(21), rooms.get(4)
       )
     );
     return dayPlanRepository.saveAll(plans);
@@ -243,31 +267,40 @@ public class DataSeeder implements CommandLineRunner {
 
   private void seedResults(List<Element> elements, List<User> users) {
     List<Result> results = List.of(
-      new Result(14.5, users.get(1), elements.get(0)),
-      new Result(17.0, users.get(1), elements.get(2)),
-      new Result(16.5, users.get(1), elements.get(4)),
-      new Result(18.0, users.get(1), elements.get(6)),
-      new Result(15.0, users.get(1), elements.get(7)),
-      
-      new Result(12.0, users.get(3), elements.get(0)),
-      new Result(10.5, users.get(3), elements.get(2)),
-      new Result(14.0, users.get(3), elements.get(6)),
-      
-      new Result(16.0, users.get(2), elements.get(8)),
-      new Result(13.5, users.get(2), elements.get(10))
+      new Result(14, users.get(1), elements.get(0)),
+      new Result(17, users.get(1), elements.get(1)),
+      new Result(16, users.get(1), elements.get(2)),
+      new Result(18, users.get(1), elements.get(4)),
+      new Result(15, users.get(1), elements.get(6)),
+      new Result(12, users.get(3), elements.get(0)),
+      new Result(10, users.get(3), elements.get(1)),
+      new Result(14, users.get(3), elements.get(4)),
+      new Result(16, users.get(2), elements.get(12)),
+      new Result(13, users.get(2), elements.get(13))
     );
     resultRepository.saveAll(results);
   }
 
   private List<Absence> seedAbsence(List<User> users, List<Element> elements) {
     List<Absence> absences = List.of(
-      new Absence(LocalDateTime.now(), AbsenceType.CLASS, true, users.get(1), elements.get(0)),
-      new Absence(LocalDateTime.now().minusDays(5), AbsenceType.CLASS, false, users.get(1), elements.get(2)),
-      new Absence(LocalDateTime.now(), AbsenceType.CLASS, false, users.get(1), elements.get(4)),
-      new Absence(LocalDateTime.now(), AbsenceType.EXAM, false, users.get(2), elements.get(8)),
-      new Absence(LocalDateTime.now().minusDays(2), AbsenceType.CLASS, true, users.get(2), elements.get(10)),
-      new Absence(LocalDateTime.now().minusDays(10), AbsenceType.CLASS, true, users.get(3), elements.get(6)),
-      new Absence(LocalDateTime.now().minusDays(1), AbsenceType.CLASS, false, users.get(4), elements.get(16))
+      new Absence(LocalDateTime.now(), AbsenceType.CLASS, true, 
+        users.get(1), elements.get(0)),
+      new Absence(LocalDateTime.now(), AbsenceType.EXAM, false, 
+        users.get(1), elements.get(3)),
+      new Absence(LocalDateTime.now(), AbsenceType.CLASS, false, 
+        users.get(1), elements.get(6)),
+      new Absence(LocalDateTime.now().minusDays(5), AbsenceType.CLASS, false, 
+        users.get(1), elements.get(6)),
+      new Absence(LocalDateTime.now(), AbsenceType.EXAM, false, 
+        users.get(2), elements.get(1)),
+      new Absence(LocalDateTime.now().minusDays(2), AbsenceType.CLASS, true, 
+        users.get(2), elements.get(1)),
+      new Absence(LocalDateTime.now(), AbsenceType.EXAM, false, 
+        users.get(2), elements.get(6)),
+      new Absence(LocalDateTime.now().minusDays(10), AbsenceType.CLASS, true, 
+        users.get(3), elements.get(4)),
+      new Absence(LocalDateTime.now().minusDays(1), AbsenceType.CLASS, false, 
+        users.get(4), elements.get(16))
     );
     return absenceRepository.saveAll(absences);
   }
@@ -278,14 +311,30 @@ public class DataSeeder implements CommandLineRunner {
     User student3 = users.get(3);
 
     List<Request> requests = List.of(
-      new Request(null, "Demande de convention de stage", RequestState.PENDING, new Date(), null, student1),
-      new Request(null, "Demande de relevé de notes S1", RequestState.IN_PROGRESS, addDays(new Date(), -2), null, student1),
-      new Request(null, "Justification d'absence médicale", RequestState.COMPLETED, addDays(new Date(), -5), new Date(), student1),
-      
-      new Request(null, "Changement de groupe de TP", RequestState.PENDING, new Date(), null, student2),
-      new Request(null, "Attestation de scolarité", RequestState.COMPLETED, addDays(new Date(), -10), addDays(new Date(), -8), student2),
-      
-      new Request(null, "Demande de relevé de notes S1", RequestState.PENDING, new Date(), null, student3)
+      new Request(null, "Document Request A", RequestState.PENDING, 
+        new Date(), null, student1),
+      new Request(null, "Transcript Request", RequestState.IN_PROGRESS, 
+        addDays(new Date(), -2), null, student1),
+      new Request(null, "Absence Justification", RequestState.COMPLETED, 
+        addDays(new Date(), -5), new Date(), student1),
+      new Request(null, "Library Access", RequestState.PENDING, 
+        new Date(), null, student1),
+      new Request(null, "Course Change", RequestState.IN_PROGRESS, 
+        addDays(new Date(), -1), null, student1),
+      new Request(null, "Internship Convention", RequestState.PENDING, 
+        new Date(), null, student1),
+      new Request(null, "Exam Retake", RequestState.PENDING, 
+        new Date(), null, student2),
+      new Request(null, "Medical Certificate", RequestState.COMPLETED, 
+        addDays(new Date(), -10), addDays(new Date(), -8), student2),
+      new Request(null, "Hardware Loan", RequestState.IN_PROGRESS, 
+        addDays(new Date(), -3), null, student2),
+      new Request(null, "Study Abroad Inquiry", RequestState.PENDING, 
+        new Date(), null, student2),
+      new Request(null, "Software License Request", RequestState.COMPLETED, 
+        addDays(new Date(), -7), addDays(new Date(), -6), student2),
+      new Request(null, "Relevé de notes S1", RequestState.PENDING, 
+        new Date(), null, student3)
     );
     requestRepository.saveAll(requests);
   }
