@@ -3,6 +3,7 @@ package com.elearn.api.config;
 import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -12,41 +13,41 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
   private final JwtAuthFilter jwtAuthFilter;
 
-  public SecurityConfig(JwtAuthFilter jwtAuthFilter){
+  public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
     this.jwtAuthFilter = jwtAuthFilter;
   }
-  
+
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
       .cors(cors -> cors.configurationSource(corsConfig()))
       .csrf(csrf -> csrf.disable())
       .authorizeHttpRequests(auth -> auth
-          .requestMatchers("/api/v1/departments").permitAll()
-          .requestMatchers("/api/v1/users/login","/api/v1/users/auth").permitAll()
-          .requestMatchers("/api/v1/users/register").hasRole("ADMIN")
-          .anyRequest().authenticated()
-        )
-      .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .requestMatchers("/api/v1/departments").permitAll()
+        .requestMatchers("/api/v1/users/login", "/api/v1/users/auth").permitAll()
+        .requestMatchers("/api/v1/users/register").hasRole("ADMIN")
+        .anyRequest().authenticated()
+      )
+      .sessionManagement(session -> 
+        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-    
+
     return http.build();
   }
 
   @Bean
-  public CorsConfigurationSource corsConfig(){
+  public CorsConfigurationSource corsConfig() {
     CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOrigins(Arrays.asList("http://localhost","http://localhost:4200"));
+    config.setAllowedOrigins(Arrays.asList("http://localhost", "http://localhost:4200"));
     config.setAllowedMethods(Arrays.asList("*"));
     config.setAllowedHeaders(Arrays.asList("*"));
     config.setAllowCredentials(true);
-
     UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
     src.registerCorsConfiguration("/**", config);
     return src;
   }
-
 }
