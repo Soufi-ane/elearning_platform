@@ -30,10 +30,16 @@ public class SecurityConfig {
         .requestMatchers("/api/v1/departments").permitAll()
         .requestMatchers("/api/v1/users/login", "/api/v1/users/auth").permitAll()
         .requestMatchers("/api/v1/users/register").hasRole("ADMIN")
+        .requestMatchers("/api/v1/rooms/**").hasAnyRole("ADMIN", "TEACHER")
+        .requestMatchers("/api/v1/modules/elements").hasAnyRole("ADMIN", "TEACHER")
+        .requestMatchers(
+          "/api/v1/modules/**", 
+          "/api/v1/timeTable/**"
+        ).authenticated()
         .anyRequest().authenticated()
       )
       .sessionManagement(session -> 
-        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
