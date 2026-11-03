@@ -17,4 +17,10 @@ export class Dashboard {
     return this.user?.role === Role.STUDENT ||
       (this.user?.role as unknown as string) === 'STUDENT';
   }
+
+  get isAdminOrTeacher(): boolean {
+    const roleStr = String(this.user?.role);
+    return roleStr === Role.ADMIN || roleStr === Role.TEACHER ||
+      roleStr === 'ADMIN' || roleStr === 'TEACHER';
+  }
 }
