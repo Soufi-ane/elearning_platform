@@ -37,7 +37,7 @@ public class ModuleService {
   public List<ModuleResponse> getModulesForUser(User user) {
     List<Module> modules = switch (user.getRole()) {
       case ADMIN -> moduleRepository.findAll();
-      case TEACHER -> moduleRepository.findDistinctByElementsTeacherId(user.getId());
+      case TEACHER -> moduleRepository.findAll();
       default -> moduleRepository.findByDepartmentAndSemester(
         user.getDepartment(), user.getSemester());
     };
@@ -49,6 +49,15 @@ public class ModuleService {
       ? elementRepository.findByModuleIdAndTeacherId(moduleId, user.getId())
       : elementRepository.findByModuleId(moduleId);
     return elements.stream().map(ElementResponse::new).toList();
+  }
+
+  public List<ElementResponse> getAllElements(User user) {
+    return elementRepository.findAll().stream()
+      .filter(e -> user.getRole() == Role.ADMIN || 
+                   (e.getTeacher() != null && 
+                    e.getTeacher().getId().equals(user.getId())))
+      .map(ElementResponse::new)
+      .toList();
   }
 
   public ModuleResponse createModule(ModuleRequest request) {
