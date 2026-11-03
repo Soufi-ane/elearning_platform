@@ -38,6 +38,14 @@ public class ModuleController {
     return ResponseEntity.ok(moduleService.getElementsForModule(moduleId, user));
   }
 
+  @GetMapping("/elements")
+  @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+  public ResponseEntity<List<ElementResponse>> getAllElements(
+    @AuthenticationPrincipal User user
+  ) {
+    return ResponseEntity.ok(moduleService.getAllElements(user));
+  }
+
   @PostMapping
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<ModuleResponse> createModule(
