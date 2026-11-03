@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoField;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -18,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class DataSeeder implements CommandLineRunner {
-
   private final UserRepository userRepository;
   private final ModuleRepository moduleRepository;
   private final ElementRepository elementRepository;
@@ -37,11 +37,8 @@ public class DataSeeder implements CommandLineRunner {
   public void run(String... args) throws Exception {
     if (args.length > 0 && "seed".equalsIgnoreCase(args[0])) {
       if (!"DEV".equalsIgnoreCase(environment) && userRepository.count() > 0) {
-        System.out.println("Database already contains data. Skipping seeding.");
         return;
       }
-
-      System.out.println("Seeding data ...");
       dayPlanRepository.deleteAllInBatch();
       absenceRepository.deleteAllInBatch();
       resultRepository.deleteAllInBatch();
@@ -62,8 +59,6 @@ public class DataSeeder implements CommandLineRunner {
       seedTimeTables(elements, rooms);
       seedAbsence(users, elements);
       seedRequests(users);
-
-      System.out.println("Seed complete!");
     }
   }
 
@@ -200,66 +195,57 @@ public class DataSeeder implements CommandLineRunner {
   }
 
   private List<DayPlan> seedTimeTables(List<Element> elements, List<Room> rooms) {
+    LocalDate today = LocalDate.now();
+    LocalDate base = today.with(ChronoField.DAY_OF_WEEK, 1);
+    
+    if (today.getMonthValue() == 7 || today.getMonthValue() == 8) {
+      base = LocalDate.of(today.getYear(), 9, 15).with(ChronoField.DAY_OF_WEEK, 1);
+    }
+
     List<DayPlan> plans = List.of(
       new DayPlan(
-        LocalDate.of(2026, 4, 6), LocalTime.of(9, 0), LocalTime.of(11, 0),
-        1, PlanType.LECTURE, elements.get(0), rooms.get(3)
+        base, LocalTime.of(9, 0), LocalTime.of(11, 0),
+        15, PlanType.LECTURE, elements.get(0), rooms.get(3)
       ),
       new DayPlan(
-        LocalDate.of(2026, 4, 6), LocalTime.of(14, 30), LocalTime.of(16, 30),
-        1, PlanType.LECTURE, elements.get(1), rooms.get(0)
+        base, LocalTime.of(14, 30), LocalTime.of(16, 30),
+        15, PlanType.LECTURE, elements.get(1), rooms.get(0)
       ),
       new DayPlan(
-        LocalDate.of(2026, 4, 7), LocalTime.of(9, 0), LocalTime.of(11, 0),
-        1, PlanType.LECTURE, elements.get(2), rooms.get(0)
+        base.plusDays(1), LocalTime.of(9, 0), LocalTime.of(11, 0),
+        15, PlanType.LECTURE, elements.get(2), rooms.get(0)
       ),
       new DayPlan(
-        LocalDate.of(2026, 4, 7), LocalTime.of(14, 0), LocalTime.of(16, 0),
-        1, PlanType.LECTURE, elements.get(3), rooms.get(1)
+        base.plusDays(1), LocalTime.of(14, 0), LocalTime.of(16, 0),
+        15, PlanType.LECTURE, elements.get(3), rooms.get(1)
       ),
       new DayPlan(
-        LocalDate.of(2026, 4, 8), LocalTime.of(8, 30), LocalTime.of(11, 0),
-        1, PlanType.LECTURE, elements.get(4), rooms.get(1)
+        base.plusDays(2), LocalTime.of(8, 30), LocalTime.of(11, 0),
+        15, PlanType.LECTURE, elements.get(4), rooms.get(1)
       ),
       new DayPlan(
-        LocalDate.of(2026, 4, 8), LocalTime.of(16, 0), LocalTime.of(18, 0),
-        1, PlanType.LECTURE, elements.get(5), rooms.get(1)
+        base.plusDays(2), LocalTime.of(16, 0), LocalTime.of(18, 0),
+        15, PlanType.LECTURE, elements.get(5), rooms.get(1)
       ),
       new DayPlan(
-        LocalDate.of(2026, 4, 9), LocalTime.of(10, 30), LocalTime.of(12, 30),
-        1, PlanType.LECTURE, elements.get(6), rooms.get(1)
+        base.plusDays(3), LocalTime.of(10, 30), LocalTime.of(12, 30),
+        15, PlanType.LECTURE, elements.get(6), rooms.get(1)
       ),
       new DayPlan(
-        LocalDate.of(2026, 4, 9), LocalTime.of(15, 30), LocalTime.of(17, 30),
-        1, PlanType.LECTURE, elements.get(7), rooms.get(2)
+        base.plusDays(3), LocalTime.of(15, 30), LocalTime.of(17, 30),
+        15, PlanType.LECTURE, elements.get(7), rooms.get(2)
       ),
       new DayPlan(
-        LocalDate.of(2026, 4, 10), LocalTime.of(8, 30), LocalTime.of(10, 30),
-        1, PlanType.LECTURE, elements.get(8), rooms.get(2)
+        base.plusDays(4), LocalTime.of(8, 30), LocalTime.of(10, 30),
+        15, PlanType.LECTURE, elements.get(8), rooms.get(2)
       ),
       new DayPlan(
-        LocalDate.of(2026, 4, 10), LocalTime.of(15, 0), LocalTime.of(17, 0),
-        1, PlanType.LECTURE, elements.get(9), rooms.get(0)
+        base.plusDays(4), LocalTime.of(15, 0), LocalTime.of(17, 0),
+        15, PlanType.LECTURE, elements.get(9), rooms.get(0)
       ),
       new DayPlan(
-        LocalDate.of(2026, 4, 11), LocalTime.of(8, 30), LocalTime.of(10, 30),
-        1, PlanType.LECTURE, elements.get(10), rooms.get(1)
-      ),
-      new DayPlan(
-        LocalDate.of(2026, 7, 15), LocalTime.of(9, 0), LocalTime.of(12, 0),
-        3, PlanType.LECTURE, elements.get(16), rooms.get(5)
-      ),
-      new DayPlan(
-        LocalDate.of(2026, 7, 15), LocalTime.of(14, 0), LocalTime.of(17, 0),
-        3, PlanType.LECTURE, elements.get(18), rooms.get(5)
-      ),
-      new DayPlan(
-        LocalDate.of(2026, 7, 16), LocalTime.of(9, 0), LocalTime.of(11, 0),
-        3, PlanType.LECTURE, elements.get(20), rooms.get(4)
-      ),
-      new DayPlan(
-        LocalDate.of(2026, 7, 17), LocalTime.of(14, 0), LocalTime.of(16, 0),
-        3, PlanType.LECTURE, elements.get(21), rooms.get(4)
+        base.plusDays(5), LocalTime.of(8, 30), LocalTime.of(10, 30),
+        15, PlanType.LECTURE, elements.get(10), rooms.get(1)
       )
     );
     return dayPlanRepository.saveAll(plans);
