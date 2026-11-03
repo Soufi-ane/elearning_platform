@@ -1,18 +1,285 @@
 <div class="w-full px-4 md:px-8 lg:px-10 pt-2 pb-8">
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-    @for (m of modules; track m.id) {
-      <div (click)="onSelect(m.id)"
-        class="p-3 border border-[#1A3025] rounded-lg cursor-pointer hover:border-[#C8A96E]
-          transition-all bg-[#1A3025]/80 hover:bg-[#1A3025] flex flex-col justify-between">
-        <h3 class="font-semibold text-sm text-[#EAE3D5] leading-tight mb-2">
-          {{ m.name }}
-        </h3>
-        <div class="text-[10px] text-[#8FA68C] font-mono tracking-wider">
-          SEMESTER {{ m.semester }}
-        </div>
-      </div>
-    } @empty {
-      <p class="text-[#8FA68C] text-sm">No modules available.</p>
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <p class="text-[10px] tracking-[0.25em] uppercase text-[#C8A96E] mb-1">
+        Academic Catalog
+      </p>
+      <h2 class="text-[#EAE3D5] text-xl font-light">Curriculum Modules</h2>
+    </div>
+    @if (isAdmin) {
+      <button
+        type="button"
+        (click)="openCreateModal()"
+        class="flex items-center gap-2 px-4 py-2.5 bg-[#C8A96E] text-[#0E1A14]
+          text-xs font-semibold uppercase tracking-wider rounded-sm
+          cursor-pointer hover:bg-[#DFC18A] transition-colors">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
+          <path
+            d="M8 3v10M3 8h10"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"/>
+        </svg>
+        <span>Add Module</span>
+      </button>
     }
   </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    @for (m of modules(); track m.id) {
+      <div
+        (click)="onSelect(m.id)"
+        class="p-5 border border-[#2A3D30] rounded-sm cursor-pointer
+          hover:border-[#C8A96E] transition-all bg-[#0B1610]
+          hover:bg-[#14261C]/70 flex flex-col justify-between group">
+        <div>
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <span
+              class="px-2 py-0.5 text-[10px] font-mono tracking-wider uppercase
+                bg-[#1A3025] text-[#C8A96E] border border-[#2A3D30]">
+              Semester {{ m.semester }}
+            </span>
+          </div>
+          <h3
+            class="font-medium text-base text-[#EAE3D5] leading-snug
+              group-hover:text-[#C8A96E] transition-colors">
+            {{ m.name }}
+          </h3>
+        </div>
+
+        @if (isAdmin) {
+          <div
+            class="mt-5 pt-3 border-t border-[#2A3D30]/60 flex items-center
+              justify-end gap-2">
+            <button
+              type="button"
+              (click)="onEdit($event, m)"
+              class="px-3 py-1 bg-[#14261C] text-[#EAE3D5] text-[10px]
+                border border-[#2A3D30] hover:text-[#C8A96E]
+                hover:border-[#C8A96E] cursor-pointer uppercase
+                tracking-wider transition-colors">
+              Edit
+            </button>
+            <button
+              type="button"
+              (click)="openDeleteModal($event, m)"
+              class="px-3 py-1 bg-[#14261C] text-[#8FA68C] text-[10px]
+                border border-[#2A3D30] hover:text-rose-400
+                hover:border-rose-500/60 cursor-pointer uppercase
+                tracking-wider transition-colors">
+              Delete
+            </button>
+          </div>
+        }
+      </div>
+    } @empty {
+      <div
+        class="col-span-full border border-[#2A3D30] bg-[#0B1610] p-12
+          text-center text-xs text-[#8FA68C] uppercase tracking-widest">
+        No modules available.
+      </div>
+    }
+  </div>
+
+  @if (showForm()) {
+    <div
+      (click)="closeModal()"
+      class="fixed inset-0 z-50 flex items-center justify-center
+        bg-black/75 backdrop-blur-sm p-4">
+      <div
+        (click)="$event.stopPropagation()"
+        class="w-full max-w-lg border border-[#C8A96E]/40 bg-[#0B1610]
+          rounded-sm shadow-2xl overflow-hidden">
+        <div
+          class="px-6 py-4 bg-[#14261C] border-b border-[#2A3D30]
+            flex items-center justify-between">
+          <div>
+            <p class="text-[10px] tracking-[0.25em] uppercase text-[#C8A96E]">
+              {{ editId() ? 'Update Module' : 'Curriculum Setup' }}
+            </p>
+            <h3 class="text-base font-medium text-[#EAE3D5] mt-0.5">
+              {{ editId() ? 'Edit Module Details' : 'Create New Module' }}
+            </h3>
+          </div>
+          <button
+            type="button"
+            (click)="closeModal()"
+            class="p-1.5 text-[#8FA68C] hover:text-[#EAE3D5]
+              hover:bg-[#1A3025] rounded-sm transition-colors cursor-pointer">
+            <svg
+              class="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <form
+          [formGroup]="form"
+          (ngSubmit)="onSubmit()"
+          class="p-6 flex flex-col gap-5 text-left">
+          <div>
+            <label
+              class="block text-[11px] uppercase tracking-wider
+                text-[#8FA68C] mb-2 font-medium">
+              Module Name
+            </label>
+            <input
+              formControlName="name"
+              type="text"
+              placeholder="e.g. Architecture Java EE"
+              class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                text-[#EAE3D5] placeholder-[#8FA68C]/40 px-3.5 py-2.5
+                text-sm rounded-sm focus:border-[#C8A96E]
+                focus:outline-none transition-colors"/>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-2 font-medium">
+                Semester
+              </label>
+              <input
+                formControlName="semester"
+                type="number"
+                min="1"
+                max="6"
+                class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                  text-[#EAE3D5] px-3.5 py-2.5 text-sm rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none
+                  transition-colors"/>
+            </div>
+
+            <div>
+              <label
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-2 font-medium">
+                Department
+              </label>
+              <select
+                formControlName="department"
+                class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                  text-[#EAE3D5] px-3.5 py-2.5 text-sm rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none
+                  transition-colors cursor-pointer">
+                <option value="GENIE_INFORMATIQUE">
+                  Genie Informatique
+                </option>
+                <option value="GENIE_ELECTRIQUE">
+                  Genie Electrique
+                </option>
+                <option value="GENIE_CIVIL">
+                  Genie Civil
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div
+            class="pt-4 mt-1 border-t border-[#2A3D30] flex items-center
+              justify-end gap-3">
+            <button
+              type="button"
+              (click)="closeModal()"
+              class="px-4 py-2.5 border border-[#2A3D30] bg-[#0E1A14]
+                text-[#8FA68C] hover:text-[#EAE3D5] hover:border-[#8FA68C]
+                text-xs uppercase tracking-wider rounded-sm
+                transition-colors cursor-pointer">
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="form.invalid"
+              class="px-5 py-2.5 bg-[#C8A96E] text-[#0E1A14] font-semibold
+                text-xs uppercase tracking-wider rounded-sm cursor-pointer
+                hover:bg-[#DFC18A] disabled:opacity-40
+                disabled:cursor-not-allowed transition-colors">
+              {{ editId() ? 'Save Changes' : 'Create Module' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  @if (deleteTarget(); as target) {
+    <div
+      (click)="closeDeleteModal()"
+      class="fixed inset-0 z-50 flex items-center justify-center
+        bg-black/75 backdrop-blur-sm p-4">
+      <div
+        (click)="$event.stopPropagation()"
+        class="w-full max-w-md border border-rose-500/40 bg-[#0B1610]
+          rounded-sm shadow-2xl overflow-hidden">
+        <div
+          class="px-6 py-4 bg-rose-950/30 border-b border-[#2A3D30]
+            flex items-center justify-between">
+          <div>
+            <p class="text-[10px] tracking-[0.25em] uppercase text-rose-400">
+              Confirm Action
+            </p>
+            <h3 class="text-base font-medium text-[#EAE3D5] mt-0.5">
+              Delete Module
+            </h3>
+          </div>
+          <button
+            type="button"
+            (click)="closeDeleteModal()"
+            class="p-1.5 text-[#8FA68C] hover:text-[#EAE3D5]
+              rounded-sm transition-colors cursor-pointer">
+            <svg
+              class="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="p-6 text-left">
+          <p class="text-sm text-[#EAE3D5] leading-relaxed">
+            Are you sure you want to delete
+            <span class="text-[#C8A96E] font-medium">{{ target.name }}</span>?
+          </p>
+          <p class="text-xs text-[#8FA68C] mt-2">
+            This action will permanently remove the module record.
+          </p>
+
+          <div
+            class="pt-4 mt-5 border-t border-[#2A3D30] flex items-center
+              justify-end gap-3">
+            <button
+              type="button"
+              (click)="closeDeleteModal()"
+              class="px-4 py-2 border border-[#2A3D30] bg-[#0E1A14]
+                text-[#8FA68C] hover:text-[#EAE3D5] text-xs uppercase
+                tracking-wider rounded-sm transition-colors cursor-pointer">
+              Cancel
+            </button>
+            <button
+              type="button"
+              (click)="confirmDelete()"
+              class="px-5 py-2 bg-rose-600 text-white font-semibold
+                text-xs uppercase tracking-wider rounded-sm cursor-pointer
+                hover:bg-rose-500 transition-colors">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 </div>
