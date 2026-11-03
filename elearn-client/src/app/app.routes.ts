@@ -13,36 +13,30 @@ import { roleGuard } from './components/login/auth.guard';
 import { Attendance } from './components/dashboard/attendance/attendance';
 import { AbsenceView } from './components/dashboard/attendance/absence-view';
 import { AdminAbsence } from './components/dashboard/attendance/admin-absence';
-import { AdminManagement } from './src/app/components/dashboard/admin/admin-management/admin-management';
 
 export const routes: Routes = [
-  { path : '', component : Home },
-  { path : 'login', component : Login },
+  { path: '', component: Home },
+  { path: 'login', component: Login },
   {
-    path : 'dashboard',
-    component : Dashboard,
-    canActivate : [roleGuard()],
-    children : [
-      { path : '', component : MainDashboard },
-      { path : 'profile', component : Profile },
-      { path : 'calendar', component : Calendar },
-      { path : 'attendance', component : Attendance },
+    path: 'dashboard',
+    component: Dashboard,
+    canActivate: [roleGuard()],
+    children: [
+      { path: '', component: MainDashboard },
+      { path: 'profile', component: Profile },
+      { path: 'calendar', component: Calendar },
+      { path: 'attendance', component: Attendance },
       {
-        path : 'attendance/manage',
-        component : AdminAbsence,
-        canActivate : [roleGuard(['ADMIN', 'TEACHER'])]
-      },
-      { path : 'attendance/:id', component : AbsenceView },
-      { path : 'grades', component : Grades },
-      { path : 'requests', component : Requests },
-      { path : 'modules', component : ModuleList },
-      { path : 'modules/:id/elements', component : ElementDetail },
-      {
-        path: 'manage',
-        component: AdminManagement,
+        path: 'attendance/manage',
+        component: AdminAbsence,
         canActivate: [roleGuard(['ADMIN', 'TEACHER'])]
-      }
+      },
+      { path: 'attendance/:id', component: AbsenceView },
+      { path: 'grades', component: Grades },
+      { path: 'requests', component: Requests },
+      { path: 'modules', component: ModuleList },
+      { path: 'modules/:id/elements', component: ElementDetail }
     ]
   },
-  { path : '**', redirectTo : "/" },
+  { path: '**', redirectTo: '/' },
 ];
