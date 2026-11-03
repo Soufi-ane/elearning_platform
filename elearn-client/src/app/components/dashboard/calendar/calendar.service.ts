@@ -9,8 +9,9 @@ export class CalendarService {
   private apiUrl = "/api";
 
   getByWeek(date: Date, department: Department): Observable<Record<string, Plan[]>> {
+    const dateStr = date.toISOString().split('T')[0];
     return this.http.get<Record<string, Plan[]>>(
-      `${this.apiUrl}/timeTable/${date.toISOString().split('T')[0]}?department=${department}`
+      `${this.apiUrl}/timeTable/${dateStr}?department=${department}`
     );
   }
 
