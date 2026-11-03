@@ -40,9 +40,9 @@ public class DayPlanService {
 
   private Map<LocalDate, List<PlanResponse>> getWeekTemplate(LocalDate start) {
     Map<LocalDate,List<PlanResponse>> template = new TreeMap<>();
-    for(int i=0; i<6; i++) {
+    for(int i=0; i<7; i++) {
       LocalDate currentDay = start.plusDays(i);
-      template.put(currentDay, List.of());
+      template.put(currentDay, new ArrayList<>());
     }
     return template;
   }
@@ -52,35 +52,26 @@ public class DayPlanService {
       startDate = startDate.with(ChronoField.DAY_OF_WEEK, 1);
     }
     Map<LocalDate,List<PlanResponse>> timeTable = getWeekTemplate(startDate);
-    LocalDate startOfYear = LocalDate.of(startDate.getYear(),1,1);
+    
+    LocalDate startOfYear = LocalDate.of(startDate.getYear(), 1, 1);
     LocalDate endOfYear = startOfYear.plusDays(365);
     List<DayPlan> plans = dayPlanRepository.findByDateBetween(startOfYear, endOfYear);
-    LocalDate currentDay = LocalDate.now();
 
-    if (plans.isEmpty()) return timeTable;
-
-    int dayOfWeek = plans.get(0).getDate().getDayOfWeek().getValue();
-    if(!plans.isEmpty()) {
-      currentDay = startDate.with(ChronoField.DAY_OF_WEEK, dayOfWeek);
-    }
-
-    List<PlanResponse> currentPlans = new ArrayList<>();
-    for(int i=0; i < plans.size(); i++) {
-      int repeats = plans.get(i).getWeeklyRepeats();
-      LocalDate firstRepeat = plans.get(i).getDate();
+    for (DayPlan plan : plans) {
+      int repeats = plan.getWeeklyRepeats();
+      LocalDate firstRepeat = plan.getDate();
       LocalDate lastRepeat = firstRepeat.plusDays(7L * repeats);
 
       if(startDate.plusDays(6).isBefore(firstRepeat) || startDate.isAfter(lastRepeat)) {
         continue;
       }
-      if(dayOfWeek != plans.get(i).getDate().getDayOfWeek().getValue()) {
-        timeTable.put(currentDay, currentPlans);
-        dayOfWeek = plans.get(i).getDate().getDayOfWeek().getValue();
-        currentDay = startDate.with(ChronoField.DAY_OF_WEEK, dayOfWeek);
-        currentPlans = new ArrayList<>();
+
+      int dayOfWeek = plan.getDate().getDayOfWeek().getValue();
+      LocalDate targetDate = startDate.plusDays(dayOfWeek - 1);
+
+      if (timeTable.containsKey(targetDate)) {
+        timeTable.get(targetDate).add(new PlanResponse(plan));
       }
-      currentPlans.add(new PlanResponse(plans.get(i)));
-      if(i == plans.size() - 1) timeTable.put(currentDay, currentPlans);
     }
     return timeTable;
   }
