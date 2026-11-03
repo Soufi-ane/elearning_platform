@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from "@angular/core";
-import { ActivatedRoute, Router, RouterLink } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { AttendaceService } from "./attendance.service";
 import { CommonModule, Location } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
@@ -8,7 +8,7 @@ import { Absence, Role } from "../../../models/models";
 @Component({
   selector: 'user-absence-view',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './absence-view.html',
 })
 export class AbsenceView implements OnInit {
@@ -17,7 +17,6 @@ export class AbsenceView implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private location = inject(Location);
-
   absences = signal<Absence[]>([]);
   isAdminOrTeacher = false;
   targetUserId: string | null = null;
@@ -26,15 +25,15 @@ export class AbsenceView implements OnInit {
   ngOnInit(): void {
     this.elementId = this.route.snapshot.paramMap.get("id");
     this.targetUserId = this.route.snapshot.queryParamMap.get("userId");
-
-    this.http.get<any>(`${this.attendanceService['apiUrl']}/users/auth`).subscribe({
+    this.http.get<any>(
+      `${this.attendanceService['apiUrl']}/users/auth`
+    ).subscribe({
       next: (user) => {
         if (user && (user.role === Role.ADMIN || user.role === Role.TEACHER)) {
           this.isAdminOrTeacher = true;
         }
       }
     });
-
     if (this.elementId) {
       this.loadAbsences();
     }
@@ -46,7 +45,9 @@ export class AbsenceView implements OnInit {
 
   loadAbsences() {
     if (this.elementId) {
-      this.attendanceService.getByElementId(this.elementId, this.targetUserId).subscribe({
+      this.attendanceService.getByElementId(
+        this.elementId, this.targetUserId
+      ).subscribe({
         next: (res) => this.absences.set(res),
         error: () => this.router.navigate(["/dashboard/attendance"])
       });
@@ -62,7 +63,9 @@ export class AbsenceView implements OnInit {
     }).subscribe({
       next: (updated) => {
         this.absences.update(list =>
-          list.map(a => a.id === updated.id ? { ...a, isJustified: updated.isJustified } : a)
+          list.map(a =>
+            a.id === updated.id ? { ...a, isJustified: updated.isJustified } : a
+          )
         );
       },
       error: (err) => console.log("Failed to update justification", err)
