@@ -1,17 +1,17 @@
 export type Absence = {
-  id: string,
-  dateTime: string,
-  type: AbsenceType,
-  isJustified: boolean,
-  student: UserInfo,
-  element: Element
-}
+  id: string;
+  dateTime: string;
+  type: AbsenceType;
+  isJustified: boolean;
+  student: UserInfo;
+  element: Element;
+};
 
 export type AbsenceByElement = {
-  element: Element,
-  count: number,
-  status: AbsenceStatus
-}
+  element: Element;
+  count: number;
+  status: AbsenceStatus;
+};
 
 export enum AbsenceStatus {
   NORMAL,
@@ -21,10 +21,10 @@ export enum AbsenceStatus {
 }
 
 export type UserInfo = {
-  id: string,
-  firstName: string,
-  lastName: string
-}
+  id: string;
+  firstName: string;
+  lastName: string;
+};
 
 export enum AbsenceType {
   CLASS,
@@ -33,43 +33,50 @@ export enum AbsenceType {
 }
 
 export type Plan = {
-  id: string,
-  startsAt: string,
-  endsAt: string,
-  type: PlanType,
-  element: Element,
-  room: Room,
-}
+  id: string;
+  date: string;
+  startsAt: string;
+  endsAt: string;
+  weeklyRepeats: number;
+  type: PlanType;
+  department: Department;
+  year: number;
+  semester: number;
+  groupName: string;
+  element: Element;
+  room: Room;
+};
 
 export type Room = {
-  id: string,
-  label: string,
-  floor: number,
-  campus: string
-}
+  id: string;
+  label: string;
+  floor: number;
+  campus: string;
+};
 
 export type Element = {
-  id: string,
-  name: string,
-  module: Module,
-  teacher: UserInfo
-}
+  id: string;
+  name: string;
+  module: Module;
+  teacher: UserInfo;
+};
 
 export type Module = {
-  id: string,
-  name: string,
-  semester: number,
-  department?: Department
-}
+  id: string;
+  name: string;
+  year: number;
+  semester: number;
+  department?: Department;
+};
 
 export enum PlanType {
-  LECTURE,
-  EXAM
+  LECTURE = 'LECTURE',
+  EXAM = 'EXAM'
 }
 
 export type PlanWithSpan = Plan & {
-  rowSpan: number[]
-}
+  rowSpan: number[];
+};
 
 export interface Result {
   id: string;
@@ -79,29 +86,31 @@ export interface Result {
 }
 
 export type LoginRequest = {
-  usernameOrEmail: string,
-  password: string
-}
+  usernameOrEmail: string;
+  password: string;
+};
 
 export type User = {
-  id: string,
-  firstName: string,
-  lastName: string,
-  username: string,
-  email: string,
-  dateOfBirth: Date,
-  role: Role,
-  department: Department,
-  studyMode: StudyMode,
-  year: number,
-  currentSemester: number,
-  numSemesters: number
-}
+  id: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+  dateOfBirth: Date;
+  role: Role;
+  department: Department;
+  studyMode: StudyMode;
+  year: number;
+  semester: number;
+  currentSemester: number;
+  numSemesters: number;
+  groupName?: string;
+};
 
 export enum StudyMode {
-  HYBRID,
-  ON_SITE,
-  REMOTE
+  HYBRID = 'HYBRID',
+  ON_SITE = 'ON_SITE',
+  REMOTE = 'REMOTE'
 }
 
 export enum Department {
@@ -123,11 +132,11 @@ export type UserRequest = {
   requestDate: Date;
   forcastDate: Date | null;
   student: UserInfo;
-}
+};
 
 export type AbsenceCreateRequest = {
   studentId: string;
   elementId: string;
   type: AbsenceType;
   dateTime?: string;
-}
+};
