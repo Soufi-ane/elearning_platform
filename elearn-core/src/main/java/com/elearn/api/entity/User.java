@@ -14,14 +14,14 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -29,7 +29,6 @@ import lombok.Data;
 @AllArgsConstructor
 @Table(name = "platform_users")
 public class User implements UserDetails {
-
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private String id;
@@ -40,46 +39,14 @@ public class User implements UserDetails {
   private String email;
   private String password;
   private LocalDate dateOfBirth;
+
+  @Enumerated(EnumType.STRING)
   private StudyMode studyMode;
+
   private int year;
   private int semester;
   private int numSemesters;
-
-  public User(
-    String firstName, String lastName, String username, DepartmentName department,
-    String email, String password, LocalDate dateOfBirth, 
-    Role role,StudyMode studyMode, int year, int semester
-  ){
-    this(firstName,lastName,username,email,password,dateOfBirth,role,studyMode,year,semester);
-    this.department = department;
-    this.numSemesters = department != null ?
-    department.getTotalSemesters() : 0;
-  }
-
-  public User(RegisterRequest request, String encodedPassword){
-    this(
-      request.firstName(),request.lastName(),request.username(),
-      request.email(), encodedPassword, request.dateOfBirth(),
-      request.role(),request.studyMode(),request.year(), request.semester()
-    );
-  }
-
-  public User(
-    String firstName, String lastName, String username,
-    String email, String password, LocalDate dateOfBirth,
-    Role role, StudyMode studyMode, int year, int semester
-  ){
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.username = username;
-    this.email = email;
-    this.password = password;
-    this.dateOfBirth = dateOfBirth;
-    this.role = role;
-    this.studyMode = studyMode;
-    this.year = year;
-    this.semester = semester;
-  }
+  private String groupName;
 
   @Enumerated(EnumType.STRING)
   private Role role;
@@ -110,17 +77,118 @@ public class User implements UserDetails {
   )
   private List<Module> enrolledModules;
 
+  public User(
+    String firstName,
+    String lastName,
+    String username,
+    DepartmentName department,
+    String email,
+    String password,
+    LocalDate dateOfBirth,
+    Role role,
+    StudyMode studyMode,
+    int year,
+    int semester,
+    String groupName
+  ) {
+    this(
+      firstName,
+      lastName,
+      username,
+      email,
+      password,
+      dateOfBirth,
+      role,
+      studyMode,
+      year,
+      semester
+    );
+    this.department = department;
+    this.groupName = groupName;
+    this.numSemesters = department != null ? department.getTotalSemesters() : 0;
+  }
+
+  public User(
+    String firstName,
+    String lastName,
+    String username,
+    DepartmentName department,
+    String email,
+    String password,
+    LocalDate dateOfBirth,
+    Role role,
+    StudyMode studyMode,
+    int year,
+    int semester
+  ) {
+    this(
+      firstName,
+      lastName,
+      username,
+      department,
+      email,
+      password,
+      dateOfBirth,
+      role,
+      studyMode,
+      year,
+      semester,
+      role == Role.STUDENT ? "A" : null
+    );
+  }
+
+  public User(RegisterRequest request, String encodedPassword) {
+    this(
+      request.firstName(),
+      request.lastName(),
+      request.username(),
+      request.department(),
+      request.email(),
+      encodedPassword,
+      request.dateOfBirth(),
+      request.role(),
+      request.studyMode(),
+      request.year(),
+      request.semester(),
+      request.groupName() != null ? request.groupName() : "A"
+    );
+  }
+
+  public User(
+    String firstName,
+    String lastName,
+    String username,
+    String email,
+    String password,
+    LocalDate dateOfBirth,
+    Role role,
+    StudyMode studyMode,
+    int year,
+    int semester
+  ) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.username = username;
+    this.email = email;
+    this.password = password;
+    this.dateOfBirth = dateOfBirth;
+    this.role = role;
+    this.studyMode = studyMode;
+    this.year = year;
+    this.semester = semester;
+  }
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
   }
 
   @Override
-  public String getUsername(){
+  public String getUsername() {
     return this.email;
   }
 
-  public String getDbUsername(){
+  public String getDbUsername() {
     return this.username;
   }
 }
