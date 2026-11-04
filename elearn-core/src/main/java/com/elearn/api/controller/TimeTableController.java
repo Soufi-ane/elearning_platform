@@ -10,7 +10,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import com.elearn.api.entity.DepartmentName;
 import com.elearn.api.entity.Role;
 import com.elearn.api.entity.User;
@@ -28,52 +36,82 @@ public class TimeTableController {
     this.dayPlanService = dayPlanService;
   }
 
+  @GetMapping("/groups")
+  public ResponseEntity<List<String>> getGroups(
+    @RequestParam(required = false) DepartmentName department,
+    @RequestParam(required = false) Integer year
+  ) {
+    return ResponseEntity.ok(
+      dayPlanService.getGroupsForClass(department, year)
+    );
+  }
+
   @GetMapping("/{startDate}")
   public Map<LocalDate, List<PlanResponse>> getPlanningByRange(
     @AuthenticationPrincipal UserDetails userDetails,
-    @PathVariable("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) 
+    @PathVariable("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     LocalDate startDate,
-    @RequestParam(value = "department") DepartmentName department
+    @RequestParam(value = "department", required = false)
+    DepartmentName department,
+    @RequestParam(value = "year", required = false) Integer year,
+    @RequestParam(value = "semester", required = false) Integer semester,
+    @RequestParam(value = "group", required = false) String groupName
   ) {
     User user = (User) userDetails;
-    boolean isAdmin = user.getRole() == Role.ADMIN;
-    boolean isDepartmentValid = false;
-    
-    if(!isAdmin) {
-      isDepartmentValid = user.getDepartment() == department;
+    if (user.getRole() == Role.STUDENT) {
+      if (department != null && user.getDepartment() != department) {
+        return new HashMap<>();
+      }
+      DepartmentName targetDept = user.getDepartment();
+      Integer targetYear = year != null ? year : user.getYear();
+      Integer targetSem = semester != null ? semester : user.getSemester();
+      String targetGroup = groupName != null ? groupName : user.getGroupName();
+      return dayPlanService.getByWeek(
+        startDate,
+        targetDept,
+        targetYear,
+        targetSem,
+        targetGroup
+      );
     }
-    if(!isAdmin && !isDepartmentValid) {
-      return new HashMap<>();
-    }
-    
-    return dayPlanService.getByWeek(startDate);
+
+    return dayPlanService.getByWeek(
+      startDate,
+      department,
+      year,
+      semester,
+      groupName
+    );
   }
 
   @PostMapping
   @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
   public ResponseEntity<PlanResponse> createPlan(
-    @RequestBody DayPlanRequest request, 
-    @AuthenticationPrincipal User user
+    @RequestBody DayPlanRequest request,
+    @AuthenticationPrincipal UserDetails userDetails
   ) {
+    User user = (User) userDetails;
     return ResponseEntity.ok(dayPlanService.createPlan(request, user));
   }
 
   @PutMapping("/{id}")
   @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
   public ResponseEntity<PlanResponse> updatePlan(
-    @PathVariable String id, 
-    @RequestBody DayPlanRequest request, 
-    @AuthenticationPrincipal User user
+    @PathVariable String id,
+    @RequestBody DayPlanRequest request,
+    @AuthenticationPrincipal UserDetails userDetails
   ) {
+    User user = (User) userDetails;
     return ResponseEntity.ok(dayPlanService.updatePlan(id, request, user));
   }
 
   @DeleteMapping("/{id}")
   @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
   public ResponseEntity<Void> deletePlan(
-    @PathVariable String id, 
-    @AuthenticationPrincipal User user
+    @PathVariable String id,
+    @AuthenticationPrincipal UserDetails userDetails
   ) {
+    User user = (User) userDetails;
     dayPlanService.deletePlan(id, user);
     return ResponseEntity.ok().build();
   }
