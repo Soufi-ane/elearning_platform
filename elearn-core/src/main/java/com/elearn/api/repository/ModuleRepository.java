@@ -9,7 +9,18 @@ import com.elearn.api.entity.Module;
 @Repository
 public interface ModuleRepository extends JpaRepository<Module, String> {
 
-    List<Module> findByDepartmentAndSemester(DepartmentName department, int semester);
-    List<Module> findDistinctByElementsTeacherId(String teacherId);
+  List<Module> findByDepartmentAndSemester(
+    DepartmentName department,
+    int semester
+  );
 
+  List<Module> findByDepartmentAndYearAndSemester(
+    DepartmentName department,
+    int year,
+    int semester
+  );
+
+  List<Module> findByDepartment(DepartmentName department);
+
+  List<Module> findDistinctByElementsTeacherId(String teacherId);
 }
