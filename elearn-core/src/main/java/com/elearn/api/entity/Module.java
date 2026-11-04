@@ -9,8 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -22,6 +22,7 @@ public class Module {
   private String id;
 
   private String name;
+  private int year;
   private int semester;
 
   @Enumerated(EnumType.STRING)
@@ -30,11 +31,19 @@ public class Module {
   @OneToMany(mappedBy = "module")
   private List<Element> elements;
 
-  public Module(String name, int semester, DepartmentName department){
+  public Module(
+    String name,
+    int year,
+    int semester,
+    DepartmentName department
+  ) {
     this.name = name;
+    this.year = year;
     this.semester = semester;
     this.department = department;
   }
 
+  public Module(String name, int semester, DepartmentName department) {
+    this(name, 1, semester, department);
+  }
 }
-
