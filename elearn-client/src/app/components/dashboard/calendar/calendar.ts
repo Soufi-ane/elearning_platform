@@ -29,7 +29,7 @@ export type DayColumn = {
   selector: 'app-calendar',
   standalone: true,
   imports: [FormsModule, ReactiveFormsModule],
-  templateUrl: './calendar.html',
+  templateUrl: './calendar.html'
 })
 export class Calendar implements OnInit {
   private calendarService = inject(CalendarService);
@@ -46,7 +46,6 @@ export class Calendar implements OnInit {
   showForm = signal(false);
   editPlanId = signal<string | null>(null);
   deleteTarget = signal<PlanWithSpan | null>(null);
-
   viewDepartment = signal<string>(Department.GENIE_INFORMATIQUE);
   viewYear = signal<number>(1);
   viewSemester = signal<number>(1);
@@ -111,9 +110,7 @@ export class Calendar implements OnInit {
         this.viewGroup.set('ALL');
       }
     }
-
     this.refreshAvailableGroups();
-
     const prevMonday = this.getPreviousMonday(new Date());
     const urlDate = this.route.snapshot.queryParamMap.get('d');
     this.init(urlDate ? this.urlStrToDate(urlDate) : prevMonday);
@@ -149,7 +146,6 @@ export class Calendar implements OnInit {
     const dept = this.form.get('department')?.value;
     const yr = Number(this.form.get('year')?.value || 0);
     const sem = Number(this.form.get('semester')?.value || 0);
-
     const mods = this.modules().filter(m => {
       const matchDept = !dept || !m.department || String(m.department) === dept;
       const matchYear = !yr || !m.year || m.year === yr;
@@ -163,7 +159,6 @@ export class Calendar implements OnInit {
   private filterFormElementsByModule() {
     const modId = this.form.get('moduleId')?.value;
     const allowedModIds = new Set(this.filteredModules().map(m => m.id));
-
     if (modId) {
       this.filteredElements.set(
         this.allElements().filter(e => e.module?.id === modId)
@@ -213,15 +208,15 @@ export class Calendar implements OnInit {
 
   loadFormDependencies() {
     if (this.isAdminOrTeacher) {
-      this.http.get<Room[]>('/api/rooms', { withCredentials: true })
+      this.http.get<Room[]>('/api/v1/rooms', { withCredentials: true })
         .subscribe(res => this.rooms.set(res));
-      this.http.get<Module[]>('/api/modules', { withCredentials: true })
+      this.http.get<Module[]>('/api/v1/modules', { withCredentials: true })
         .subscribe(res => {
           this.modules.set(res);
           this.filteredModules.set(res);
         });
       this.http.get<Element[]>(
-        '/api/modules/elements',
+        '/api/v1/modules/elements',
         { withCredentials: true }
       ).subscribe(res => {
         this.allElements.set(res);
@@ -291,11 +286,11 @@ export class Calendar implements OnInit {
       moduleId: '',
       elementId: '',
       roomId: '',
-      date: '',
-      startsAt: '',
-      endsAt: '',
+      date: this.formatToISODate(new Date()),
+      startsAt: '09:00',
+      endsAt: '11:00',
       weeklyRepeats: 1,
-      type: ''
+      type: 'LECTURE'
     });
     this.onFormClassChange();
     this.showForm.set(true);
@@ -442,12 +437,9 @@ export class Calendar implements OnInit {
   }
 
   timeSlots = [
-    '07:30', '08:00', '08:30', '09:00',
-    '09:30', '10:00', '10:30', '11:00',
-    '11:30', '12:00', '12:30', '13:00',
-    '13:30', '14:00', '14:30', '15:00',
-    '15:30', '16:00', '16:30', '17:00',
-    '17:30', '18:00', '18:30', '19:00'
+    '08:00', '09:00', '10:00', '11:00',
+    '12:00', '13:00', '14:00', '15:00',
+    '16:00', '17:00', '18:00'
   ];
 
   days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -505,22 +497,20 @@ export class Calendar implements OnInit {
     const baseMin = this.timeToMinutes(this.timeSlots[0]);
     const startMin = this.timeToMinutes(newPlan.startsAt);
     const endMin = this.timeToMinutes(newPlan.endsAt);
-
     const startIdx = Math.max(
       0,
       Math.min(
         this.timeSlots.length - 2,
-        Math.floor((startMin - baseMin) / 30)
+        Math.floor((startMin - baseMin) / 60)
       )
     );
     const endIdx = Math.max(
       startIdx + 1,
       Math.min(
         this.timeSlots.length,
-        Math.ceil((endMin - baseMin) / 30)
+        Math.ceil((endMin - baseMin) / 60)
       )
     );
-
     newPlan.rowSpan = [startIdx, endIdx];
     return newPlan;
   }
