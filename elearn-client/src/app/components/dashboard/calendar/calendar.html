@@ -1,19 +1,19 @@
-<div class="h-full pt-2 pb-8 text-center text-[#8FA68C] px-10">
-  <div class="flex items-center justify-between p-4 bg-[#0E1A14] mb-6">
-    <div class="flex items-center gap-4">
-      <p>{{ currentWeekStr }} to {{ endOfWeekStr }}</p>
+<div class="h-full pt-2 pb-8 text-center text-[#8FA68C] px-6 lg:px-10">
+  <div
+    class="flex flex-col xl:flex-row xl:items-center justify-between gap-4
+      p-4 bg-[#0B1610] border border-[#2A3D30] mb-6">
+    <div class="flex flex-wrap items-center gap-3">
+      <p class="text-xs font-mono text-[#EAE3D5] mr-2">
+        {{ currentWeekStr }} &rarr; {{ endOfWeekStr }}
+      </p>
       <button
         (click)="onPrevious()"
         type="button"
-        class="flex items-center gap-2 font-['Roboto',sans-serif] text-sm
-          px-4 py-2 border border-[#C8A96E] text-[#C8A96E]
+        class="flex items-center gap-1.5 font-['Roboto',sans-serif] text-xs
+          px-3 py-2 border border-[#C8A96E] text-[#C8A96E]
           hover:bg-[#C8A96E] hover:text-[#0E1A14] transition-all
-          duration-300 tracking-wide cursor-pointer group">
-        <svg
-          class="w-4 h-4 opacity-70 group-hover:opacity-100
-            transition-opacity"
-          viewBox="0 0 16 16"
-          fill="none">
+          duration-200 tracking-wide cursor-pointer group">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
           <path
             d="M10 12L6 8L10 4"
             stroke="currentColor"
@@ -21,22 +21,18 @@
             stroke-linecap="round"
             stroke-linejoin="round"/>
         </svg>
-        <span>Previous</span>
+        <span>Prev</span>
       </button>
 
       <button
         (click)="onNext()"
         type="button"
-        class="flex items-center gap-2 font-['Roboto',sans-serif] text-sm
-          px-4 py-2 border border-[#C8A96E] text-[#C8A96E]
+        class="flex items-center gap-1.5 font-['Roboto',sans-serif] text-xs
+          px-3 py-2 border border-[#C8A96E] text-[#C8A96E]
           hover:bg-[#C8A96E] hover:text-[#0E1A14] transition-all
-          duration-300 tracking-wide cursor-pointer group">
+          duration-200 tracking-wide cursor-pointer group">
         <span>Next</span>
-        <svg
-          class="w-4 h-4 opacity-70 group-hover:opacity-100
-            transition-opacity"
-          viewBox="0 0 16 16"
-          fill="none">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
           <path
             d="M6 4L10 8L6 12"
             stroke="currentColor"
@@ -45,46 +41,85 @@
             stroke-linejoin="round"/>
         </svg>
       </button>
+    </div>
 
-      @if (isAdmin) {
+    <div class="flex flex-wrap items-center gap-2.5">
+      @if (isAdminOrTeacher) {
         <select
           [ngModel]="viewDepartment()"
           (ngModelChange)="changeDepartment($event)"
-          class="bg-[#1A3025] text-xs text-[#EAE3D5] border
-            border-[#2A3D30] px-3 py-2.5 rounded-sm focus:outline-none
-            cursor-pointer hidden md:block">
+          class="bg-[#14261C] text-xs text-[#EAE3D5] border
+            border-[#2A3D30] px-3 py-2 rounded-sm focus:border-[#C8A96E]
+            focus:outline-none cursor-pointer">
           <option value="GENIE_INFORMATIQUE">Genie Informatique</option>
           <option value="GENIE_ELECTRIQUE">Genie Electrique</option>
           <option value="GENIE_CIVIL">Genie Civil</option>
         </select>
       }
-    </div>
 
-    @if (isAdminOrTeacher) {
-      <button
-        type="button"
-        (click)="openCreateModal()"
-        class="flex items-center gap-2 px-4 py-2.5 bg-[#C8A96E] text-[#0E1A14]
-          text-xs font-semibold uppercase tracking-wider rounded-sm
-          cursor-pointer hover:bg-[#DFC18A] transition-colors">
-        <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
-          <path
-            d="M8 3v10M3 8h10"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"/>
-        </svg>
-        <span>Add Seance</span>
-      </button>
-    }
+      <select
+        [ngModel]="viewYear()"
+        (ngModelChange)="changeYear($event)"
+        class="bg-[#14261C] text-xs text-[#EAE3D5] border border-[#2A3D30]
+          px-3 py-2 rounded-sm focus:border-[#C8A96E] focus:outline-none
+          cursor-pointer">
+        <option [ngValue]="1">Year 1</option>
+        <option [ngValue]="2">Year 2</option>
+        <option [ngValue]="3">Year 3</option>
+      </select>
+
+      <select
+        [ngModel]="viewSemester()"
+        (ngModelChange)="changeSemester($event)"
+        class="bg-[#14261C] text-xs text-[#EAE3D5] border border-[#2A3D30]
+          px-3 py-2 rounded-sm focus:border-[#C8A96E] focus:outline-none
+          cursor-pointer">
+        <option [ngValue]="1">Semester 1</option>
+        <option [ngValue]="2">Semester 2</option>
+      </select>
+
+      <select
+        [ngModel]="viewGroup()"
+        (ngModelChange)="changeGroup($event)"
+        class="bg-[#14261C] text-xs text-[#EAE3D5] border border-[#2A3D30]
+          px-3 py-2 rounded-sm focus:border-[#C8A96E] focus:outline-none
+          cursor-pointer">
+        <option value="ALL">All Groups</option>
+        @for (grp of availableGroups(); track grp) {
+          <option [value]="grp">Group {{ grp }}</option>
+        }
+      </select>
+
+      @if (isAdminOrTeacher) {
+        <button
+          type="button"
+          (click)="openCreateModal()"
+          class="flex items-center gap-2 px-4 py-2 bg-[#C8A96E]
+            text-[#0E1A14] text-xs font-semibold uppercase tracking-wider
+            rounded-sm cursor-pointer hover:bg-[#DFC18A] transition-colors">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
+            <path
+              d="M8 3v10M3 8h10"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"/>
+          </svg>
+          <span>Add Seance</span>
+        </button>
+      }
+    </div>
   </div>
 
   <div class="flex overflow-x-auto">
-    <div class="flex border-b flex-col">
-      <div class="border w-34 h-10 leading-9">Time</div>
+    <div class="flex border-b border-[#2A3D30] flex-col">
+      <div class="border border-[#2A3D30] w-34 h-12 leading-11 text-xs">
+        Time
+      </div>
       @for(slot of timeSlots; track slot) {
         @if($index % 2 != 0){
-          <div class="w-34 border-l border-r h-10 leading-10">
+          <div
+            class="w-34 border-l border-r border-[#2A3D30] h-10 leading-10
+              text-xs font-mono">
             ----- {{ slot }} -----
           </div>
         }
@@ -92,17 +127,27 @@
     </div>
 
     @for(col of weekColumns(); track col.dateStr) {
-      <div class="border-b">
-        <div class="w-34 border h-10 flex-col leading-9">
-          {{ days[col.date.getDay()] }}
+      <div class="border-b border-[#2A3D30]">
+        <div
+          class="w-36 border border-[#2A3D30] h-12 flex flex-col
+            items-center justify-center leading-tight">
+          <span class="text-xs font-medium text-[#EAE3D5]">
+            {{ days[col.date.getDay()] }}
+          </span>
+          <span class="text-[10px] font-mono text-[#8FA68C]">
+            {{ formatShortDayDate(col.date) }}
+          </span>
         </div>
         @for(slot of timeSlots; track slot; let slotIndex = $index) {
           @if (findPlanAtSlot(col.plans, slotIndex); as activePlan) {
-            @if (slotIndex == activePlan.rowSpan[0] + 1) {
+            @if (slotIndex == activePlan.rowSpan[0]) {
               <div
-                class="w-34 bg-[#1A302F] h-5 border-r flex items-center
-                  justify-between px-1.5 gap-1">
-                <span class="truncate text-[10px] text-white">
+                class="w-36 bg-[#1A302F] h-5 border-r border-t
+                  border-[#C8A96E]/50 flex items-center justify-between
+                  px-1.5 gap-1">
+                <span
+                  class="truncate text-[10px] font-medium text-[#EAE3D5]"
+                  [title]="activePlan.element.name">
                   {{ activePlan.element.name }}
                 </span>
                 @if (isAdminOrTeacher) {
@@ -141,14 +186,31 @@
                   </div>
                 }
               </div>
+            } @else if (slotIndex == activePlan.rowSpan[0] + 1) {
+              <div
+                class="w-36 bg-[#1A302F] h-5 border-r border-[#2A3D30]
+                  flex items-center justify-between px-1.5 text-[9px]
+                  text-[#C8A96E] font-mono">
+                <span class="truncate">{{ activePlan.room.label }}</span>
+                <span>
+                  Y{{ activePlan.year }}S{{ activePlan.semester }}-G{{
+                    activePlan.groupName || 'A'
+                  }}
+                </span>
+              </div>
             } @else {
-              <div class="w-34 bg-[#1A302F] h-5 border-r leading-5"></div>
+              <div
+                class="w-36 bg-[#1A302F] h-5 border-r border-[#2A3D30]
+                  leading-5">
+              </div>
             }
           } @else {
             @if(slotIndex % 2 == 0) {
-              <div class="w-34 border-b border-r h-5 leading-5"></div>
+              <div
+                class="w-36 border-b border-r border-[#2A3D30] h-5 leading-5">
+              </div>
             } @else {
-              <div class="w-34 h-5 border-r leading-5"></div>
+              <div class="w-36 h-5 border-r border-[#2A3D30] leading-5"></div>
             }
           }
         }
@@ -160,11 +222,11 @@
     <div
       (click)="closeModal()"
       class="fixed inset-0 z-50 flex items-center justify-center
-        bg-black/75 backdrop-blur-sm p-4">
+        bg-black/75 backdrop-blur-sm p-4 overflow-y-auto">
       <div
         (click)="$event.stopPropagation()"
-        class="w-full max-w-lg border border-[#C8A96E]/40 bg-[#0B1610]
-          rounded-sm shadow-2xl overflow-hidden">
+        class="w-full max-w-xl border border-[#C8A96E]/40 bg-[#0B1610]
+          rounded-sm shadow-2xl overflow-hidden my-8">
         <div
           class="px-6 py-4 bg-[#14261C] border-b border-[#2A3D30]
             flex items-center justify-between text-left">
@@ -198,24 +260,95 @@
         <form
           [formGroup]="form"
           (ngSubmit)="onSubmit()"
-          class="p-6 flex flex-col gap-5 text-left">
+          class="p-6 flex flex-col gap-4 text-left">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-1.5 font-medium">
+                Department
+              </label>
+              <select
+                formControlName="department"
+                class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                  text-[#EAE3D5] px-3 py-2 text-sm rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none cursor-pointer">
+                <option value="" disabled>Select department</option>
+                <option value="GENIE_INFORMATIQUE">Genie Informatique</option>
+                <option value="GENIE_ELECTRIQUE">Genie Electrique</option>
+                <option value="GENIE_CIVIL">Genie Civil</option>
+              </select>
+            </div>
+
+            <div>
+              <label
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-1.5 font-medium">
+                Academic Year
+              </label>
+              <select
+                formControlName="year"
+                class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                  text-[#EAE3D5] px-3 py-2 text-sm rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none cursor-pointer">
+                <option [ngValue]="1">1st Year</option>
+                <option [ngValue]="2">2nd Year</option>
+                <option [ngValue]="3">3rd Year</option>
+              </select>
+            </div>
+
+            <div>
+              <label
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-1.5 font-medium">
+                Semester (2 per Year)
+              </label>
+              <select
+                formControlName="semester"
+                class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                  text-[#EAE3D5] px-3 py-2 text-sm rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none cursor-pointer">
+                <option [ngValue]="1">Semester 1</option>
+                <option [ngValue]="2">Semester 2</option>
+              </select>
+            </div>
+
+            <div>
+              <label
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-1.5 font-medium">
+                Class Group (e.g. A, B, C)
+              </label>
+              <input
+                formControlName="groupName"
+                type="text"
+                list="classGroupOptions"
+                placeholder="Enter or select group (A, B...)"
+                class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                  text-[#EAE3D5] px-3 py-2 text-sm rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none uppercase"/>
+              <datalist id="classGroupOptions">
+                @for (g of formGroups(); track g) {
+                  <option [value]="g">Group {{ g }}</option>
+                }
+              </datalist>
+            </div>
+
             <div class="col-span-1 sm:col-span-2">
               <label
                 class="block text-[11px] uppercase tracking-wider
-                  text-[#8FA68C] mb-2 font-medium">
+                  text-[#8FA68C] mb-1.5 font-medium">
                 Module Filter (Optional)
               </label>
               <select
                 formControlName="moduleId"
                 class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-3.5 py-2.5 text-sm rounded-sm
-                  focus:border-[#C8A96E] focus:outline-none
-                  transition-colors cursor-pointer">
-                <option value="">All Modules</option>
-                @for(m of modules(); track m.id) {
+                  text-[#EAE3D5] px-3 py-2 text-sm rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none cursor-pointer">
+                <option value="">All Matching Modules</option>
+                @for(m of filteredModules(); track m.id) {
                   <option [value]="m.id">
-                    {{ m.name }} (Sem {{ m.semester }})
+                    {{ m.name }} (Y{{ m.year || 1 }} - S{{ m.semester }})
                   </option>
                 }
               </select>
@@ -224,15 +357,14 @@
             <div class="col-span-1 sm:col-span-2">
               <label
                 class="block text-[11px] uppercase tracking-wider
-                  text-[#8FA68C] mb-2 font-medium">
+                  text-[#8FA68C] mb-1.5 font-medium">
                 Course Element
               </label>
               <select
                 formControlName="elementId"
                 class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-3.5 py-2.5 text-sm rounded-sm
-                  focus:border-[#C8A96E] focus:outline-none
-                  transition-colors cursor-pointer">
+                  text-[#EAE3D5] px-3 py-2 text-sm rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none cursor-pointer">
                 <option value="" disabled>Select an element</option>
                 @for(e of filteredElements(); track e.id) {
                   <option [value]="e.id">{{ e.name }}</option>
@@ -243,15 +375,14 @@
             <div class="col-span-1 sm:col-span-2">
               <label
                 class="block text-[11px] uppercase tracking-wider
-                  text-[#8FA68C] mb-2 font-medium">
+                  text-[#8FA68C] mb-1.5 font-medium">
                 Room & Campus
               </label>
               <select
                 formControlName="roomId"
                 class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-3.5 py-2.5 text-sm rounded-sm
-                  focus:border-[#C8A96E] focus:outline-none
-                  transition-colors cursor-pointer">
+                  text-[#EAE3D5] px-3 py-2 text-sm rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none cursor-pointer">
                 <option value="" disabled>Select a room</option>
                 @for(r of rooms(); track r.id) {
                   <option [value]="r.id">
@@ -264,52 +395,52 @@
             <div class="col-span-1 sm:col-span-2">
               <label
                 class="block text-[11px] uppercase tracking-wider
-                  text-[#8FA68C] mb-2 font-medium">
+                  text-[#8FA68C] mb-1.5 font-medium">
                 Date
               </label>
               <input
                 formControlName="date"
                 type="date"
                 class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-3.5 py-2.5 text-sm rounded-sm
+                  text-[#EAE3D5] px-3 py-2 text-sm rounded-sm
                   focus:border-[#C8A96E] focus:outline-none
-                  transition-colors [color-scheme:dark]"/>
+                  [color-scheme:dark]"/>
             </div>
 
             <div>
               <label
                 class="block text-[11px] uppercase tracking-wider
-                  text-[#8FA68C] mb-2 font-medium">
+                  text-[#8FA68C] mb-1.5 font-medium">
                 Start Time
               </label>
               <input
                 formControlName="startsAt"
                 type="time"
                 class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-3.5 py-2.5 text-sm rounded-sm
+                  text-[#EAE3D5] px-3 py-2 text-sm rounded-sm
                   focus:border-[#C8A96E] focus:outline-none
-                  transition-colors [color-scheme:dark]"/>
+                  [color-scheme:dark]"/>
             </div>
 
             <div>
               <label
                 class="block text-[11px] uppercase tracking-wider
-                  text-[#8FA68C] mb-2 font-medium">
+                  text-[#8FA68C] mb-1.5 font-medium">
                 End Time
               </label>
               <input
                 formControlName="endsAt"
                 type="time"
                 class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-3.5 py-2.5 text-sm rounded-sm
+                  text-[#EAE3D5] px-3 py-2 text-sm rounded-sm
                   focus:border-[#C8A96E] focus:outline-none
-                  transition-colors [color-scheme:dark]"/>
+                  [color-scheme:dark]"/>
             </div>
 
             <div>
               <label
                 class="block text-[11px] uppercase tracking-wider
-                  text-[#8FA68C] mb-2 font-medium">
+                  text-[#8FA68C] mb-1.5 font-medium">
                 Weekly Repeats
               </label>
               <input
@@ -317,23 +448,22 @@
                 type="number"
                 min="1"
                 class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-3.5 py-2.5 text-sm rounded-sm
-                  focus:border-[#C8A96E] focus:outline-none
-                  transition-colors"/>
+                  text-[#EAE3D5] px-3 py-2 text-sm rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none"/>
             </div>
 
             <div>
               <label
                 class="block text-[11px] uppercase tracking-wider
-                  text-[#8FA68C] mb-2 font-medium">
+                  text-[#8FA68C] mb-1.5 font-medium">
                 Session Type
               </label>
               <select
                 formControlName="type"
                 class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-3.5 py-2.5 text-sm rounded-sm
-                  focus:border-[#C8A96E] focus:outline-none
-                  transition-colors cursor-pointer">
+                  text-[#EAE3D5] px-3 py-2 text-sm rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none cursor-pointer">
+                <option value="" disabled>Select session type</option>
                 <option value="LECTURE">Lecture</option>
                 <option value="EXAM">Exam</option>
               </select>
