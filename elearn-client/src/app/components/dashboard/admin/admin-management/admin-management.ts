@@ -4,7 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ModuleService } from '../../modules/modules.service';
 import { CalendarService } from '../../calendar/calendar.service';
-import { Module, Element, Department, Room, User } from '../../../../models/models';
+import { Module, Element, Room, User } from '../../../../models/models';
 
 @Component({
   selector: 'app-admin-management',
@@ -22,12 +22,13 @@ export class AdminManagement implements OnInit {
   elements = signal<Element[]>([]);
   teachers = signal<User[]>([]);
   rooms = signal<Room[]>([]);
-
+  availableGroups = signal<string[]>(['A', 'B']);
   activeModal = signal<'modules' | 'elements' | 'seances' | null>(null);
 
   moduleForm = this.fb.group({
     name: ['', Validators.required],
-    semester: [1, [Validators.required, Validators.min(1), Validators.max(6)]],
+    year: [1, [Validators.required, Validators.min(1), Validators.max(5)]],
+    semester: [1, [Validators.required, Validators.min(1), Validators.max(2)]],
     department: ['', Validators.required]
   });
 
@@ -38,6 +39,10 @@ export class AdminManagement implements OnInit {
   });
 
   seanceForm = this.fb.group({
+    department: ['', Validators.required],
+    year: [1, [Validators.required, Validators.min(1), Validators.max(5)]],
+    semester: [1, [Validators.required, Validators.min(1), Validators.max(2)]],
+    groupName: ['', Validators.required],
     date: ['', Validators.required],
     startsAt: ['', Validators.required],
     endsAt: ['', Validators.required],
@@ -77,11 +82,16 @@ export class AdminManagement implements OnInit {
 
   onModuleSubmit() {
     if (this.moduleForm.invalid) return;
-    this.moduleService.createModule(
-      this.moduleForm.getRawValue() as any
-    ).subscribe(() => {
+    const raw = this.moduleForm.getRawValue();
+    this.moduleService.createModule({
+      name: raw.name!,
+      year: Number(raw.year),
+      semester: Number(raw.semester),
+      department: raw.department!
+    }).subscribe(() => {
       this.moduleForm.reset({
         name: '',
+        year: 1,
         semester: 1,
         department: ''
       });
@@ -103,8 +113,14 @@ export class AdminManagement implements OnInit {
 
   onSeanceSubmit() {
     if (this.seanceForm.invalid) return;
-    this.calendarService.createPlan(this.seanceForm.getRawValue()).subscribe(() => {
+    this.calendarService.createPlan(
+      this.seanceForm.getRawValue()
+    ).subscribe(() => {
       this.seanceForm.reset({
+        department: '',
+        year: 1,
+        semester: 1,
+        groupName: '',
         date: '',
         startsAt: '',
         endsAt: '',
