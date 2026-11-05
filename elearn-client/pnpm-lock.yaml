@@ -27,20 +27,20 @@ importers:
         specifier: ^21.1.0
         version: 21.2.7(@angular/common@21.2.7(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2))(@angular/platform-browser@21.2.7(@angular/common@21.2.7(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2)))(rxjs@7.8.2)
       '@fullcalendar/angular':
-        specifier: ^7.1.4
-        version: 7.1.4(@angular/common@21.2.7(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2))(fullcalendar@7.1.4(temporal-polyfill@1.0.8))(temporal-polyfill@1.0.8)
+        specifier: ^6.1.22
+        version: 6.1.22(@angular/common@21.2.7(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2))(@fullcalendar/core@6.1.22)
       '@fullcalendar/core':
-        specifier: ^7.1.4
-        version: 7.1.4(@full-ui/headless-calendar@7.1.4(temporal-polyfill@1.0.8))(temporal-polyfill@1.0.8)
+        specifier: ^6.1.22
+        version: 6.1.22
       '@fullcalendar/daygrid':
-        specifier: ^6.1.22
-        version: 6.1.22(@fullcalendar/core@7.1.4(@full-ui/headless-calendar@7.1.4(temporal-polyfill@1.0.8))(temporal-polyfill@1.0.8))
+        specifier: 6.1.22
+        version: 6.1.22(@fullcalendar/core@6.1.22)
       '@fullcalendar/interaction':
-        specifier: ^6.1.22
-        version: 6.1.22(@fullcalendar/core@7.1.4(@full-ui/headless-calendar@7.1.4(temporal-polyfill@1.0.8))(temporal-polyfill@1.0.8))
+        specifier: 6.1.22
+        version: 6.1.22(@fullcalendar/core@6.1.22)
       '@fullcalendar/timegrid':
-        specifier: ^6.1.22
-        version: 6.1.22(@fullcalendar/core@7.1.4(@full-ui/headless-calendar@7.1.4(temporal-polyfill@1.0.8))(temporal-polyfill@1.0.8))
+        specifier: 6.1.22
+        version: 6.1.22(@fullcalendar/core@6.1.22)
       '@tanstack/angular-query-experimental':
         specifier: ^5.96.2
         version: 5.96.2(@angular/common@21.2.7(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2))
@@ -599,24 +599,15 @@ packages:
       '@noble/hashes':
         optional: true
 
-  '@full-ui/headless-calendar@7.1.4':
-    resolution: {integrity: sha512-b0o9zsbJKpeM+e5eh27paqfDseQgMQkOy4jjp+nCLABmUQWn2kJ+vV3QdSNXL/9R7S+SwN6Ky21p1hDYvDdgUg==}
+  '@fullcalendar/angular@6.1.22':
+    resolution: {integrity: sha512-lc3Ua8R5EAHBjnQP1/qfsXEgUHhOkLmgRUBm5okbnLktMKGYvYIISI2zU0Q+j6TQMZGSxSRSXL5poEIHAjsqrQ==}
     peerDependencies:
-      temporal-polyfill: ^1.0.7
+      '@angular/common': 12 - 22
+      '@angular/core': 12 - 22
+      '@fullcalendar/core': ~6.1.22
 
-  '@fullcalendar/angular@7.1.4':
-    resolution: {integrity: sha512-sIJ9dgZs/3NTiDgTodVts9fBV/fY7cj0Kx42NJvTq1HYkDzlVDHrVMz6NjYw3Rrxr4AX4ALl3C2CvG4gRb+tzQ==}
-    peerDependencies:
-      '@angular/common': 16 - 22
-      '@angular/core': 16 - 22
-      fullcalendar: 7.1.4
-      temporal-polyfill: ^1.0.7
-
-  '@fullcalendar/core@7.1.4':
-    resolution: {integrity: sha512-Pkjagkqa4U9n2PemmdjrejmgrbiN6UyeP0pd0qKSjnvPDZzMJGPJvQ00sgm67KL0FAyQSnKMy0odSz9yv6s2XA==}
-    peerDependencies:
-      '@full-ui/headless-calendar': 7.1.4
-      temporal-polyfill: ^1.0.7
+  '@fullcalendar/core@6.1.22':
+    resolution: {integrity: sha512-ju5PJUE++zr8XXCGtlXlrodF6doUy9BDfzx+VmE0B+XDBM2A5cUi/aU3M1ANfw/StmKhwqew7Ps7bXMiv/JREg==}
 
   '@fullcalendar/daygrid@6.1.22':
     resolution: {integrity: sha512-cpom5+bAvsGG5nX+snsCtpMIyyhAr+QlseD9mhz5Vq7rMBTzx43mSkz6IBvQ3vz5h2idbDmT1cggEn/dzZwt9Q==}
@@ -1936,11 +1927,6 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
-  fullcalendar@7.1.4:
-    resolution: {integrity: sha512-RLaHmd8rkoIha1QHVana64v/Dq5rGFft5Yo25sp48D5isoCR2et5OZ+VOPdjvW/CSfa12WYlOqAz94yTt4728A==}
-    peerDependencies:
-      temporal-polyfill: ^1.0.7
-
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
 
@@ -2474,13 +2460,8 @@ packages:
     resolution: {integrity: sha512-OW/rX8O/jXnm82Ey1k44pObPtdblfiuWnrd8X7GJ7emImCOstunGbXUpp7HdBrFQX6rJzn3sPT397Wp5aCwCHg==}
     engines: {node: ^10 || ^12 || >=14}
 
-  preact@10.29.8:
-    resolution: {integrity: sha512-ej2aVZ+vZ8WO7tvlQWRM9N63A0KzF9q4mWJfDUHgYaIofWY9hu74QdnQrjoPMmZi2/nZ5gN0bJCQF49xQqx09Q==}
-    peerDependencies:
-      preact-render-to-string: '>=5'
-    peerDependenciesMeta:
-      preact-render-to-string:
-        optional: true
+  preact@10.12.1:
+    resolution: {integrity: sha512-l8386ixSsBdbreOAkqtrwqHwdvR35ID8c3rKPa8lCWuO86dBi32QWHV4vfsZK1utLLFMvw+Z5Ad4XLkZzchscg==}
 
   proc-log@6.1.0:
     resolution: {integrity: sha512-iG+GYldRf2BQ0UDUAd6JQ/RwzaQy6mXmsk/IzlYyal4A4SNFw54MeH4/tLkF4I5WoWG9SQwuqWzS99jaFQHBuQ==}
@@ -2715,15 +2696,6 @@ packages:
   tar@7.5.13:
     resolution: {integrity: sha512-tOG/7GyXpFevhXVh8jOPJrmtRpOTsYqUIkVdVooZYJS/z8WhfQUX8RJILmeuJNinGAMSu1veBr4asSHFt5/hng==}
     engines: {node: '>=18'}
-
-  temporal-polyfill@1.0.8:
-    resolution: {integrity: sha512-RCCGa0GddT099XG49ijdD0tDf86L8vfuZun1+JyJiO4Y2NP9PACQsG0OnvNPXwVLisdvhr/zqL2nhKQmXXx08A==}
-
-  temporal-spec@1.0.1:
-    resolution: {integrity: sha512-wxVoanmDeavXie1vu2JaQ3WIc3JZnWAOYFBsJyATaVsXsycKYUflGsyBmrRSnoCpZJpwPyr38VpgSUlQ8CbFxg==}
-
-  temporal-utils@1.0.4:
-    resolution: {integrity: sha512-4mAcgbWlaxe+gn23gk8g0iHxCVGVOhKzSCfF5HM3lfvH8BdT+/pBmH/R/E4CrIse+koUgs8ThkPzCLnui6Fi8w==}
 
   tinybench@2.9.0:
     resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
@@ -3518,35 +3490,29 @@ snapshots:
 
   '@exodus/bytes@1.15.0': {}
 
-  '@full-ui/headless-calendar@7.1.4(temporal-polyfill@1.0.8)':
-    dependencies:
-      temporal-polyfill: 1.0.8
-
-  '@fullcalendar/angular@7.1.4(@angular/common@21.2.7(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2))(fullcalendar@7.1.4(temporal-polyfill@1.0.8))(temporal-polyfill@1.0.8)':
+  '@fullcalendar/angular@6.1.22(@angular/common@21.2.7(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2))(@fullcalendar/core@6.1.22)':
     dependencies:
       '@angular/common': 21.2.7(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2))(rxjs@7.8.2)
       '@angular/core': 21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2)
-      fullcalendar: 7.1.4(temporal-polyfill@1.0.8)
-      temporal-polyfill: 1.0.8
+      '@fullcalendar/core': 6.1.22
       tslib: 2.8.1
 
-  '@fullcalendar/core@7.1.4(@full-ui/headless-calendar@7.1.4(temporal-polyfill@1.0.8))(temporal-polyfill@1.0.8)':
+  '@fullcalendar/core@6.1.22':
     dependencies:
-      '@full-ui/headless-calendar': 7.1.4(temporal-polyfill@1.0.8)
-      temporal-polyfill: 1.0.8
+      preact: 10.12.1
 
-  '@fullcalendar/daygrid@6.1.22(@fullcalendar/core@7.1.4(@full-ui/headless-calendar@7.1.4(temporal-polyfill@1.0.8))(temporal-polyfill@1.0.8))':
+  '@fullcalendar/daygrid@6.1.22(@fullcalendar/core@6.1.22)':
     dependencies:
-      '@fullcalendar/core': 7.1.4(@full-ui/headless-calendar@7.1.4(temporal-polyfill@1.0.8))(temporal-polyfill@1.0.8)
+      '@fullcalendar/core': 6.1.22
 
-  '@fullcalendar/interaction@6.1.22(@fullcalendar/core@7.1.4(@full-ui/headless-calendar@7.1.4(temporal-polyfill@1.0.8))(temporal-polyfill@1.0.8))':
+  '@fullcalendar/interaction@6.1.22(@fullcalendar/core@6.1.22)':
     dependencies:
-      '@fullcalendar/core': 7.1.4(@full-ui/headless-calendar@7.1.4(temporal-polyfill@1.0.8))(temporal-polyfill@1.0.8)
+      '@fullcalendar/core': 6.1.22
 
-  '@fullcalendar/timegrid@6.1.22(@fullcalendar/core@7.1.4(@full-ui/headless-calendar@7.1.4(temporal-polyfill@1.0.8))(temporal-polyfill@1.0.8))':
+  '@fullcalendar/timegrid@6.1.22(@fullcalendar/core@6.1.22)':
     dependencies:
-      '@fullcalendar/core': 7.1.4(@full-ui/headless-calendar@7.1.4(temporal-polyfill@1.0.8))(temporal-polyfill@1.0.8)
-      '@fullcalendar/daygrid': 6.1.22(@fullcalendar/core@7.1.4(@full-ui/headless-calendar@7.1.4(temporal-polyfill@1.0.8))(temporal-polyfill@1.0.8))
+      '@fullcalendar/core': 6.1.22
+      '@fullcalendar/daygrid': 6.1.22(@fullcalendar/core@6.1.22)
 
   '@gar/promise-retry@1.0.3': {}
 
@@ -4706,15 +4672,6 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
-  fullcalendar@7.1.4(temporal-polyfill@1.0.8):
-    dependencies:
-      '@full-ui/headless-calendar': 7.1.4(temporal-polyfill@1.0.8)
-      '@fullcalendar/core': 7.1.4(@full-ui/headless-calendar@7.1.4(temporal-polyfill@1.0.8))(temporal-polyfill@1.0.8)
-      preact: 10.29.8
-      temporal-polyfill: 1.0.8
-    transitivePeerDependencies:
-      - preact-render-to-string
-
   function-bind@1.1.2: {}
 
   gensync@1.0.0-beta.2: {}
@@ -5286,7 +5243,7 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  preact@10.29.8: {}
+  preact@10.12.1: {}
 
   proc-log@6.1.0: {}
 
@@ -5588,15 +5545,6 @@ snapshots:
       minipass: 7.1.3
       minizlib: 3.1.0
       yallist: 5.0.0
-
-  temporal-polyfill@1.0.8:
-    dependencies:
-      temporal-spec: 1.0.1
-      temporal-utils: 1.0.4
-
-  temporal-spec@1.0.1: {}
-
-  temporal-utils@1.0.4: {}
 
   tinybench@2.9.0: {}
 
