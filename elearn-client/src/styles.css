@@ -1,3 +1,55 @@
-/* You can add global styles to this file, and also import other style files */
-
 @import "tailwindcss";
+
+.fc {
+  --fc-border-color: #2A3D30;
+  --fc-page-bg-color: #0B1610;
+  --fc-neutral-bg-color: #0E1A14;
+  --fc-list-event-hover-bg-color: #14261C;
+  --fc-today-bg-color: rgba(200, 169, 110, 0.08);
+  --fc-now-indicator-color: #C8A96E;
+  color: #EAE3D5;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+}
+
+.fc .fc-toolbar-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #EAE3D5;
+  letter-spacing: 0.05em;
+}
+
+.fc .fc-button-primary {
+  background-color: #14261C;
+  border-color: #2A3D30;
+  color: #C8A96E;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+}
+
+.fc .fc-button-primary:hover,
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+  background-color: #C8A96E;
+  border-color: #C8A96E;
+  color: #0E1A14;
+}
+
+.fc .fc-col-header-cell {
+  background-color: #0E1A14;
+  padding: 0.5rem 0;
+  color: #C8A96E;
+  font-weight: 500;
+}
+
+.fc .fc-timegrid-slot {
+  height: 2.75rem;
+}
+
+.fc .fc-event {
+  border-width: 1px;
+  border-left-width: 3px;
+  border-radius: 2px;
+  padding: 2px 4px;
+  cursor: pointer;
+}
