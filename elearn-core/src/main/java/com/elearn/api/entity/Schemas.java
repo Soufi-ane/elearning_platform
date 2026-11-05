@@ -135,9 +135,13 @@ public class Schemas {
     RoomBaseResponse room
   ) {
     public PlanResponse(DayPlan plan) {
+      this(plan, plan.getDate());
+    }
+
+    public PlanResponse(DayPlan plan, LocalDate occurrenceDate) {
       this(
         plan.getId(),
-        plan.getDate(),
+        occurrenceDate,
         plan.getStartsAt(),
         plan.getEndsAt(),
         plan.getWeeklyRepeats(),
@@ -151,6 +155,13 @@ public class Schemas {
       );
     }
   }
+
+  public record DayPlanScheduleRequest(
+    LocalDate date,
+    LocalTime startsAt,
+    LocalTime endsAt,
+    String roomId
+  ) {}
 
   public record AbsenceByElementResponse(
     ElementResponse element,
