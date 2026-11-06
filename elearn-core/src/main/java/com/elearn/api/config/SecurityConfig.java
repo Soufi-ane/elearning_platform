@@ -15,6 +15,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
+
   private final JwtAuthFilter jwtAuthFilter;
 
   public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
@@ -22,25 +23,35 @@ public class SecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain securityFilterChain(HttpSecurity http)
+      throws Exception {
     http
       .cors(cors -> cors.configurationSource(corsConfig()))
       .csrf(csrf -> csrf.disable())
       .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/api/v1/departments").permitAll()
-        .requestMatchers("/api/v1/users/login", "/api/v1/users/auth").permitAll()
-        .requestMatchers("/api/v1/users/register").hasRole("ADMIN")
-        .requestMatchers("/api/v1/rooms/**").hasAnyRole("ADMIN", "TEACHER")
-        .requestMatchers("/api/v1/modules/elements").hasAnyRole("ADMIN", "TEACHER")
         .requestMatchers(
-          "/api/v1/modules/**", 
-          "/api/v1/timeTable/**"
-        ).authenticated()
+          "/api/v1/departments",
+          "/api/v1/users/login",
+          "/api/v1/users/auth",
+          "/api/v1/users/logout",
+        ).permitAll()
+        .requestMatchers(
+          "/api/v1/users/register", "/api/users/register"
+        ).hasRole("ADMIN")
+        .requestMatchers("/api/v1/rooms/**")
+        .hasAnyRole("ADMIN", "TEACHER")
+        .requestMatchers("/api/v1/modules/elements")
+        .hasAnyRole("ADMIN", "TEACHER")
+        .requestMatchers("/api/v1/modules/**", "/api/v1/timeTable/**")
+        .authenticated()
         .anyRequest().authenticated()
       )
-      .sessionManagement(session -> 
-         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-      .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+      .sessionManagement(session ->
+        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+      )
+      .addFilterBefore(
+        jwtAuthFilter, UsernamePasswordAuthenticationFilter.class
+      );
 
     return http.build();
   }
@@ -48,11 +59,14 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfig() {
     CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOrigins(Arrays.asList("http://localhost", "http://localhost:4200"));
+    config.setAllowedOrigins(
+      Arrays.asList("http://localhost", "http://localhost:4200")
+    );
     config.setAllowedMethods(Arrays.asList("*"));
     config.setAllowedHeaders(Arrays.asList("*"));
     config.setAllowCredentials(true);
-    UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
+    UrlBasedCorsConfigurationSource src =
+      new UrlBasedCorsConfigurationSource();
     src.registerCorsConfiguration("/**", config);
     return src;
   }
