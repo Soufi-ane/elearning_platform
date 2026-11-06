@@ -1,4 +1,11 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  OnInit,
+  signal,
+  ViewChild
+} from '@angular/core';
 import {
   FormBuilder,
   FormsModule,
@@ -6,6 +13,8 @@ import {
   Validators
 } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { CalendarService } from './calendar.service';
 import { LoginService } from '../../login/login.service';
 import {
@@ -16,7 +25,10 @@ import {
   Role,
   Room
 } from '../../../models/models';
-import { FullCalendarModule } from '@fullcalendar/angular';
+import {
+  FullCalendarComponent,
+  FullCalendarModule
+} from '@fullcalendar/angular';
 import {
   CalendarOptions,
   DateSelectArg,
@@ -38,6 +50,8 @@ import interactionPlugin, {
   templateUrl: './calendar.html'
 })
 export class Calendar implements OnInit {
+  @ViewChild(FullCalendarComponent) calendarComponent?: FullCalendarComponent;
+
   private calendarService = inject(CalendarService);
   private loginService = inject(LoginService);
   private fb = inject(FormBuilder);
@@ -45,7 +59,6 @@ export class Calendar implements OnInit {
 
   visibleStart = signal<string>('');
   visibleEnd = signal<string>('');
-
   showForm = signal(false);
   editPlanId = signal<string | null>(null);
   selectedPlan = signal<Plan | null>(null);
@@ -59,7 +72,6 @@ export class Calendar implements OnInit {
 
   availableGroups = signal<string[]>(['A', 'B']);
   formGroups = signal<string[]>(['A', 'B']);
-
   rooms = signal<Room[]>([]);
   modules = signal<Module[]>([]);
   filteredModules = signal<Module[]>([]);
@@ -107,39 +119,49 @@ export class Calendar implements OnInit {
     eventResize: (arg: EventResizeDoneArg) => this.onEventResize(arg)
   });
 
+  constructor() {
+    effect(() => {
+      const user = this.loginService.userProfile();
+      if (!user) return;
+      const roleStr = String(user.role || '');
+      const isStaff =
+        roleStr === Role.ADMIN ||
+        roleStr === Role.TEACHER ||
+        roleStr === 'ADMIN' ||
+        roleStr === 'TEACHER';
+
+      if (isStaff) {
+        this.calendarOptions.update((opts) => ({
+          ...opts,
+          selectable: true,
+          editable: true,
+          selectMirror: true
+        }));
+        if (this.allElements().length === 0 || this.rooms().length === 0) {
+          this.loadFormDependencies();
+        }
+      } else {
+        if (user.department) this.viewDepartment.set(String(user.department));
+        if (user.year && user.year > 0) this.viewYear.set(user.year);
+        if (user.semester && user.semester > 0) {
+          this.viewSemester.set(user.semester);
+        }
+        if (user.groupName) this.viewGroup.set(user.groupName);
+      }
+    });
+  }
+
   get isAdminOrTeacher(): boolean {
-    const roleStr = String(this.loginService.userProfile()?.role);
-    return roleStr === Role.ADMIN || roleStr === Role.TEACHER ||
-      roleStr === 'ADMIN' || roleStr === 'TEACHER';
+    const roleStr = String(this.loginService.userProfile()?.role || '');
+    return (
+      roleStr === Role.ADMIN ||
+      roleStr === Role.TEACHER ||
+      roleStr === 'ADMIN' ||
+      roleStr === 'TEACHER'
+    );
   }
 
   ngOnInit(): void {
-    const user = this.loginService.userProfile();
-    if (user && !this.isAdminOrTeacher) {
-      if (user.department) {
-        this.viewDepartment.set(String(user.department));
-      }
-      if (user.year && user.year > 0) {
-        this.viewYear.set(user.year);
-      }
-      if (user.semester && user.semester > 0) {
-        this.viewSemester.set(user.semester);
-      }
-      if (user.groupName) {
-        this.viewGroup.set(user.groupName);
-      }
-    }
-
-    if (this.isAdminOrTeacher) {
-      this.calendarOptions.update((opts) => ({
-        ...opts,
-        selectable: true,
-        editable: true,
-        selectMirror: true
-      }));
-      this.loadFormDependencies();
-    }
-
     this.refreshAvailableGroups();
     this.setupFormListeners();
   }
@@ -154,7 +176,20 @@ export class Calendar implements OnInit {
     this.form.get('semester')?.valueChanges.subscribe(() => {
       this.filterFormModulesAndElements();
     });
-    this.form.get('moduleId')?.valueChanges.subscribe(() => {
+    this.form.get('moduleId')?.valueChanges.subscribe((modId) => {
+      const foundMod = this.modules().find((m) => m.id === modId);
+      if (foundMod) {
+        this.form.patchValue(
+          {
+            department: String(
+              foundMod.department || Department.GENIE_INFORMATIQUE
+            ),
+            year: foundMod.year || 1,
+            semester: foundMod.semester || 1
+          },
+          { emitEvent: false }
+        );
+      }
       this.filterFormElementsByModule();
     });
     this.form.get('elementId')?.valueChanges.subscribe((elId) => {
@@ -163,7 +198,9 @@ export class Calendar implements OnInit {
       if (found && found.module) {
         this.form.patchValue(
           {
-            department: String(found.module.department || ''),
+            department: String(
+              found.module.department || Department.GENIE_INFORMATIQUE
+            ),
             year: found.module.year || 1,
             semester: found.module.semester || 1,
             moduleId: found.module.id
@@ -197,54 +234,87 @@ export class Calendar implements OnInit {
       const matchSem = !sem || !m.semester || m.semester === sem;
       return matchDept && matchYear && matchSem;
     });
-    this.filteredModules.set(mods);
+
+    const nextMods = mods.length > 0 ? mods : this.modules();
+    this.filteredModules.set(nextMods);
+
+    const currentModId = this.form.get('moduleId')?.value;
+    if (currentModId && !nextMods.some((m) => m.id === currentModId)) {
+      this.form.patchValue({ moduleId: '' }, { emitEvent: false });
+    }
+
     this.filterFormElementsByModule();
   }
 
   private filterFormElementsByModule(): void {
     const modId = this.form.get('moduleId')?.value;
-    const allowedModIds = new Set(this.filteredModules().map((m) => m.id));
+    const allEls = this.allElements();
 
+    let result: Element[] = [];
     if (modId) {
-      this.filteredElements.set(
-        this.allElements().filter((e) => e.module?.id === modId)
-      );
-    } else if (allowedModIds.size > 0) {
-      this.filteredElements.set(
-        this.allElements().filter((e) => allowedModIds.has(e.module?.id))
-      );
+      const byMod = allEls.filter((e) => e.module?.id === modId);
+      result = byMod.length > 0 ? byMod : allEls;
     } else {
-      this.filteredElements.set(this.allElements());
+      const allowedModIds = new Set(this.filteredModules().map((m) => m.id));
+      const matching = allEls.filter(
+        (e) => e.module && allowedModIds.has(e.module.id)
+      );
+      result = matching.length > 0 ? matching : allEls;
+    }
+
+    this.filteredElements.set(result);
+
+    const currentElId = this.form.get('elementId')?.value;
+    if (result.length > 0 && !result.some((e) => e.id === currentElId)) {
+      this.form.patchValue({ elementId: result[0].id }, { emitEvent: false });
     }
   }
 
-  loadFormDependencies(): void {
-    this.http.get<Room[]>('/api/v1/rooms', { withCredentials: true })
-      .subscribe((res) => this.rooms.set(res));
-    this.http.get<Module[]>('/api/v1/modules', { withCredentials: true })
-      .subscribe((res) => {
-        this.modules.set(res);
-        this.filteredModules.set(res);
-      });
-    this.http.get<Element[]>(
-      '/api/v1/modules/elements',
-      { withCredentials: true }
-    ).subscribe((res) => {
-      this.allElements.set(res);
-      this.filteredElements.set(res);
+  loadFormDependencies(onLoaded?: () => void): void {
+    forkJoin({
+      rooms: this.http
+        .get<Room[]>('/api/rooms', { withCredentials: true })
+        .pipe(catchError(() => of([] as Room[]))),
+      modules: this.http
+        .get<Module[]>('/api/modules', { withCredentials: true })
+        .pipe(catchError(() => of([] as Module[]))),
+      elements: this.http
+        .get<Element[]>('/api/modules/elements', { withCredentials: true })
+        .pipe(catchError(() => of([] as Element[])))
+    }).subscribe(({ rooms, modules, elements }) => {
+      this.rooms.set(rooms);
+      this.modules.set(modules);
+      this.filteredModules.set(modules);
+      this.allElements.set(elements);
+      this.filteredElements.set(elements);
+
+      if (!this.form.get('roomId')?.value && rooms.length > 0) {
+        this.form.patchValue({ roomId: rooms[0].id }, { emitEvent: false });
+      }
+      if (!this.form.get('elementId')?.value && elements.length > 0) {
+        this.form.patchValue(
+          {
+            moduleId: elements[0].module?.id || '',
+            elementId: elements[0].id
+          },
+          { emitEvent: false }
+        );
+      }
+      if (onLoaded) {
+        onLoaded();
+      }
     });
   }
 
   refreshAvailableGroups(): void {
-    this.calendarService.getGroups(
-      this.viewDepartment(),
-      this.viewYear()
-    ).subscribe({
-      next: (groups) => {
-        this.availableGroups.set(groups.length ? groups : ['A', 'B']);
-      },
-      error: () => this.availableGroups.set(['A', 'B'])
-    });
+    this.calendarService
+      .getGroups(this.viewDepartment(), this.viewYear())
+      .subscribe({
+        next: (groups) => {
+          this.availableGroups.set(groups.length ? groups : ['A', 'B']);
+        },
+        error: () => this.availableGroups.set(['A', 'B'])
+      });
   }
 
   onFilterChange(): void {
@@ -266,28 +336,35 @@ export class Calendar implements OnInit {
     const end = this.visibleEnd();
     if (!start || !end) return;
 
-    this.calendarService.getEvents(
-      start,
-      end,
-      this.viewDepartment(),
-      this.viewYear(),
-      this.viewSemester(),
-      this.viewGroup()
-    ).subscribe({
-      next: (plans) => {
-        const events = plans.map((p) => this.mapPlanToEvent(p));
-        this.calendarOptions.update((opts) => ({
-          ...opts,
-          events
-        }));
-      },
-      error: () => {
-        this.calendarOptions.update((opts) => ({
-          ...opts,
-          events: []
-        }));
-      }
-    });
+    this.calendarService
+      .getEvents(
+        start,
+        end,
+        this.viewDepartment(),
+        this.viewYear(),
+        this.viewSemester(),
+        this.viewGroup()
+      )
+      .subscribe({
+        next: (plans) => {
+          const events = plans.map((p) => this.mapPlanToEvent(p));
+          this.calendarOptions.update((opts) => ({
+            ...opts,
+            events: [...events]
+          }));
+          const api = this.calendarComponent?.getApi();
+          if (api) {
+            api.removeAllEvents();
+            events.forEach((ev) => api.addEvent(ev));
+          }
+        },
+        error: () => {
+          this.calendarOptions.update((opts) => ({
+            ...opts,
+            events: []
+          }));
+        }
+      });
   }
 
   private mapPlanToEvent(plan: Plan): EventInput {
@@ -315,7 +392,6 @@ export class Calendar implements OnInit {
     const dateStr = this.formatToISODate(selectInfo.start);
     const startTime = this.formatToTime(selectInfo.start);
     const endTime = this.formatToTime(selectInfo.end);
-
     this.openCreateModal(dateStr, startTime, endTime);
   }
 
@@ -384,29 +460,56 @@ export class Calendar implements OnInit {
     this.editPlanId.set(null);
     this.selectedPlan.set(null);
 
-    const defaultDept = this.viewDepartment() === 'ALL'
-      ? Department.GENIE_INFORMATIQUE
-      : this.viewDepartment();
-    const defaultYear = this.viewYear() > 0 ? this.viewYear() : 1;
-    const defaultSem = this.viewSemester() > 0 ? this.viewSemester() : 1;
-    const defaultGroup = this.viewGroup() === 'ALL' ? 'A' : this.viewGroup();
+    const openWithData = () => {
+      const firstEl = this.allElements()[0];
+      const defaultDept =
+        this.viewDepartment() !== 'ALL'
+          ? this.viewDepartment()
+          : String(
+              firstEl?.module?.department || Department.GENIE_INFORMATIQUE
+            );
+      const defaultYear =
+        this.viewYear() > 0 ? this.viewYear() : firstEl?.module?.year || 1;
+      const defaultSem =
+        this.viewSemester() > 0
+          ? this.viewSemester()
+          : firstEl?.module?.semester || 1;
+      const defaultGroup = this.viewGroup() === 'ALL' ? 'A' : this.viewGroup();
 
-    this.form.reset({
-      department: defaultDept,
-      year: defaultYear,
-      semester: defaultSem,
-      groupName: defaultGroup,
-      moduleId: '',
-      elementId: this.allElements()[0]?.id || '',
-      roomId: this.rooms()[0]?.id || '',
-      date: dateStr || this.formatToISODate(new Date()),
-      startsAt,
-      endsAt,
-      weeklyRepeats: 1,
-      type: 'LECTURE'
-    });
-    this.onFormClassChange();
-    this.showForm.set(true);
+      this.filteredModules.set(this.modules());
+      this.filteredElements.set(this.allElements());
+
+      this.form.reset(
+        {
+          department: defaultDept,
+          year: defaultYear,
+          semester: defaultSem,
+          groupName: defaultGroup,
+          moduleId: firstEl?.module?.id || '',
+          elementId: firstEl?.id || '',
+          roomId: this.rooms()[0]?.id || '',
+          date: dateStr || this.formatToISODate(new Date()),
+          startsAt,
+          endsAt,
+          weeklyRepeats: 1,
+          type: 'LECTURE'
+        },
+        { emitEvent: false }
+      );
+
+      this.onFormClassChange();
+      this.showForm.set(true);
+    };
+
+    if (
+      this.allElements().length === 0 ||
+      this.rooms().length === 0 ||
+      this.modules().length === 0
+    ) {
+      this.loadFormDependencies(() => openWithData());
+    } else {
+      openWithData();
+    }
   }
 
   openEditModal(plan: Plan): void {
@@ -414,29 +517,49 @@ export class Calendar implements OnInit {
     this.editPlanId.set(plan.id);
     this.selectedPlan.set(plan);
 
-    const modId = plan.element?.module?.id || '';
-    const dept = plan.department ||
-      plan.element?.module?.department ||
-      Department.GENIE_INFORMATIQUE;
-    const yr = plan.year || plan.element?.module?.year || 1;
-    const sem = plan.semester || plan.element?.module?.semester || 1;
+    const populateEdit = () => {
+      const modId = plan.element?.module?.id || '';
+      const dept =
+        plan.department ||
+        plan.element?.module?.department ||
+        Department.GENIE_INFORMATIQUE;
+      const yr = plan.year || plan.element?.module?.year || 1;
+      const sem = plan.semester || plan.element?.module?.semester || 1;
 
-    this.form.patchValue({
-      department: String(dept),
-      year: yr,
-      semester: sem,
-      groupName: plan.groupName || 'A',
-      moduleId: modId,
-      elementId: plan.element.id,
-      roomId: plan.room.id,
-      date: plan.date,
-      startsAt: plan.startsAt.substring(0, 5),
-      endsAt: plan.endsAt.substring(0, 5),
-      weeklyRepeats: plan.weeklyRepeats || 1,
-      type: String(plan.type)
-    });
-    this.onFormClassChange();
-    this.showForm.set(true);
+      this.filteredModules.set(this.modules());
+      this.filteredElements.set(this.allElements());
+
+      this.form.patchValue(
+        {
+          department: String(dept),
+          year: yr,
+          semester: sem,
+          groupName: plan.groupName || 'A',
+          moduleId: modId,
+          elementId: plan.element.id,
+          roomId: plan.room.id,
+          date: plan.date,
+          startsAt: plan.startsAt.substring(0, 5),
+          endsAt: plan.endsAt.substring(0, 5),
+          weeklyRepeats: plan.weeklyRepeats || 1,
+          type: String(plan.type)
+        },
+        { emitEvent: false }
+      );
+
+      this.onFormClassChange();
+      this.showForm.set(true);
+    };
+
+    if (
+      this.allElements().length === 0 ||
+      this.rooms().length === 0 ||
+      this.modules().length === 0
+    ) {
+      this.loadFormDependencies(() => populateEdit());
+    } else {
+      populateEdit();
+    }
   }
 
   closeModal(): void {
@@ -447,7 +570,12 @@ export class Calendar implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      this.errorMessage.set('Please fill in all required fields.');
+      return;
+    }
+
     this.errorMessage.set(null);
 
     const id = this.editPlanId();
@@ -456,12 +584,12 @@ export class Calendar implements OnInit {
       date: raw.date,
       startsAt: raw.startsAt,
       endsAt: raw.endsAt,
-      weeklyRepeats: Number(raw.weeklyRepeats),
+      weeklyRepeats: Number(raw.weeklyRepeats) || 1,
       type: raw.type,
       department: raw.department,
-      year: Number(raw.year),
-      semester: Number(raw.semester),
-      groupName: raw.groupName?.trim().toUpperCase(),
+      year: Number(raw.year) || 1,
+      semester: Number(raw.semester) || 1,
+      groupName: raw.groupName?.trim().toUpperCase() || 'A',
       elementId: raw.elementId,
       roomId: raw.roomId
     };
@@ -471,9 +599,36 @@ export class Calendar implements OnInit {
       : this.calendarService.createPlan(payload);
 
     request$.subscribe({
-      next: () => {
-        this.refreshAvailableGroups();
+      next: (savedPlan) => {
+        if (
+          this.viewDepartment() !== 'ALL' &&
+          this.viewDepartment() !== String(savedPlan.department)
+        ) {
+          this.viewDepartment.set('ALL');
+        }
+        if (this.viewYear() !== 0 && this.viewYear() !== savedPlan.year) {
+          this.viewYear.set(0);
+        }
+        if (
+          this.viewSemester() !== 0 &&
+          this.viewSemester() !== savedPlan.semester
+        ) {
+          this.viewSemester.set(0);
+        }
+        if (
+          this.viewGroup() !== 'ALL' &&
+          this.viewGroup() !== savedPlan.groupName
+        ) {
+          this.viewGroup.set('ALL');
+        }
+
         this.closeModal();
+        this.refreshAvailableGroups();
+
+        const api = this.calendarComponent?.getApi();
+        if (api && savedPlan.date) {
+          api.gotoDate(savedPlan.date);
+        }
         this.loadEvents();
       },
       error: (err) => {
@@ -498,6 +653,7 @@ export class Calendar implements OnInit {
   confirmDelete(): void {
     const target = this.deleteTarget();
     if (!target) return;
+
     this.calendarService.deletePlan(target.id).subscribe({
       next: () => {
         this.closeDeleteModal();

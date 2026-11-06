@@ -10,7 +10,6 @@
         Interactive Course Timetable
       </h2>
     </div>
-
     <div class="flex flex-wrap items-center gap-2">
       @if (isAdminOrTeacher) {
         <select
@@ -24,7 +23,6 @@
           <option value="GENIE_CIVIL">Genie Civil</option>
         </select>
       }
-
       <select
         [ngModel]="viewYear()"
         (ngModelChange)="viewYear.set(+$event); onFilterChange()"
@@ -35,7 +33,6 @@
         <option [ngValue]="2">Year 2</option>
         <option [ngValue]="3">Year 3</option>
       </select>
-
       <select
         [ngModel]="viewSemester()"
         (ngModelChange)="viewSemester.set(+$event); onFilterChange()"
@@ -45,7 +42,6 @@
         <option [ngValue]="1">Sem 1</option>
         <option [ngValue]="2">Sem 2</option>
       </select>
-
       <select
         [ngModel]="viewGroup()"
         (ngModelChange)="viewGroup.set($event); onFilterChange()"
@@ -56,7 +52,6 @@
           <option [value]="grp">Group {{ grp }}</option>
         }
       </select>
-
       @if (isAdminOrTeacher) {
         <button
           type="button"
@@ -117,7 +112,34 @@
           [formGroup]="form"
           (ngSubmit)="onSubmit()"
           class="p-5 flex flex-col gap-3 text-left">
+          @if (errorMessage(); as modalErr) {
+            <div
+              class="px-3 py-2 bg-rose-950/60 border border-rose-500/50
+                text-rose-200 text-xs rounded-sm">
+              {{ modalErr }}
+            </div>
+          }
+
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="col-span-1 sm:col-span-2">
+              <label
+                class="block text-[10px] uppercase tracking-wider
+                  text-[#8FA68C] mb-1">
+                Module
+              </label>
+              <select
+                formControlName="moduleId"
+                class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                  text-[#EAE3D5] px-2.5 py-2 text-xs rounded-sm cursor-pointer">
+                <option value="">All Modules</option>
+                @for (m of filteredModules(); track m.id) {
+                  <option [value]="m.id">
+                    {{ m.name }} (Y{{ m.year || 1 }} S{{ m.semester }})
+                  </option>
+                }
+              </select>
+            </div>
+
             <div class="col-span-1 sm:col-span-2">
               <label
                 class="block text-[10px] uppercase tracking-wider
