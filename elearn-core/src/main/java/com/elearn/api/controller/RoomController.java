@@ -10,8 +10,9 @@ import com.elearn.api.entity.Schemas.RoomBaseResponse;
 import com.elearn.api.repository.RoomRepository;
 
 @RestController
-@RequestMapping("/api/v1/rooms")
+@RequestMapping({"/api/v1/rooms"})
 public class RoomController {
+
   private final RoomRepository roomRepository;
 
   @Autowired
@@ -22,6 +23,9 @@ public class RoomController {
   @GetMapping
   @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
   public List<RoomBaseResponse> getAllRooms() {
-    return roomRepository.findAll().stream().map(RoomBaseResponse::new).toList();
+    return roomRepository.findAll()
+      .stream()
+      .map(RoomBaseResponse::new)
+      .toList();
   }
 }

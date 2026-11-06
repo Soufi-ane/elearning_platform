@@ -5,7 +5,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import com.elearn.api.entity.DepartmentName;
+import com.elearn.api.entity.Role;
+import com.elearn.api.entity.User;
+import com.elearn.api.entity.Schemas.DayPlanRequest;
+import com.elearn.api.entity.Schemas.DayPlanScheduleRequest;
+import com.elearn.api.entity.Schemas.PlanResponse;
+import com.elearn.api.service.DayPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -23,16 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.elearn.api.entity.DepartmentName;
-import com.elearn.api.entity.Role;
-import com.elearn.api.entity.User;
-import com.elearn.api.entity.Schemas.DayPlanRequest;
-import com.elearn.api.entity.Schemas.DayPlanScheduleRequest;
-import com.elearn.api.entity.Schemas.PlanResponse;
-import com.elearn.api.service.DayPlanService;
-
 @RestController
-@RequestMapping({"/api/v1/timeTable", "/api/timeTable"})
+@RequestMapping("/api/v1/timeTable")
 public class TimeTableController {
 
   private final DayPlanService dayPlanService;
