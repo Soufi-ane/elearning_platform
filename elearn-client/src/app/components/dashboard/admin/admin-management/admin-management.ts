@@ -4,7 +4,13 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ModuleService } from '../../modules/modules.service';
 import { CalendarService } from '../../calendar/calendar.service';
-import { Module, Element, Room, User } from '../../../../models/models';
+import {
+  Department,
+  Module,
+  Element,
+  Room,
+  User
+} from '../../../../models/models';
 
 @Component({
   selector: 'app-admin-management',
@@ -23,6 +29,7 @@ export class AdminManagement implements OnInit {
   teachers = signal<User[]>([]);
   rooms = signal<Room[]>([]);
   availableGroups = signal<string[]>(['A', 'B']);
+
   activeModal = signal<'modules' | 'elements' | 'seances' | null>(null);
 
   moduleForm = this.fb.group({
@@ -39,15 +46,15 @@ export class AdminManagement implements OnInit {
   });
 
   seanceForm = this.fb.group({
-    department: ['', Validators.required],
-    year: [1, [Validators.required, Validators.min(1), Validators.max(5)]],
-    semester: [1, [Validators.required, Validators.min(1), Validators.max(2)]],
-    groupName: ['', Validators.required],
+    department: [Department.GENIE_INFORMATIQUE as string],
+    year: [1],
+    semester: [1],
+    groupName: ['A'],
     date: ['', Validators.required],
-    startsAt: ['', Validators.required],
-    endsAt: ['', Validators.required],
+    startsAt: ['09:00', Validators.required],
+    endsAt: ['11:00', Validators.required],
     weeklyRepeats: [1, [Validators.required, Validators.min(1)]],
-    type: ['', Validators.required],
+    type: ['LECTURE', Validators.required],
     elementId: ['', Validators.required],
     roomId: ['', Validators.required]
   });
@@ -57,22 +64,23 @@ export class AdminManagement implements OnInit {
   }
 
   loadData() {
-    this.moduleService.getModules().subscribe(res => this.modules.set(res));
-    this.http.get<Element[]>('/api/modules/elements', {
-      withCredentials: true
-    }).subscribe(res => this.elements.set(res));
-    this.http.get<User[]>('/api/users?role=TEACHER', {
-      withCredentials: true
-    }).subscribe(res => this.teachers.set(res));
-    this.http.get<Room[]>('/api/rooms', {
-      withCredentials: true
-    }).subscribe({
-      next: (res) => this.rooms.set(res),
-      error: () => this.rooms.set([])
-    });
+    this.moduleService.getModules().subscribe((res) => this.modules.set(res));
+    this.http
+      .get<Element[]>('/api/modules/elements', { withCredentials: true })
+      .subscribe((res) => this.elements.set(res));
+    this.http
+      .get<User[]>('/api/users?role=TEACHER', { withCredentials: true })
+      .subscribe((res) => this.teachers.set(res));
+    this.http
+      .get<Room[]>('/api/rooms', { withCredentials: true })
+      .subscribe({
+        next: (res) => this.rooms.set(res),
+        error: () => this.rooms.set([])
+      });
   }
 
   openModal(type: 'modules' | 'elements' | 'seances') {
+    this.loadData();
     this.activeModal.set(type);
   }
 
@@ -83,49 +91,64 @@ export class AdminManagement implements OnInit {
   onModuleSubmit() {
     if (this.moduleForm.invalid) return;
     const raw = this.moduleForm.getRawValue();
-    this.moduleService.createModule({
-      name: raw.name!,
-      year: Number(raw.year),
-      semester: Number(raw.semester),
-      department: raw.department!
-    }).subscribe(() => {
-      this.moduleForm.reset({
-        name: '',
-        year: 1,
-        semester: 1,
-        department: ''
+    this.moduleService
+      .createModule({
+        name: raw.name!,
+        year: Number(raw.year),
+        semester: Number(raw.semester),
+        department: raw.department!
+      })
+      .subscribe(() => {
+        this.moduleForm.reset({
+          name: '',
+          year: 1,
+          semester: 1,
+          department: ''
+        });
+        this.closeModal();
+        this.loadData();
       });
-      this.closeModal();
-      this.loadData();
-    });
   }
 
   onElementSubmit() {
     if (this.elementForm.invalid) return;
-    this.moduleService.createElement(
-      this.elementForm.getRawValue() as any
-    ).subscribe(() => {
-      this.elementForm.reset({ name: '', moduleId: '', teacherId: '' });
-      this.closeModal();
-      this.loadData();
-    });
+    this.moduleService
+      .createElement(this.elementForm.getRawValue() as any)
+      .subscribe(() => {
+        this.elementForm.reset({ name: '', moduleId: '', teacherId: '' });
+        this.closeModal();
+        this.loadData();
+      });
   }
 
   onSeanceSubmit() {
     if (this.seanceForm.invalid) return;
-    this.calendarService.createPlan(
-      this.seanceForm.getRawValue()
-    ).subscribe(() => {
+    const raw = this.seanceForm.getRawValue();
+    const selectedEl = this.elements().find((e) => e.id === raw.elementId);
+
+    const payload = {
+      ...raw,
+      department:
+        selectedEl?.module?.department ||
+        raw.department ||
+        Department.GENIE_INFORMATIQUE,
+      year: selectedEl?.module?.year || Number(raw.year) || 1,
+      semester: selectedEl?.module?.semester || Number(raw.semester) || 1,
+      groupName: raw.groupName || 'A',
+      weeklyRepeats: Number(raw.weeklyRepeats) || 1
+    };
+
+    this.calendarService.createPlan(payload).subscribe(() => {
       this.seanceForm.reset({
-        department: '',
+        department: Department.GENIE_INFORMATIQUE,
         year: 1,
         semester: 1,
-        groupName: '',
+        groupName: 'A',
         date: '',
-        startsAt: '',
-        endsAt: '',
+        startsAt: '09:00',
+        endsAt: '11:00',
         weeklyRepeats: 1,
-        type: '',
+        type: 'LECTURE',
         elementId: '',
         roomId: ''
       });
