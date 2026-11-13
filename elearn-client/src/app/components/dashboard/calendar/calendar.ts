@@ -422,10 +422,9 @@ export class Calendar implements OnInit {
     const startIso = `${plan.date}T${plan.startsAt}`;
     const endIso = `${plan.date}T${plan.endsAt}`;
     const isExam = String(plan.type) === 'EXAM';
-    const badge = `Y${plan.year}S${plan.semester}-${plan.groupName || 'A'}`;
     return {
       id: plan.id,
-      title: `${plan.element.name} (${plan.room.label}) [${badge}]`,
+      title: `${plan.element.name} (${plan.room.label})`,
       start: startIso,
       end: endIso,
       backgroundColor: isExam ? '#4C1D24' : '#14261C',
