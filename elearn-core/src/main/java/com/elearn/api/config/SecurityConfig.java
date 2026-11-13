@@ -33,7 +33,7 @@ public class SecurityConfig {
           "/api/v1/departments",
           "/api/v1/users/login",
           "/api/v1/users/auth",
-          "/api/v1/users/logout",
+          "/api/v1/users/logout"
         ).permitAll()
         .requestMatchers(
           "/api/v1/users/register", "/api/users/register"

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class CalendarService {
   private http = inject(HttpClient);
-  private apiUrl = '/api/v1/timeTable';
+  private apiUrl = '/api/timeTable';
 
   private toLocalISODate(date: Date): string {
     const year = date.getFullYear();
@@ -26,7 +26,6 @@ export class CalendarService {
     let params = new HttpParams()
       .set('start', start)
       .set('end', end);
-
     if (department && department !== 'ALL') {
       params = params.set('department', department);
     }
@@ -39,7 +38,6 @@ export class CalendarService {
     if (group && group.trim() !== '' && group !== 'ALL') {
       params = params.set('group', group.trim());
     }
-
     return this.http.get<Plan[]>(`${this.apiUrl}/events`, {
       params,
       withCredentials: true

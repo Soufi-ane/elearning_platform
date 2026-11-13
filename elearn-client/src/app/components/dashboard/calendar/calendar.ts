@@ -1,41 +1,25 @@
 import {
-  Component,
-  effect,
-  inject,
-  OnInit,
-  signal,
-  ViewChild
+  Component, effect, inject, OnInit, signal, untracked, ViewChild
 } from '@angular/core';
 import {
-  FormBuilder,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators
+  FormBuilder, FormsModule, ReactiveFormsModule, Validators
 } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CalendarService } from './calendar.service';
+import { ModuleService } from '../modules/modules.service';
 import { LoginService } from '../../login/login.service';
 import {
-  Department,
-  Element,
-  Module,
-  Plan,
-  Role,
-  Room
+  Department, Element, Module, Plan, Role, Room
 } from '../../../models/models';
 import {
   FullCalendarComponent,
   FullCalendarModule
 } from '@fullcalendar/angular';
 import {
-  CalendarOptions,
-  DateSelectArg,
-  DatesSetArg,
-  EventClickArg,
-  EventDropArg,
-  EventInput
+  CalendarOptions, DateSelectArg, DatesSetArg, EventClickArg,
+  EventDropArg, EventInput
 } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -53,12 +37,14 @@ export class Calendar implements OnInit {
   @ViewChild(FullCalendarComponent) calendarComponent?: FullCalendarComponent;
 
   private calendarService = inject(CalendarService);
+  private moduleService = inject(ModuleService);
   private loginService = inject(LoginService);
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
 
   visibleStart = signal<string>('');
   visibleEnd = signal<string>('');
+
   showForm = signal(false);
   editPlanId = signal<string | null>(null);
   selectedPlan = signal<Plan | null>(null);
@@ -69,9 +55,9 @@ export class Calendar implements OnInit {
   viewYear = signal<number>(0);
   viewSemester = signal<number>(0);
   viewGroup = signal<string>('ALL');
-
   availableGroups = signal<string[]>(['A', 'B']);
   formGroups = signal<string[]>(['A', 'B']);
+
   rooms = signal<Room[]>([]);
   modules = signal<Module[]>([]);
   filteredModules = signal<Module[]>([]);
@@ -119,35 +105,43 @@ export class Calendar implements OnInit {
     eventResize: (arg: EventResizeDoneArg) => this.onEventResize(arg)
   });
 
+  private depsLoaded = false;
+
   constructor() {
     effect(() => {
       const user = this.loginService.userProfile();
       if (!user) return;
-      const roleStr = String(user.role || '');
-      const isStaff =
-        roleStr === Role.ADMIN ||
-        roleStr === Role.TEACHER ||
-        roleStr === 'ADMIN' ||
-        roleStr === 'TEACHER';
 
-      if (isStaff) {
-        this.calendarOptions.update((opts) => ({
-          ...opts,
-          selectable: true,
-          editable: true,
-          selectMirror: true
-        }));
-        if (this.allElements().length === 0 || this.rooms().length === 0) {
-          this.loadFormDependencies();
+      untracked(() => {
+        const roleStr = String(user.role || '');
+        const isStaff =
+          roleStr === Role.ADMIN ||
+          roleStr === Role.TEACHER ||
+          roleStr === 'ADMIN' ||
+          roleStr === 'TEACHER';
+
+        if (isStaff) {
+          this.calendarOptions.update((opts) => ({
+            ...opts,
+            selectable: true,
+            editable: true,
+            selectMirror: true
+          }));
+          if (!this.depsLoaded) {
+            this.depsLoaded = true;
+            this.loadFormDependencies();
+          }
+        } else {
+          if (user.department) {
+            this.viewDepartment.set(String(user.department));
+          }
+          if (user.year && user.year > 0) this.viewYear.set(user.year);
+          if (user.semester && user.semester > 0) {
+            this.viewSemester.set(user.semester);
+          }
+          if (user.groupName) this.viewGroup.set(user.groupName);
         }
-      } else {
-        if (user.department) this.viewDepartment.set(String(user.department));
-        if (user.year && user.year > 0) this.viewYear.set(user.year);
-        if (user.semester && user.semester > 0) {
-          this.viewSemester.set(user.semester);
-        }
-        if (user.groupName) this.viewGroup.set(user.groupName);
-      }
+      });
     });
   }
 
@@ -194,7 +188,9 @@ export class Calendar implements OnInit {
     });
     this.form.get('elementId')?.valueChanges.subscribe((elId) => {
       if (!elId) return;
-      const found = this.allElements().find((e) => e.id === elId);
+      const found =
+        this.allElements().find((e) => e.id === elId) ||
+        this.filteredElements().find((e) => e.id === elId);
       if (found && found.module) {
         this.form.patchValue(
           {
@@ -224,46 +220,83 @@ export class Calendar implements OnInit {
   }
 
   private filterFormModulesAndElements(): void {
-    const dept = this.form.get('department')?.value;
-    const yr = Number(this.form.get('year')?.value || 0);
-    const sem = Number(this.form.get('semester')?.value || 0);
+    const dept = this.form.get('department')?.value || undefined;
+    const yr = Number(this.form.get('year')?.value || 0) || undefined;
+    const sem = Number(this.form.get('semester')?.value || 0) || undefined;
 
-    const mods = this.modules().filter((m) => {
-      const matchDept = !dept || !m.department || String(m.department) === dept;
-      const matchYear = !yr || !m.year || m.year === yr;
-      const matchSem = !sem || !m.semester || m.semester === sem;
-      return matchDept && matchYear && matchSem;
-    });
+    this.moduleService
+      .getModules(dept, yr, sem)
+      .pipe(catchError(() => of([] as Module[])))
+      .subscribe((fetchedMods) => {
+        if (fetchedMods.length > 0) {
+          const existingIds = new Set(this.modules().map((m) => m.id));
+          const merged = [
+            ...this.modules(),
+            ...fetchedMods.filter((m) => !existingIds.has(m.id))
+          ];
+          this.modules.set(merged);
+          this.filteredModules.set(fetchedMods);
+        } else {
+          const localMods = this.modules().filter((m) => {
+            const matchDept =
+              !dept || !m.department || String(m.department) === dept;
+            const matchYear = !yr || !m.year || m.year === yr;
+            const matchSem = !sem || !m.semester || m.semester === sem;
+            return matchDept && matchYear && matchSem;
+          });
+          this.filteredModules.set(
+            localMods.length > 0 ? localMods : this.modules()
+          );
+        }
 
-    const nextMods = mods.length > 0 ? mods : this.modules();
-    this.filteredModules.set(nextMods);
-
-    const currentModId = this.form.get('moduleId')?.value;
-    if (currentModId && !nextMods.some((m) => m.id === currentModId)) {
-      this.form.patchValue({ moduleId: '' }, { emitEvent: false });
-    }
-
-    this.filterFormElementsByModule();
+        const nextMods = this.filteredModules();
+        const currentModId = this.form.get('moduleId')?.value;
+        if (
+          nextMods.length > 0 &&
+          (!currentModId || !nextMods.some((m) => m.id === currentModId))
+        ) {
+          this.form.patchValue(
+            { moduleId: nextMods[0].id },
+            { emitEvent: false }
+          );
+        }
+        this.filterFormElementsByModule();
+      });
   }
 
   private filterFormElementsByModule(): void {
     const modId = this.form.get('moduleId')?.value;
     const allEls = this.allElements();
 
-    let result: Element[] = [];
     if (modId) {
-      const byMod = allEls.filter((e) => e.module?.id === modId);
-      result = byMod.length > 0 ? byMod : allEls;
-    } else {
-      const allowedModIds = new Set(this.filteredModules().map((m) => m.id));
-      const matching = allEls.filter(
-        (e) => e.module && allowedModIds.has(e.module.id)
-      );
-      result = matching.length > 0 ? matching : allEls;
+      this.moduleService
+        .getElements(modId)
+        .pipe(catchError(() => of([] as Element[])))
+        .subscribe((els) => {
+          if (els.length > 0) {
+            const existingIds = new Set(allEls.map((e) => e.id));
+            this.allElements.set([
+              ...allEls,
+              ...els.filter((e) => !existingIds.has(e.id))
+            ]);
+            this.applyFilteredElements(els);
+          } else {
+            const byMod = allEls.filter((e) => e.module?.id === modId);
+            this.applyFilteredElements(byMod.length > 0 ? byMod : allEls);
+          }
+        });
+      return;
     }
 
-    this.filteredElements.set(result);
+    const allowedModIds = new Set(this.filteredModules().map((m) => m.id));
+    const matching = allEls.filter(
+      (e) => e.module && allowedModIds.has(e.module.id)
+    );
+    this.applyFilteredElements(matching.length > 0 ? matching : allEls);
+  }
 
+  private applyFilteredElements(result: Element[]): void {
+    this.filteredElements.set(result);
     const currentElId = this.form.get('elementId')?.value;
     if (result.length > 0 && !result.some((e) => e.id === currentElId)) {
       this.form.patchValue({ elementId: result[0].id }, { emitEvent: false });
@@ -275,26 +308,44 @@ export class Calendar implements OnInit {
       rooms: this.http
         .get<Room[]>('/api/rooms', { withCredentials: true })
         .pipe(catchError(() => of([] as Room[]))),
-      modules: this.http
-        .get<Module[]>('/api/modules', { withCredentials: true })
+      modules: this.moduleService
+        .getModules()
         .pipe(catchError(() => of([] as Module[]))),
       elements: this.http
         .get<Element[]>('/api/modules/elements', { withCredentials: true })
         .pipe(catchError(() => of([] as Element[])))
     }).subscribe(({ rooms, modules, elements }) => {
       this.rooms.set(rooms);
-      this.modules.set(modules);
-      this.filteredModules.set(modules);
+
+      let resolvedModules = modules;
+      if (resolvedModules.length === 0 && elements.length > 0) {
+        const modMap = new Map<string, Module>();
+        elements.forEach((e) => {
+          if (e.module && !modMap.has(e.module.id)) {
+            modMap.set(e.module.id, e.module);
+          }
+        });
+        resolvedModules = Array.from(modMap.values());
+      }
+
+      this.modules.set(resolvedModules);
+      this.filteredModules.set(resolvedModules);
       this.allElements.set(elements);
       this.filteredElements.set(elements);
 
       if (!this.form.get('roomId')?.value && rooms.length > 0) {
         this.form.patchValue({ roomId: rooms[0].id }, { emitEvent: false });
       }
+      if (!this.form.get('moduleId')?.value && resolvedModules.length > 0) {
+        this.form.patchValue(
+          { moduleId: resolvedModules[0].id },
+          { emitEvent: false }
+        );
+      }
       if (!this.form.get('elementId')?.value && elements.length > 0) {
         this.form.patchValue(
           {
-            moduleId: elements[0].module?.id || '',
+            moduleId: elements[0].module?.id || resolvedModules[0]?.id || '',
             elementId: elements[0].id
           },
           { emitEvent: false }
@@ -372,7 +423,6 @@ export class Calendar implements OnInit {
     const endIso = `${plan.date}T${plan.endsAt}`;
     const isExam = String(plan.type) === 'EXAM';
     const badge = `Y${plan.year}S${plan.semester}-${plan.groupName || 'A'}`;
-
     return {
       id: plan.id,
       title: `${plan.element.name} (${plan.room.label}) [${badge}]`,
@@ -388,7 +438,6 @@ export class Calendar implements OnInit {
   onDateSelect(selectInfo: DateSelectArg): void {
     if (!this.isAdminOrTeacher) return;
     selectInfo.view.calendar.unselect();
-
     const dateStr = this.formatToISODate(selectInfo.start);
     const startTime = this.formatToTime(selectInfo.start);
     const endTime = this.formatToTime(selectInfo.end);
@@ -409,13 +458,11 @@ export class Calendar implements OnInit {
       dropInfo.revert();
       return;
     }
-
     const payload = {
       date: this.formatToISODate(dropInfo.event.start),
       startsAt: this.formatToTime(dropInfo.event.start),
       endsAt: this.formatToTime(dropInfo.event.end)
     };
-
     this.calendarService.reschedulePlan(plan.id, payload).subscribe({
       next: () => this.loadEvents(),
       error: (err) => {
@@ -433,13 +480,11 @@ export class Calendar implements OnInit {
       resizeInfo.revert();
       return;
     }
-
     const payload = {
       date: this.formatToISODate(resizeInfo.event.start),
       startsAt: this.formatToTime(resizeInfo.event.start),
       endsAt: this.formatToTime(resizeInfo.event.end)
     };
-
     this.calendarService.reschedulePlan(plan.id, payload).subscribe({
       next: () => this.loadEvents(),
       error: (err) => {
@@ -460,24 +505,26 @@ export class Calendar implements OnInit {
     this.editPlanId.set(null);
     this.selectedPlan.set(null);
 
-    const openWithData = () => {
+    this.loadFormDependencies(() => {
       const firstEl = this.allElements()[0];
+      const firstMod = this.modules()[0];
       const defaultDept =
         this.viewDepartment() !== 'ALL'
           ? this.viewDepartment()
           : String(
-              firstEl?.module?.department || Department.GENIE_INFORMATIQUE
+              firstEl?.module?.department ||
+                firstMod?.department ||
+                Department.GENIE_INFORMATIQUE
             );
       const defaultYear =
-        this.viewYear() > 0 ? this.viewYear() : firstEl?.module?.year || 1;
+        this.viewYear() > 0
+          ? this.viewYear()
+          : firstEl?.module?.year || firstMod?.year || 1;
       const defaultSem =
         this.viewSemester() > 0
           ? this.viewSemester()
-          : firstEl?.module?.semester || 1;
+          : firstEl?.module?.semester || firstMod?.semester || 1;
       const defaultGroup = this.viewGroup() === 'ALL' ? 'A' : this.viewGroup();
-
-      this.filteredModules.set(this.modules());
-      this.filteredElements.set(this.allElements());
 
       this.form.reset(
         {
@@ -485,7 +532,7 @@ export class Calendar implements OnInit {
           year: defaultYear,
           semester: defaultSem,
           groupName: defaultGroup,
-          moduleId: firstEl?.module?.id || '',
+          moduleId: firstEl?.module?.id || firstMod?.id || '',
           elementId: firstEl?.id || '',
           roomId: this.rooms()[0]?.id || '',
           date: dateStr || this.formatToISODate(new Date()),
@@ -496,20 +543,9 @@ export class Calendar implements OnInit {
         },
         { emitEvent: false }
       );
-
       this.onFormClassChange();
       this.showForm.set(true);
-    };
-
-    if (
-      this.allElements().length === 0 ||
-      this.rooms().length === 0 ||
-      this.modules().length === 0
-    ) {
-      this.loadFormDependencies(() => openWithData());
-    } else {
-      openWithData();
-    }
+    });
   }
 
   openEditModal(plan: Plan): void {
@@ -517,7 +553,7 @@ export class Calendar implements OnInit {
     this.editPlanId.set(plan.id);
     this.selectedPlan.set(plan);
 
-    const populateEdit = () => {
+    this.loadFormDependencies(() => {
       const modId = plan.element?.module?.id || '';
       const dept =
         plan.department ||
@@ -525,9 +561,6 @@ export class Calendar implements OnInit {
         Department.GENIE_INFORMATIQUE;
       const yr = plan.year || plan.element?.module?.year || 1;
       const sem = plan.semester || plan.element?.module?.semester || 1;
-
-      this.filteredModules.set(this.modules());
-      this.filteredElements.set(this.allElements());
 
       this.form.patchValue(
         {
@@ -546,20 +579,9 @@ export class Calendar implements OnInit {
         },
         { emitEvent: false }
       );
-
       this.onFormClassChange();
       this.showForm.set(true);
-    };
-
-    if (
-      this.allElements().length === 0 ||
-      this.rooms().length === 0 ||
-      this.modules().length === 0
-    ) {
-      this.loadFormDependencies(() => populateEdit());
-    } else {
-      populateEdit();
-    }
+    });
   }
 
   closeModal(): void {
@@ -577,7 +599,6 @@ export class Calendar implements OnInit {
     }
 
     this.errorMessage.set(null);
-
     const id = this.editPlanId();
     const raw = this.form.getRawValue();
     const payload = {
@@ -621,10 +642,8 @@ export class Calendar implements OnInit {
         ) {
           this.viewGroup.set('ALL');
         }
-
         this.closeModal();
         this.refreshAvailableGroups();
-
         const api = this.calendarComponent?.getApi();
         if (api && savedPlan.date) {
           api.gotoDate(savedPlan.date);
@@ -653,7 +672,6 @@ export class Calendar implements OnInit {
   confirmDelete(): void {
     const target = this.deleteTarget();
     if (!target) return;
-
     this.calendarService.deletePlan(target.id).subscribe({
       next: () => {
         this.closeDeleteModal();

@@ -1,65 +1,77 @@
-<div class="h-full pt-2 pb-8 text-[#EAE3D5] px-6 lg:px-10">
+<div class="w-full px-4 md:px-8 lg:px-10 pt-2 pb-8 text-[#EAE3D5]">
   <div
-    class="flex flex-wrap items-center justify-between gap-4 p-4
-      bg-[#0B1610] border border-[#2A3D30] mb-4 rounded-sm shadow-lg">
-    <div class="text-left">
-      <p class="text-[10px] tracking-[0.25em] uppercase text-[#C8A96E]">
+    class="flex flex-col md:flex-row md:items-center justify-between
+      gap-4 mb-5">
+    <div>
+      <p class="text-[10px] tracking-[0.25em] uppercase text-[#C8A96E] mb-1">
         Academic Schedule
       </p>
-      <h2 class="text-lg font-light text-[#EAE3D5]">
-        Interactive Course Timetable
-      </h2>
+      <h2 class="text-[#EAE3D5] text-xl font-light">Class Timetable</h2>
     </div>
-    <div class="flex flex-wrap items-center gap-2">
+
+    <div class="flex flex-wrap items-center gap-2.5">
       @if (isAdminOrTeacher) {
         <select
           [ngModel]="viewDepartment()"
           (ngModelChange)="viewDepartment.set($event); onFilterChange()"
-          class="bg-[#14261C] text-xs text-[#EAE3D5] border border-[#2A3D30]
-            px-3 py-2 rounded-sm cursor-pointer">
+          class="bg-[#0B1610] border border-[#2A3D30] text-xs text-[#EAE3D5]
+            px-3 py-2 rounded-sm focus:border-[#C8A96E] focus:outline-none
+            cursor-pointer">
           <option value="ALL">All Departments</option>
           <option value="GENIE_INFORMATIQUE">Genie Informatique</option>
           <option value="GENIE_ELECTRIQUE">Genie Electrique</option>
           <option value="GENIE_CIVIL">Genie Civil</option>
         </select>
-      }
-      <select
-        [ngModel]="viewYear()"
-        (ngModelChange)="viewYear.set(+$event); onFilterChange()"
-        class="bg-[#14261C] text-xs text-[#EAE3D5] border border-[#2A3D30]
-          px-3 py-2 rounded-sm cursor-pointer">
-        <option [ngValue]="0">All Years</option>
-        <option [ngValue]="1">Year 1</option>
-        <option [ngValue]="2">Year 2</option>
-        <option [ngValue]="3">Year 3</option>
-      </select>
-      <select
-        [ngModel]="viewSemester()"
-        (ngModelChange)="viewSemester.set(+$event); onFilterChange()"
-        class="bg-[#14261C] text-xs text-[#EAE3D5] border border-[#2A3D30]
-          px-3 py-2 rounded-sm cursor-pointer">
-        <option [ngValue]="0">All Semesters</option>
-        <option [ngValue]="1">Sem 1</option>
-        <option [ngValue]="2">Sem 2</option>
-      </select>
-      <select
-        [ngModel]="viewGroup()"
-        (ngModelChange)="viewGroup.set($event); onFilterChange()"
-        class="bg-[#14261C] text-xs text-[#EAE3D5] border border-[#2A3D30]
-          px-3 py-2 rounded-sm cursor-pointer">
-        <option value="ALL">All Groups</option>
-        @for (grp of availableGroups(); track grp) {
-          <option [value]="grp">Group {{ grp }}</option>
-        }
-      </select>
-      @if (isAdminOrTeacher) {
+
+        <select
+          [ngModel]="viewYear()"
+          (ngModelChange)="viewYear.set(+$event); onFilterChange()"
+          class="bg-[#0B1610] border border-[#2A3D30] text-xs text-[#EAE3D5]
+            px-3 py-2 rounded-sm focus:border-[#C8A96E] focus:outline-none
+            cursor-pointer">
+          <option [ngValue]="0">All Years</option>
+          <option [ngValue]="1">Year 1</option>
+          <option [ngValue]="2">Year 2</option>
+          <option [ngValue]="3">Year 3</option>
+        </select>
+
+        <select
+          [ngModel]="viewSemester()"
+          (ngModelChange)="viewSemester.set(+$event); onFilterChange()"
+          class="bg-[#0B1610] border border-[#2A3D30] text-xs text-[#EAE3D5]
+            px-3 py-2 rounded-sm focus:border-[#C8A96E] focus:outline-none
+            cursor-pointer">
+          <option [ngValue]="0">All Semesters</option>
+          <option [ngValue]="1">Semester 1</option>
+          <option [ngValue]="2">Semester 2</option>
+        </select>
+
+        <select
+          [ngModel]="viewGroup()"
+          (ngModelChange)="viewGroup.set($event); onFilterChange()"
+          class="bg-[#0B1610] border border-[#2A3D30] text-xs text-[#EAE3D5]
+            px-3 py-2 rounded-sm focus:border-[#C8A96E] focus:outline-none
+            cursor-pointer">
+          <option value="ALL">All Groups</option>
+          @for (g of availableGroups(); track g) {
+            <option [value]="g">Group {{ g }}</option>
+          }
+        </select>
+
         <button
           type="button"
           (click)="openCreateModal()"
-          class="px-4 py-2 bg-[#C8A96E] text-[#0E1A14] text-xs font-semibold
-            uppercase tracking-wider rounded-sm cursor-pointer
-            hover:bg-[#DFC18A] transition-colors">
-          + Schedule Course
+          class="flex items-center gap-2 px-4 py-2 bg-[#C8A96E]
+            text-[#0E1A14] text-xs font-semibold uppercase tracking-wider
+            rounded-sm cursor-pointer hover:bg-[#DFC18A] transition-colors">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
+            <path
+              d="M8 3v10M3 8h10"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"/>
+          </svg>
+          <span>Add Session</span>
         </button>
       }
     </div>
@@ -67,19 +79,19 @@
 
   @if (errorMessage(); as msg) {
     <div
-      class="mb-4 px-4 py-3 bg-rose-950/60 border border-rose-500/50
-        text-rose-200 text-xs flex items-center justify-between rounded-sm">
+      class="mb-4 px-4 py-3 border border-rose-500/40 bg-rose-950/30
+        text-rose-300 text-xs flex items-center justify-between rounded-sm">
       <span>{{ msg }}</span>
       <button
         type="button"
         (click)="errorMessage.set(null)"
-        class="text-rose-300 hover:text-white cursor-pointer font-bold">
-        &times;
+        class="text-rose-400 hover:text-white cursor-pointer ml-4">
+        ✕
       </button>
     </div>
   }
 
-  <div class="p-4 border border-[#2A3D30] bg-[#0B1610] shadow-xl rounded-sm">
+  <div class="border border-[#2A3D30] bg-[#0B1610] p-4 rounded-sm">
     <full-calendar [options]="calendarOptions()"></full-calendar>
   </div>
 
@@ -87,89 +99,148 @@
     <div
       (click)="closeModal()"
       class="fixed inset-0 z-50 flex items-center justify-center
-        bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
+        bg-black/75 backdrop-blur-sm p-4">
       <div
         (click)="$event.stopPropagation()"
-        class="w-full max-w-lg border border-[#C8A96E] bg-[#0B1610]
-          rounded-sm shadow-2xl overflow-hidden my-8">
+        class="w-full max-w-lg border border-[#C8A96E]/40 bg-[#0B1610]
+          rounded-sm shadow-2xl overflow-hidden">
         <div
-          class="px-5 py-3 bg-[#14261C] border-b border-[#2A3D30]
-            flex items-center justify-between text-left">
-          <h2
-            class="text-sm font-semibold uppercase tracking-wider
-              text-[#C8A96E]">
-            {{ editPlanId() ? 'Modify Course Session' : 'Schedule Course' }}
-          </h2>
+          class="px-6 py-4 bg-[#14261C] border-b border-[#2A3D30]
+            flex items-center justify-between">
+          <div>
+            <p class="text-[10px] tracking-[0.25em] uppercase text-[#C8A96E]">
+              {{ editPlanId() ? 'Update Schedule' : 'Timetable Setup' }}
+            </p>
+            <h3 class="text-base font-medium text-[#EAE3D5] mt-0.5">
+              {{ editPlanId() ? 'Edit Course Session' : 'Schedule Session' }}
+            </h3>
+          </div>
           <button
             type="button"
             (click)="closeModal()"
-            class="text-[#8FA68C] hover:text-[#EAE3D5] cursor-pointer text-lg">
-            &times;
+            class="p-1.5 text-[#8FA68C] hover:text-[#EAE3D5]
+              hover:bg-[#1A3025] rounded-sm transition-colors cursor-pointer">
+            <svg
+              class="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"/>
+            </svg>
           </button>
         </div>
 
         <form
           [formGroup]="form"
           (ngSubmit)="onSubmit()"
-          class="p-5 flex flex-col gap-3 text-left">
-          @if (errorMessage(); as modalErr) {
-            <div
-              class="px-3 py-2 bg-rose-950/60 border border-rose-500/50
-                text-rose-200 text-xs rounded-sm">
-              {{ modalErr }}
-            </div>
-          }
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div class="col-span-1 sm:col-span-2">
+          class="p-6 flex flex-col gap-4 text-left">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="col-span-2">
               <label
-                class="block text-[10px] uppercase tracking-wider
-                  text-[#8FA68C] mb-1">
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-1.5 font-medium">
+                Department
+              </label>
+              <select
+                formControlName="department"
+                class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                  text-[#EAE3D5] px-3 py-2 text-xs rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none cursor-pointer">
+                <option value="GENIE_INFORMATIQUE">Genie Info</option>
+                <option value="GENIE_ELECTRIQUE">Genie Elec</option>
+                <option value="GENIE_CIVIL">Genie Civil</option>
+              </select>
+            </div>
+
+            <div>
+              <label
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-1.5 font-medium">
+                Year
+              </label>
+              <select
+                formControlName="year"
+                class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                  text-[#EAE3D5] px-3 py-2 text-xs rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none cursor-pointer">
+                <option [ngValue]="1">Year 1</option>
+                <option [ngValue]="2">Year 2</option>
+                <option [ngValue]="3">Year 3</option>
+              </select>
+            </div>
+
+            <div>
+              <label
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-1.5 font-medium">
+                Semester
+              </label>
+              <select
+                formControlName="semester"
+                class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                  text-[#EAE3D5] px-3 py-2 text-xs rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none cursor-pointer">
+                <option [ngValue]="1">Sem 1</option>
+                <option [ngValue]="2">Sem 2</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-1.5 font-medium">
                 Module
               </label>
               <select
                 formControlName="moduleId"
                 class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-2.5 py-2 text-xs rounded-sm cursor-pointer">
+                  text-[#EAE3D5] px-3 py-2 text-xs rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none cursor-pointer">
                 <option value="">All Modules</option>
                 @for (m of filteredModules(); track m.id) {
-                  <option [value]="m.id">
-                    {{ m.name }} (Y{{ m.year || 1 }} S{{ m.semester }})
-                  </option>
-                }
-              </select>
-            </div>
-
-            <div class="col-span-1 sm:col-span-2">
-              <label
-                class="block text-[10px] uppercase tracking-wider
-                  text-[#8FA68C] mb-1">
-                Course Element
-              </label>
-              <select
-                formControlName="elementId"
-                class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-2.5 py-2 text-xs rounded-sm cursor-pointer">
-                <option value="" disabled>Select course element</option>
-                @for (e of filteredElements(); track e.id) {
-                  <option [value]="e.id">
-                    {{ e.name }} ({{ e.module.name }})
-                  </option>
+                  <option [value]="m.id">{{ m.name }}</option>
                 }
               </select>
             </div>
 
             <div>
               <label
-                class="block text-[10px] uppercase tracking-wider
-                  text-[#8FA68C] mb-1">
-                Room & Campus
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-1.5 font-medium">
+                Course Element
+              </label>
+              <select
+                formControlName="elementId"
+                class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                  text-[#EAE3D5] px-3 py-2 text-xs rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none cursor-pointer">
+                <option value="" disabled>Select element</option>
+                @for (el of filteredElements(); track el.id) {
+                  <option [value]="el.id">{{ el.name }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-1.5 font-medium">
+                Room
               </label>
               <select
                 formControlName="roomId"
                 class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-2.5 py-2 text-xs rounded-sm cursor-pointer">
-                <option value="" disabled>Select a room</option>
+                  text-[#EAE3D5] px-3 py-2 text-xs rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none cursor-pointer">
+                <option value="" disabled>Select room</option>
                 @for (r of rooms(); track r.id) {
                   <option [value]="r.id">
                     {{ r.label }} ({{ r.campus }})
@@ -180,177 +251,133 @@
 
             <div>
               <label
-                class="block text-[10px] uppercase tracking-wider
-                  text-[#8FA68C] mb-1">
-                Session Type
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-1.5 font-medium">
+                Group
+              </label>
+              <select
+                formControlName="groupName"
+                class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                  text-[#EAE3D5] px-3 py-2 text-xs rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none cursor-pointer">
+                @for (g of formGroups(); track g) {
+                  <option [value]="g">Group {{ g }}</option>
+                }
+              </select>
+            </div>
+
+            <div>
+              <label
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-1.5 font-medium">
+                Type
               </label>
               <select
                 formControlName="type"
                 class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-2.5 py-2 text-xs rounded-sm cursor-pointer">
+                  text-[#EAE3D5] px-3 py-2 text-xs rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none cursor-pointer">
                 <option value="LECTURE">Lecture</option>
                 <option value="EXAM">Exam</option>
               </select>
             </div>
+          </div>
 
-            <div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="col-span-2">
               <label
-                class="block text-[10px] uppercase tracking-wider
-                  text-[#8FA68C] mb-1">
-                Department
-              </label>
-              <select
-                formControlName="department"
-                class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-2.5 py-1.5 text-xs rounded-sm
-                  cursor-pointer">
-                <option value="GENIE_INFORMATIQUE">Genie Informatique</option>
-                <option value="GENIE_ELECTRIQUE">Genie Electrique</option>
-                <option value="GENIE_CIVIL">Genie Civil</option>
-              </select>
-            </div>
-
-            <div>
-              <label
-                class="block text-[10px] uppercase tracking-wider
-                  text-[#8FA68C] mb-1">
-                Class Group
-              </label>
-              <input
-                formControlName="groupName"
-                type="text"
-                list="classGroupOptions"
-                placeholder="e.g. A, B"
-                class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-2.5 py-1.5 text-xs rounded-sm uppercase"/>
-              <datalist id="classGroupOptions">
-                @for (g of formGroups(); track g) {
-                  <option [value]="g">Group {{ g }}</option>
-                }
-              </datalist>
-            </div>
-
-            <div>
-              <label
-                class="block text-[10px] uppercase tracking-wider
-                  text-[#8FA68C] mb-1">
-                Academic Year
-              </label>
-              <select
-                formControlName="year"
-                class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-2.5 py-1.5 text-xs rounded-sm
-                  cursor-pointer">
-                <option [ngValue]="1">1st Year</option>
-                <option [ngValue]="2">2nd Year</option>
-                <option [ngValue]="3">3rd Year</option>
-              </select>
-            </div>
-
-            <div>
-              <label
-                class="block text-[10px] uppercase tracking-wider
-                  text-[#8FA68C] mb-1">
-                Semester
-              </label>
-              <select
-                formControlName="semester"
-                class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-2.5 py-1.5 text-xs rounded-sm
-                  cursor-pointer">
-                <option [ngValue]="1">Semester 1</option>
-                <option [ngValue]="2">Semester 2</option>
-              </select>
-            </div>
-
-            <div>
-              <label
-                class="block text-[10px] uppercase tracking-wider
-                  text-[#8FA68C] mb-1">
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-1.5 font-medium">
                 Date
               </label>
               <input
                 formControlName="date"
                 type="date"
                 class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-2.5 py-1.5 text-xs rounded-sm
+                  text-[#EAE3D5] px-3 py-2 text-xs rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none
                   [color-scheme:dark]"/>
             </div>
 
             <div>
               <label
-                class="block text-[10px] uppercase tracking-wider
-                  text-[#8FA68C] mb-1">
-                Weekly Repeats
-              </label>
-              <input
-                formControlName="weeklyRepeats"
-                type="number"
-                min="1"
-                class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-2.5 py-1.5 text-xs rounded-sm"/>
-            </div>
-
-            <div>
-              <label
-                class="block text-[10px] uppercase tracking-wider
-                  text-[#8FA68C] mb-1">
-                Start Time
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-1.5 font-medium">
+                Starts At
               </label>
               <input
                 formControlName="startsAt"
                 type="time"
                 class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-2.5 py-1.5 text-xs rounded-sm
+                  text-[#EAE3D5] px-3 py-2 text-xs rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none
                   [color-scheme:dark]"/>
             </div>
 
             <div>
               <label
-                class="block text-[10px] uppercase tracking-wider
-                  text-[#8FA68C] mb-1">
-                End Time
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-1.5 font-medium">
+                Ends At
               </label>
               <input
                 formControlName="endsAt"
                 type="time"
                 class="w-full bg-[#0E1A14] border border-[#2A3D30]
-                  text-[#EAE3D5] px-2.5 py-1.5 text-xs rounded-sm
+                  text-[#EAE3D5] px-3 py-2 text-xs rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none
                   [color-scheme:dark]"/>
             </div>
           </div>
 
+          <div>
+            <label
+              class="block text-[11px] uppercase tracking-wider
+                text-[#8FA68C] mb-1.5 font-medium">
+              Weekly Repeats
+            </label>
+            <input
+              formControlName="weeklyRepeats"
+              type="number"
+              min="1"
+              max="30"
+              class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                text-[#EAE3D5] px-3 py-2 text-xs rounded-sm
+                focus:border-[#C8A96E] focus:outline-none"/>
+          </div>
+
           <div
-            class="pt-3 mt-2 border-t border-[#2A3D30] flex items-center
-              justify-between gap-2">
+            class="pt-4 mt-1 border-t border-[#2A3D30] flex items-center
+              justify-between gap-3">
             <div>
               @if (editPlanId()) {
                 <button
                   type="button"
                   (click)="promptDeleteFromModal()"
-                  class="px-3 py-1.5 bg-rose-600 text-white hover:bg-rose-500
-                    text-xs font-semibold uppercase tracking-wider rounded-sm
-                    cursor-pointer">
-                  Delete Course
+                  class="px-3.5 py-2 border border-rose-500/40 bg-rose-950/30
+                    text-rose-400 hover:bg-rose-900/40 text-xs uppercase
+                    tracking-wider rounded-sm transition-colors cursor-pointer">
+                  Delete
                 </button>
               }
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-3">
               <button
                 type="button"
                 (click)="closeModal()"
-                class="px-3 py-1.5 border border-[#2A3D30] bg-[#0E1A14]
+                class="px-4 py-2 border border-[#2A3D30] bg-[#0E1A14]
                   text-[#8FA68C] hover:text-[#EAE3D5] text-xs uppercase
-                  tracking-wider rounded-sm cursor-pointer">
+                  tracking-wider rounded-sm transition-colors cursor-pointer">
                 Cancel
               </button>
               <button
                 type="submit"
                 [disabled]="form.invalid"
-                class="px-4 py-1.5 bg-[#C8A96E] text-[#0E1A14] font-semibold
+                class="px-5 py-2 bg-[#C8A96E] text-[#0E1A14] font-semibold
                   text-xs uppercase tracking-wider rounded-sm cursor-pointer
-                  hover:bg-[#DFC18A] disabled:opacity-40">
-                {{ editPlanId() ? 'Save Changes' : 'Create Course' }}
+                  hover:bg-[#DFC18A] disabled:opacity-40
+                  disabled:cursor-not-allowed transition-colors">
+                {{ editPlanId() ? 'Save Changes' : 'Schedule' }}
               </button>
             </div>
           </div>
@@ -363,50 +390,54 @@
     <div
       (click)="closeDeleteModal()"
       class="fixed inset-0 z-50 flex items-center justify-center
-        bg-black/80 backdrop-blur-sm p-4">
+        bg-black/75 backdrop-blur-sm p-4">
       <div
         (click)="$event.stopPropagation()"
-        class="w-full max-w-sm border border-rose-500 bg-[#0B1610]
+        class="w-full max-w-md border border-rose-500/40 bg-[#0B1610]
           rounded-sm shadow-2xl overflow-hidden">
         <div
-          class="px-5 py-3 bg-rose-950 border-b border-[#2A3D30]
+          class="px-6 py-4 bg-rose-950/30 border-b border-[#2A3D30]
             flex items-center justify-between">
-          <h3
-            class="text-sm font-semibold uppercase tracking-wider
-              text-rose-300">
-            Delete Course Session
-          </h3>
+          <div>
+            <p class="text-[10px] tracking-[0.25em] uppercase text-rose-400">
+              Confirm Action
+            </p>
+            <h3 class="text-base font-medium text-[#EAE3D5] mt-0.5">
+              Delete Course Session
+            </h3>
+          </div>
           <button
             type="button"
             (click)="closeDeleteModal()"
-            class="text-[#8FA68C] hover:text-[#EAE3D5] cursor-pointer">
-            &times;
+            class="p-1.5 text-[#8FA68C] hover:text-[#EAE3D5]
+              rounded-sm transition-colors cursor-pointer">
+            ✕
           </button>
         </div>
-        <div class="p-5 text-left">
-          <p class="text-xs text-[#EAE3D5] leading-relaxed">
-            Remove scheduled course for
+        <div class="p-6 text-left">
+          <p class="text-sm text-[#EAE3D5] leading-relaxed">
+            Are you sure you want to delete the session for
             <span class="text-[#C8A96E] font-medium">
               {{ target.element.name }}
             </span>?
           </p>
           <div
-            class="pt-4 mt-4 border-t border-[#2A3D30] flex items-center
-              justify-end gap-2">
+            class="pt-4 mt-5 border-t border-[#2A3D30] flex items-center
+              justify-end gap-3">
             <button
               type="button"
               (click)="closeDeleteModal()"
-              class="px-3 py-1.5 border border-[#2A3D30] bg-[#0E1A14]
+              class="px-4 py-2 border border-[#2A3D30] bg-[#0E1A14]
                 text-[#8FA68C] hover:text-[#EAE3D5] text-xs uppercase
-                tracking-wider rounded-sm cursor-pointer">
+                tracking-wider rounded-sm transition-colors cursor-pointer">
               Cancel
             </button>
             <button
               type="button"
               (click)="confirmDelete()"
-              class="px-4 py-1.5 bg-rose-600 text-white font-semibold
+              class="px-5 py-2 bg-rose-600 text-white font-semibold
                 text-xs uppercase tracking-wider rounded-sm cursor-pointer
-                hover:bg-rose-500">
+                hover:bg-rose-500 transition-colors">
               Delete
             </button>
           </div>
