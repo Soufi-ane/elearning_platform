@@ -7,10 +7,12 @@ import java.time.temporal.ChronoField;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
 import com.elearn.api.entity.Absence;
 import com.elearn.api.entity.AbsenceType;
 import com.elearn.api.entity.Campus;
@@ -36,11 +38,13 @@ import com.elearn.api.repository.RequestRepository;
 import com.elearn.api.repository.ResultRepository;
 import com.elearn.api.repository.RoomRepository;
 import com.elearn.api.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class DataSeeder implements CommandLineRunner {
+
   private final UserRepository userRepository;
   private final ModuleRepository moduleRepository;
   private final ElementRepository elementRepository;
@@ -57,7 +61,12 @@ public class DataSeeder implements CommandLineRunner {
 
   @Override
   public void run(String... args) throws Exception {
-    if (args.length > 0 && "seed".equalsIgnoreCase(args[0])) {
+    boolean forceSeed = args.length > 0 && "seed".equalsIgnoreCase(args[0]);
+    boolean emptyDb =
+      "DEV".equalsIgnoreCase(environment) &&
+      (moduleRepository.count() == 0 || elementRepository.count() == 0);
+
+    if (forceSeed || emptyDb) {
       if (!"DEV".equalsIgnoreCase(environment) && userRepository.count() > 0) {
         return;
       }
@@ -152,6 +161,9 @@ public class DataSeeder implements CommandLineRunner {
 
   private List<Module> seedModules() {
     DepartmentName gi = DepartmentName.GENIE_INFORMATIQUE;
+    DepartmentName ge = DepartmentName.GENIE_ELECTRIQUE;
+    DepartmentName gc = DepartmentName.GENIE_CIVIL;
+
     List<Module> modules = List.of(
       new Module("Reseaux Informatiques", 1, 1, gi),
       new Module("Programmation Python", 1, 1, gi),
@@ -174,7 +186,19 @@ public class DataSeeder implements CommandLineRunner {
       new Module("Developpement Frontend", 3, 1, gi),
       new Module("Structure de Donnees", 3, 1, gi),
       new Module("Systemes d'Exploitation", 3, 2, gi),
-      new Module("DevOps & CI/CD", 3, 2, gi)
+      new Module("DevOps & CI/CD", 3, 2, gi),
+      new Module("Circuits Electriques", 1, 1, ge),
+      new Module("Electronique Analogique", 1, 1, ge),
+      new Module("Systemes Logiques", 1, 2, ge),
+      new Module("Automatique Lineaire", 2, 1, ge),
+      new Module("Electronique de Puissance", 2, 2, ge),
+      new Module("Systemes Embarques", 3, 1, ge),
+      new Module("Mecanique des Solides", 1, 1, gc),
+      new Module("Materiaux de Construction", 1, 1, gc),
+      new Module("Topographie", 1, 2, gc),
+      new Module("Beton Arme", 2, 1, gc),
+      new Module("Geotechnique", 2, 2, gc),
+      new Module("Calcul des Structures", 3, 1, gc)
     );
     return moduleRepository.saveAll(modules);
   }
@@ -192,17 +216,35 @@ public class DataSeeder implements CommandLineRunner {
       new Element("Expression Ecrite", modules.get(4), users.get(10)),
       new Element("Gestion de Projet", modules.get(5), users.get(11)),
       new Element("Methodes Agiles", modules.get(6), users.get(11)),
+      new Element("Diagrammes UML", modules.get(7), users.get(8)),
       new Element("Optimisation SQL", modules.get(8), users.get(9)),
       new Element("Reseaux de Neurones", modules.get(9), users.get(6)),
       new Element("Architecture Java", modules.get(10), users.get(8)),
       new Element("Prise de Parole", modules.get(11), users.get(10)),
+      new Element("Redaction Scientifique", modules.get(12), users.get(10)),
       new Element("Design Patterns", modules.get(13), users.get(8)),
+      new Element("Conduite de Projet", modules.get(14), users.get(11)),
+      new Element("PL/SQL et Triggers", modules.get(15), users.get(9)),
+      new Element("Deep Learning", modules.get(16), users.get(6)),
       new Element("Securite Applicative", modules.get(17), users.get(7)),
       new Element("Microservices", modules.get(17), users.get(7)),
       new Element("Interfaces Reactives", modules.get(18), users.get(11)),
       new Element("Gestion d'Etat", modules.get(18), users.get(11)),
       new Element("Complexite Avancee", modules.get(19), users.get(6)),
-      new Element("Administration Serveur", modules.get(20), users.get(9))
+      new Element("Administration Serveur", modules.get(20), users.get(9)),
+      new Element("Pipelines Docker & K8s", modules.get(21), users.get(7)),
+      new Element("Lois de Kirchhoff", modules.get(22), users.get(6)),
+      new Element("Amplificateurs Operationnels", modules.get(23), users.get(7)),
+      new Element(" Portes Logiques & VHDL", modules.get(24), users.get(8)),
+      new Element("Asservissement & PID", modules.get(25), users.get(9)),
+      new Element("Convertisseurs Statiques", modules.get(26), users.get(10)),
+      new Element("Microcontroleurs ARM", modules.get(27), users.get(11)),
+      new Element("Statique et RDM", modules.get(28), users.get(6)),
+      new Element("Granulats et Liants", modules.get(29), users.get(7)),
+      new Element("Nivellement et Leves", modules.get(30), users.get(8)),
+      new Element("Dimensionnement BAEL", modules.get(31), users.get(9)),
+      new Element("Mecanique des Sols", modules.get(32), users.get(10)),
+      new Element("Elements Finis", modules.get(33), users.get(11))
     );
     return elementRepository.saveAll(elements);
   }
@@ -237,7 +279,6 @@ public class DataSeeder implements CommandLineRunner {
   ) {
     LocalDate today = LocalDate.now();
     LocalDate base = today.with(ChronoField.DAY_OF_WEEK, 1);
-
     if (today.getMonthValue() == 7 || today.getMonthValue() == 8) {
       base = LocalDate.of(today.getYear(), 9, 15)
         .with(ChronoField.DAY_OF_WEEK, 1);
@@ -284,11 +325,11 @@ public class DataSeeder implements CommandLineRunner {
       ),
       new DayPlan(
         base.plusDays(4), LocalTime.of(15, 0), LocalTime.of(17, 0),
-        15, PlanType.LECTURE, gi, 2, 1, "A", elements.get(11), rooms.get(0)
+        15, PlanType.LECTURE, gi, 2, 1, "A", elements.get(12), rooms.get(0)
       ),
       new DayPlan(
         base.plusDays(5), LocalTime.of(8, 30), LocalTime.of(10, 30),
-        15, PlanType.LECTURE, gi, 2, 1, "A", elements.get(13), rooms.get(1)
+        15, PlanType.LECTURE, gi, 2, 1, "A", elements.get(14), rooms.get(1)
       )
     );
     return dayPlanRepository.saveAll(plans);
@@ -356,6 +397,7 @@ public class DataSeeder implements CommandLineRunner {
     User student1 = users.get(1);
     User student2 = users.get(2);
     User student3 = users.get(3);
+
     List<Request> requests = List.of(
       new Request(
         null, "Document Request A", RequestState.PENDING,
