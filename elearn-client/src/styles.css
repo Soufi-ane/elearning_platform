@@ -50,6 +50,12 @@
   border-width: 1px;
   border-left-width: 3px;
   border-radius: 2px;
-  padding: 2px 4px;
+  padding: 3px 5px;
   cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.fc .fc-event-time,
+.fc .fc-event-title {
+  font-size: 0.8rem;
 }
