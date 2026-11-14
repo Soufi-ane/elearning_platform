@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -68,14 +69,31 @@ public class DayPlanService {
     Integer semester,
     String groupName
   ) {
+    if (
+      department == null ||
+      year == null ||
+      year <= 0 ||
+      semester == null ||
+      semester <= 0 ||
+      groupName == null ||
+      groupName.isBlank()
+    ) {
+      return Collections.emptyList();
+    }
+
     List<PlanResponse> events = new ArrayList<>();
-    List<DayPlan> plans = dayPlanRepository.findAll();
+    List<DayPlan> plans =
+      dayPlanRepository.findByDepartmentAndYearAndSemesterAndGroupNameIgnoreCase(
+        department,
+        year,
+        semester,
+        groupName.trim()
+      );
 
     for (DayPlan plan : plans) {
-      if (!matchesFilter(plan, department, year, semester, groupName)) {
+      if (plan.getDate() == null || plan.getElement() == null) {
         continue;
       }
-
       int repeats = Math.max(1, plan.getWeeklyRepeats());
       LocalDate baseDate = plan.getDate();
 
@@ -107,7 +125,6 @@ public class DayPlanService {
     if (startDate.getDayOfWeek().getValue() != 1) {
       startDate = startDate.with(ChronoField.DAY_OF_WEEK, 1);
     }
-
     LocalDate endDate = startDate.plusDays(6);
     Map<LocalDate, List<PlanResponse>> timeTable = getWeekTemplate(startDate);
     List<PlanResponse> weekEvents = getEventsByRange(
@@ -118,59 +135,12 @@ public class DayPlanService {
       semester,
       groupName
     );
-
     for (PlanResponse event : weekEvents) {
       if (timeTable.containsKey(event.date())) {
         timeTable.get(event.date()).add(event);
       }
     }
-
     return timeTable;
-  }
-
-  private boolean matchesFilter(
-    DayPlan plan,
-    DepartmentName department,
-    Integer year,
-    Integer semester,
-    String groupName
-  ) {
-    if (plan.getDate() == null || plan.getElement() == null) {
-      return false;
-    }
-
-    Module mod = plan.getElement().getModule();
-    DepartmentName planDept = plan.getDepartment() != null
-      ? plan.getDepartment()
-      : mod.getDepartment();
-    int planYear = plan.getYear() > 0
-      ? plan.getYear()
-      : Math.max(1, mod.getYear());
-    int planSem = plan.getSemester() > 0
-      ? plan.getSemester()
-      : mod.getSemester();
-    String planGroup = plan.getGroupName() != null
-      ? plan.getGroupName()
-      : "A";
-
-    if (department != null && planDept != department) {
-      return false;
-    }
-    if (year != null && year > 0 && planYear != year) {
-      return false;
-    }
-    if (semester != null && semester > 0 && planSem != semester) {
-      return false;
-    }
-    if (
-      groupName != null &&
-      !groupName.isBlank() &&
-      !"ALL".equalsIgnoreCase(groupName) &&
-      !groupName.equalsIgnoreCase(planGroup)
-    ) {
-      return false;
-    }
-    return true;
   }
 
   public List<String> getGroupsForClass(
@@ -181,35 +151,22 @@ public class DayPlanService {
     groups.add("A");
     groups.add("B");
 
-    userRepository.findByRole(Role.STUDENT).forEach(u -> {
-      boolean deptMatch = department == null || u.getDepartment() == department;
-      boolean yearMatch = year == null || year <= 0 || u.getYear() == year;
-      if (deptMatch && yearMatch && u.getGroupName() != null) {
-        String trimmed = u.getGroupName().trim().toUpperCase();
-        if (!trimmed.isEmpty()) {
-          groups.add(trimmed);
+    if (department != null && year != null && year > 0) {
+      dayPlanRepository.findByDepartmentAndYear(department, year).forEach(p -> {
+        if (p.getGroupName() != null) {
+          String trimmed = p.getGroupName().trim().toUpperCase();
+          if (!trimmed.isEmpty()) {
+            groups.add(trimmed);
+          }
         }
-      }
-    });
-
-    dayPlanRepository.findAll().forEach(p -> {
-      boolean deptMatch = department == null || p.getDepartment() == department;
-      boolean yearMatch = year == null || year <= 0 || p.getYear() == year;
-      if (deptMatch && yearMatch && p.getGroupName() != null) {
-        String trimmed = p.getGroupName().trim().toUpperCase();
-        if (!trimmed.isEmpty()) {
-          groups.add(trimmed);
-        }
-      }
-    });
-
+      });
+    }
     return new ArrayList<>(groups);
   }
 
   public PlanResponse createPlan(DayPlanRequest request, User user) {
     Element element = elementRepository.findById(request.elementId())
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
     validateTeacherOwnership(user, element);
 
     Room room = roomRepository.findById(request.roomId())
@@ -238,6 +195,10 @@ public class DayPlanService {
       request.startsAt(),
       request.endsAt(),
       repeats,
+      dept,
+      year,
+      semester,
+      groupName,
       room,
       element
     );
@@ -255,7 +216,6 @@ public class DayPlanService {
       element,
       room
     );
-
     return new PlanResponse(dayPlanRepository.save(plan));
   }
 
@@ -266,10 +226,8 @@ public class DayPlanService {
   ) {
     DayPlan plan = dayPlanRepository.findById(id)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
     Element element = elementRepository.findById(request.elementId())
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
     validateTeacherOwnership(user, element);
 
     Room room = roomRepository.findById(request.roomId())
@@ -298,6 +256,10 @@ public class DayPlanService {
       request.startsAt(),
       request.endsAt(),
       repeats,
+      dept,
+      year,
+      semester,
+      groupName,
       room,
       element
     );
@@ -324,7 +286,6 @@ public class DayPlanService {
   ) {
     DayPlan plan = dayPlanRepository.findById(id)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
     validateTeacherOwnership(user, plan.getElement());
 
     Room targetRoom = plan.getRoom();
@@ -349,6 +310,10 @@ public class DayPlanService {
       newStart,
       newEnd,
       Math.max(1, plan.getWeeklyRepeats()),
+      plan.getDepartment(),
+      plan.getYear(),
+      plan.getSemester(),
+      plan.getGroupName(),
       targetRoom,
       plan.getElement()
     );
@@ -382,6 +347,10 @@ public class DayPlanService {
     LocalTime startsAt,
     LocalTime endsAt,
     int weeklyRepeats,
+    DepartmentName dept,
+    int year,
+    int semester,
+    String groupName,
     Room room,
     Element element
   ) {
@@ -414,9 +383,22 @@ public class DayPlanService {
         endsAt.isAfter(existing.getStartsAt());
 
       if (weeksOverlap && timesOverlap) {
+        boolean sameClassGroup =
+          existing.getDepartment() == dept &&
+          existing.getYear() == year &&
+          existing.getSemester() == semester &&
+          groupName != null &&
+          groupName.equalsIgnoreCase(existing.getGroupName());
+
+        if (sameClassGroup) {
+          throw new BadRequestException(
+            "Group " + groupName + " already has a session during this slot"
+          );
+        }
         if (
           existing.getRoom() != null &&
-          existing.getRoom().getId().equals(room.getId())
+          existing.getRoom().getId().equals(room.getId()) &&
+          existing.getSemester() == semester
         ) {
           throw new BadRequestException(
             "Room " + room.getLabel() + " is already booked during this slot"
@@ -426,6 +408,7 @@ public class DayPlanService {
           existing.getElement() != null &&
           existing.getElement().getTeacher() != null &&
           element.getTeacher() != null &&
+          existing.getSemester() == semester &&
           existing.getElement().getTeacher().getId().equals(
             element.getTeacher().getId()
           )
