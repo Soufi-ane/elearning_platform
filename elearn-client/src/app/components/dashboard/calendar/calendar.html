@@ -17,47 +17,45 @@
           class="bg-[#0B1610] border border-[#2A3D30] text-xs text-[#EAE3D5]
             px-3 py-2 rounded-sm focus:border-[#C8A96E] focus:outline-none
             cursor-pointer">
-          <option value="ALL">All Departments</option>
           <option value="GENIE_INFORMATIQUE">Genie Informatique</option>
           <option value="GENIE_ELECTRIQUE">Genie Electrique</option>
           <option value="GENIE_CIVIL">Genie Civil</option>
         </select>
+      }
 
-        <select
-          [ngModel]="viewYear()"
-          (ngModelChange)="viewYear.set(+$event); onFilterChange()"
-          class="bg-[#0B1610] border border-[#2A3D30] text-xs text-[#EAE3D5]
-            px-3 py-2 rounded-sm focus:border-[#C8A96E] focus:outline-none
-            cursor-pointer">
-          <option [ngValue]="0">All Years</option>
-          <option [ngValue]="1">Year 1</option>
-          <option [ngValue]="2">Year 2</option>
-          <option [ngValue]="3">Year 3</option>
-        </select>
+      <select
+        [ngModel]="viewYear()"
+        (ngModelChange)="viewYear.set(+$event); onFilterChange()"
+        class="bg-[#0B1610] border border-[#2A3D30] text-xs text-[#EAE3D5]
+          px-3 py-2 rounded-sm focus:border-[#C8A96E] focus:outline-none
+          cursor-pointer">
+        <option [ngValue]="1">Year 1</option>
+        <option [ngValue]="2">Year 2</option>
+        <option [ngValue]="3">Year 3</option>
+      </select>
 
-        <select
-          [ngModel]="viewSemester()"
-          (ngModelChange)="viewSemester.set(+$event); onFilterChange()"
-          class="bg-[#0B1610] border border-[#2A3D30] text-xs text-[#EAE3D5]
-            px-3 py-2 rounded-sm focus:border-[#C8A96E] focus:outline-none
-            cursor-pointer">
-          <option [ngValue]="0">All Semesters</option>
-          <option [ngValue]="1">Semester 1</option>
-          <option [ngValue]="2">Semester 2</option>
-        </select>
+      <select
+        [ngModel]="viewSemester()"
+        (ngModelChange)="viewSemester.set(+$event); onFilterChange()"
+        class="bg-[#0B1610] border border-[#2A3D30] text-xs text-[#EAE3D5]
+          px-3 py-2 rounded-sm focus:border-[#C8A96E] focus:outline-none
+          cursor-pointer">
+        <option [ngValue]="1">Semester 1</option>
+        <option [ngValue]="2">Semester 2</option>
+      </select>
 
-        <select
-          [ngModel]="viewGroup()"
-          (ngModelChange)="viewGroup.set($event); onFilterChange()"
-          class="bg-[#0B1610] border border-[#2A3D30] text-xs text-[#EAE3D5]
-            px-3 py-2 rounded-sm focus:border-[#C8A96E] focus:outline-none
-            cursor-pointer">
-          <option value="ALL">All Groups</option>
-          @for (g of availableGroups(); track g) {
-            <option [value]="g">Group {{ g }}</option>
-          }
-        </select>
+      <select
+        [ngModel]="viewGroup()"
+        (ngModelChange)="viewGroup.set($event); onFilterChange()"
+        class="bg-[#0B1610] border border-[#2A3D30] text-xs text-[#EAE3D5]
+          px-3 py-2 rounded-sm focus:border-[#C8A96E] focus:outline-none
+          cursor-pointer">
+        @for (g of availableGroups(); track g) {
+          <option [value]="g">Group {{ g }}</option>
+        }
+      </select>
 
+      @if (isAdminOrTeacher) {
         <button
           type="button"
           (click)="openCreateModal()"

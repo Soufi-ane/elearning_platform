@@ -1,8 +1,17 @@
 import {
-  Component, effect, inject, OnInit, signal, untracked, ViewChild
+  Component,
+  effect,
+  inject,
+  OnInit,
+  signal,
+  untracked,
+  ViewChild
 } from '@angular/core';
 import {
-  FormBuilder, FormsModule, ReactiveFormsModule, Validators
+  FormBuilder,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators
 } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin, of } from 'rxjs';
@@ -11,15 +20,24 @@ import { CalendarService } from './calendar.service';
 import { ModuleService } from '../modules/modules.service';
 import { LoginService } from '../../login/login.service';
 import {
-  Department, Element, Module, Plan, Role, Room
+  Department,
+  Element,
+  Module,
+  Plan,
+  Role,
+  Room
 } from '../../../models/models';
 import {
   FullCalendarComponent,
   FullCalendarModule
 } from '@fullcalendar/angular';
 import {
-  CalendarOptions, DateSelectArg, DatesSetArg, EventClickArg,
-  EventDropArg, EventInput
+  CalendarOptions,
+  DateSelectArg,
+  DatesSetArg,
+  EventClickArg,
+  EventDropArg,
+  EventInput
 } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -51,10 +69,15 @@ export class Calendar implements OnInit {
   deleteTarget = signal<Plan | null>(null);
   errorMessage = signal<string | null>(null);
 
-  viewDepartment = signal<string>('ALL');
-  viewYear = signal<number>(0);
-  viewSemester = signal<number>(0);
-  viewGroup = signal<string>('ALL');
+  private getCurrentAcademicSemester(): number {
+    const month = new Date().getMonth() + 1;
+    return month >= 2 && month <= 8 ? 2 : 1;
+  }
+
+  viewDepartment = signal<string>(Department.GENIE_INFORMATIQUE);
+  viewYear = signal<number>(1);
+  viewSemester = signal<number>(this.getCurrentAcademicSemester());
+  viewGroup = signal<string>('A');
   availableGroups = signal<string[]>(['A', 'B']);
   formGroups = signal<string[]>(['A', 'B']);
 
@@ -141,6 +164,8 @@ export class Calendar implements OnInit {
           }
           if (user.groupName) this.viewGroup.set(user.groupName);
         }
+        this.refreshAvailableGroups();
+        this.loadEvents();
       });
     });
   }
@@ -362,7 +387,11 @@ export class Calendar implements OnInit {
       .getGroups(this.viewDepartment(), this.viewYear())
       .subscribe({
         next: (groups) => {
-          this.availableGroups.set(groups.length ? groups : ['A', 'B']);
+          const list = groups.length ? groups : ['A', 'B'];
+          this.availableGroups.set(list);
+          if (!list.includes(this.viewGroup())) {
+            this.viewGroup.set(list[0]);
+          }
         },
         error: () => this.availableGroups.set(['A', 'B'])
       });
@@ -385,17 +414,17 @@ export class Calendar implements OnInit {
   loadEvents(): void {
     const start = this.visibleStart();
     const end = this.visibleEnd();
-    if (!start || !end) return;
+    const dept = this.viewDepartment();
+    const yr = this.viewYear();
+    const sem = this.viewSemester();
+    const grp = this.viewGroup();
+
+    if (!start || !end || !dept || yr <= 0 || sem <= 0 || !grp) {
+      return;
+    }
 
     this.calendarService
-      .getEvents(
-        start,
-        end,
-        this.viewDepartment(),
-        this.viewYear(),
-        this.viewSemester(),
-        this.viewGroup()
-      )
+      .getEvents(start, end, dept, yr, sem, grp)
       .subscribe({
         next: (plans) => {
           const events = plans.map((p) => this.mapPlanToEvent(p));
@@ -427,8 +456,8 @@ export class Calendar implements OnInit {
       title: `${plan.element.name} (${plan.room.label})`,
       start: startIso,
       end: endIso,
-      backgroundColor: isExam ? '#4C1D24' : '#14261C',
-      borderColor: isExam ? '#F43F5E' : '#C8A96E',
+      backgroundColor: isExam ? '#3B1A20' : '#0E1F17',
+      borderColor: isExam ? '#9F2C43' : '#5A7360',
       textColor: '#EAE3D5',
       extendedProps: { plan }
     };
@@ -507,30 +536,13 @@ export class Calendar implements OnInit {
     this.loadFormDependencies(() => {
       const firstEl = this.allElements()[0];
       const firstMod = this.modules()[0];
-      const defaultDept =
-        this.viewDepartment() !== 'ALL'
-          ? this.viewDepartment()
-          : String(
-              firstEl?.module?.department ||
-                firstMod?.department ||
-                Department.GENIE_INFORMATIQUE
-            );
-      const defaultYear =
-        this.viewYear() > 0
-          ? this.viewYear()
-          : firstEl?.module?.year || firstMod?.year || 1;
-      const defaultSem =
-        this.viewSemester() > 0
-          ? this.viewSemester()
-          : firstEl?.module?.semester || firstMod?.semester || 1;
-      const defaultGroup = this.viewGroup() === 'ALL' ? 'A' : this.viewGroup();
 
       this.form.reset(
         {
-          department: defaultDept,
-          year: defaultYear,
-          semester: defaultSem,
-          groupName: defaultGroup,
+          department: this.viewDepartment(),
+          year: this.viewYear(),
+          semester: this.viewSemester(),
+          groupName: this.viewGroup(),
           moduleId: firstEl?.module?.id || firstMod?.id || '',
           elementId: firstEl?.id || '',
           roomId: this.rooms()[0]?.id || '',
@@ -620,26 +632,17 @@ export class Calendar implements OnInit {
 
     request$.subscribe({
       next: (savedPlan) => {
-        if (
-          this.viewDepartment() !== 'ALL' &&
-          this.viewDepartment() !== String(savedPlan.department)
-        ) {
-          this.viewDepartment.set('ALL');
+        if (savedPlan.department) {
+          this.viewDepartment.set(String(savedPlan.department));
         }
-        if (this.viewYear() !== 0 && this.viewYear() !== savedPlan.year) {
-          this.viewYear.set(0);
+        if (savedPlan.year > 0) {
+          this.viewYear.set(savedPlan.year);
         }
-        if (
-          this.viewSemester() !== 0 &&
-          this.viewSemester() !== savedPlan.semester
-        ) {
-          this.viewSemester.set(0);
+        if (savedPlan.semester > 0) {
+          this.viewSemester.set(savedPlan.semester);
         }
-        if (
-          this.viewGroup() !== 'ALL' &&
-          this.viewGroup() !== savedPlan.groupName
-        ) {
-          this.viewGroup.set('ALL');
+        if (savedPlan.groupName) {
+          this.viewGroup.set(savedPlan.groupName);
         }
         this.closeModal();
         this.refreshAvailableGroups();
