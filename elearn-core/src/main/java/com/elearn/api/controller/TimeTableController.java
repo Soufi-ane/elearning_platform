@@ -1,8 +1,6 @@
 package com.elearn.api.controller;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.elearn.api.entity.DepartmentName;
@@ -65,29 +63,48 @@ public class TimeTableController {
   ) {
     User user = (User) userDetails;
     if (user.getRole() == Role.STUDENT) {
-      if (department != null && user.getDepartment() != department) {
-        return ResponseEntity.ok(Collections.emptyList());
-      }
+      DepartmentName targetDept = user.getDepartment() != null
+        ? user.getDepartment()
+        : DepartmentName.GENIE_INFORMATIQUE;
+      int targetYear = (year != null && year > 0)
+        ? year
+        : Math.max(1, user.getYear());
+      int targetSem = (semester != null && semester > 0)
+        ? semester
+        : Math.max(1, user.getSemester());
+      String targetGroup = (groupName != null && !groupName.isBlank())
+        ? groupName
+        : (user.getGroupName() != null ? user.getGroupName() : "A");
+
       return ResponseEntity.ok(
         dayPlanService.getEventsByRange(
           startDate,
           endDate,
-          user.getDepartment(),
-          year != null ? year : user.getYear(),
-          semester != null ? semester : user.getSemester(),
-          groupName != null ? groupName : user.getGroupName()
+          targetDept,
+          targetYear,
+          targetSem,
+          targetGroup
         )
       );
     }
+
+    DepartmentName targetDept = department != null
+      ? department
+      : DepartmentName.GENIE_INFORMATIQUE;
+    int targetYear = (year != null && year > 0) ? year : 1;
+    int targetSem = (semester != null && semester > 0) ? semester : 1;
+    String targetGroup = (groupName != null && !groupName.isBlank())
+      ? groupName
+      : "A";
 
     return ResponseEntity.ok(
       dayPlanService.getEventsByRange(
         startDate,
         endDate,
-        department,
-        year,
-        semester,
-        groupName
+        targetDept,
+        targetYear,
+        targetSem,
+        targetGroup
       )
     );
   }
@@ -105,24 +122,43 @@ public class TimeTableController {
   ) {
     User user = (User) userDetails;
     if (user.getRole() == Role.STUDENT) {
-      if (department != null && user.getDepartment() != department) {
-        return new HashMap<>();
-      }
+      DepartmentName targetDept = user.getDepartment() != null
+        ? user.getDepartment()
+        : DepartmentName.GENIE_INFORMATIQUE;
+      int targetYear = (year != null && year > 0)
+        ? year
+        : Math.max(1, user.getYear());
+      int targetSem = (semester != null && semester > 0)
+        ? semester
+        : Math.max(1, user.getSemester());
+      String targetGroup = (groupName != null && !groupName.isBlank())
+        ? groupName
+        : (user.getGroupName() != null ? user.getGroupName() : "A");
+
       return dayPlanService.getByWeek(
         startDate,
-        user.getDepartment(),
-        year != null ? year : user.getYear(),
-        semester != null ? semester : user.getSemester(),
-        groupName != null ? groupName : user.getGroupName()
+        targetDept,
+        targetYear,
+        targetSem,
+        targetGroup
       );
     }
 
+    DepartmentName targetDept = department != null
+      ? department
+      : DepartmentName.GENIE_INFORMATIQUE;
+    int targetYear = (year != null && year > 0) ? year : 1;
+    int targetSem = (semester != null && semester > 0) ? semester : 1;
+    String targetGroup = (groupName != null && !groupName.isBlank())
+      ? groupName
+      : "A";
+
     return dayPlanService.getByWeek(
       startDate,
-      department,
-      year,
-      semester,
-      groupName
+      targetDept,
+      targetYear,
+      targetSem,
+      targetGroup
     );
   }
 
