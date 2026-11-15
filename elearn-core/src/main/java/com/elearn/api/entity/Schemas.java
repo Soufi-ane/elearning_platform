@@ -7,6 +7,7 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class Schemas {
+
   public record RegisterRequest(
     String firstName,
     String lastName,
@@ -25,8 +26,28 @@ public class Schemas {
   public record UserBaseResponse(
     String id,
     String firstName,
-    String lastName
-  ) {}
+    String lastName,
+    DepartmentName department,
+    int year,
+    int semester,
+    String groupName
+  ) {
+    public UserBaseResponse(User user) {
+      this(
+        user.getId(),
+        user.getFirstName(),
+        user.getLastName(),
+        user.getDepartment(),
+        user.getYear(),
+        user.getSemester(),
+        user.getGroupName()
+      );
+    }
+
+    public UserBaseResponse(String id, String firstName, String lastName) {
+      this(id, firstName, lastName, null, 0, 0, null);
+    }
+  }
 
   public record UserResponse(
     String id,
@@ -95,11 +116,7 @@ public class Schemas {
         element.getId(),
         element.getName(),
         new ModuleBaseResponse(element.getModule()),
-        new UserBaseResponse(
-          element.getTeacher().getId(),
-          element.getTeacher().getFirstName(),
-          element.getTeacher().getLastName()
-        )
+        new UserBaseResponse(element.getTeacher())
       );
     }
   }
@@ -183,11 +200,7 @@ public class Schemas {
         a.getDateTime(),
         a.getType(),
         a.isJustified(),
-        new UserBaseResponse(
-          a.getStudent().getId(),
-          a.getStudent().getFirstName(),
-          a.getStudent().getLastName()
-        ),
+        new UserBaseResponse(a.getStudent()),
         new ElementResponse(a.getElement())
       );
     }
@@ -203,11 +216,7 @@ public class Schemas {
       this(
         r.getId(),
         r.getGrade(),
-        new UserBaseResponse(
-          r.getStudent().getId(),
-          r.getStudent().getFirstName(),
-          r.getStudent().getLastName()
-        ),
+        new UserBaseResponse(r.getStudent()),
         new ElementResponse(r.getElement())
       );
     }
@@ -228,11 +237,7 @@ public class Schemas {
         r.getState() != null ? r.getState().name() : null,
         r.getRequestDate(),
         r.getForcastDate(),
-        new UserBaseResponse(
-          r.getStudent().getId(),
-          r.getStudent().getFirstName(),
-          r.getStudent().getLastName()
-        )
+        new UserBaseResponse(r.getStudent())
       );
     }
   }
@@ -259,9 +264,13 @@ public class Schemas {
     String studentId,
     String elementId,
     LocalDateTime dateTime,
-    AbsenceType type
+    AbsenceType type,
+    Boolean isJustified
   ) {
     public record AbsenceUpdateRequest(
+      String studentId,
+      String elementId,
+      LocalDateTime dateTime,
       Boolean isJustified,
       AbsenceType type
     ) {}
@@ -281,11 +290,7 @@ public class Schemas {
         a.getDateTime(),
         a.getType(),
         a.isJustified(),
-        new UserBaseResponse(
-          a.getStudent().getId(),
-          a.getStudent().getFirstName(),
-          a.getStudent().getLastName()
-        ),
+        new UserBaseResponse(a.getStudent()),
         new ElementResponse(a.getElement())
       );
     }
