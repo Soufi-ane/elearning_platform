@@ -14,22 +14,26 @@ export type AbsenceByElement = {
 };
 
 export enum AbsenceStatus {
-  NORMAL,
-  VERBAL_WARNING,
-  WRITTEN_WARNING,
-  DISCIPLINARY_HEARING
+  NORMAL = 'NORMAL',
+  VERBAL_WARNING = 'VERBAL_WARNING',
+  WRITTEN_WARNING = 'WRITTEN_WARNING',
+  DISCIPLINARY_HEARING = 'DISCIPLINARY_HEARING'
 }
 
 export type UserInfo = {
   id: string;
   firstName: string;
   lastName: string;
+  department?: Department;
+  year?: number;
+  semester?: number;
+  groupName?: string;
 };
 
 export enum AbsenceType {
-  CLASS,
-  EXAM,
-  OTHER
+  CLASS = 'CLASS',
+  EXAM = 'EXAM',
+  OTHER = 'OTHER'
 }
 
 export type Plan = {
@@ -137,6 +141,15 @@ export type UserRequest = {
 export type AbsenceCreateRequest = {
   studentId: string;
   elementId: string;
-  type: AbsenceType;
+  type: AbsenceType | string;
   dateTime?: string;
+  isJustified?: boolean;
+};
+
+export type AbsenceUpdateRequest = {
+  studentId?: string;
+  elementId?: string;
+  dateTime?: string;
+  isJustified?: boolean;
+  type?: AbsenceType | string;
 };
