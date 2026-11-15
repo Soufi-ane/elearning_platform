@@ -421,44 +421,62 @@ public class DataSeeder implements CommandLineRunner {
   }
 
   private List<Absence> seedAbsence(List<User> users, List<Element> elements) {
-    List<Absence> absences = List.of(
-      new Absence(
-        LocalDateTime.now(), AbsenceType.CLASS, true,
-        users.get(1), elements.get(0)
-      ),
-      new Absence(
-        LocalDateTime.now(), AbsenceType.EXAM, false,
-        users.get(1), elements.get(3)
-      ),
-      new Absence(
-        LocalDateTime.now(), AbsenceType.CLASS, false,
-        users.get(1), elements.get(6)
-      ),
-      new Absence(
-        LocalDateTime.now().minusDays(5), AbsenceType.CLASS, false,
-        users.get(1), elements.get(6)
-      ),
-      new Absence(
-        LocalDateTime.now(), AbsenceType.EXAM, false,
-        users.get(2), elements.get(1)
-      ),
-      new Absence(
-        LocalDateTime.now().minusDays(2), AbsenceType.CLASS, true,
-        users.get(2), elements.get(1)
-      ),
-      new Absence(
-        LocalDateTime.now(), AbsenceType.EXAM, false,
-        users.get(3), elements.get(8)
-      ),
-      new Absence(
-        LocalDateTime.now().minusDays(10), AbsenceType.CLASS, true,
-        users.get(4), elements.get(16)
-      ),
-      new Absence(
-        LocalDateTime.now().minusDays(1), AbsenceType.CLASS, false,
-        users.get(7), elements.get(44)
-      )
-    );
+    List<Absence> absences = new ArrayList<>();
+    List<User> students = users.stream()
+      .filter(u -> u.getRole() == Role.STUDENT)
+      .toList();
+
+    int offset = 1;
+    for (User student : students) {
+      for (int sem = 1; sem <= 2; sem++) {
+        final int targetSem = sem;
+        List<Element> matchingEls = elements.stream()
+          .filter(
+            e ->
+              e.getModule() != null &&
+              e.getModule().getDepartment() == student.getDepartment() &&
+              e.getModule().getYear() == student.getYear() &&
+              e.getModule().getSemester() == targetSem
+          )
+          .toList();
+
+        if (!matchingEls.isEmpty()) {
+          Element el1 = matchingEls.get(0);
+          absences.add(
+            new Absence(
+              LocalDateTime.now()
+                .minusDays(offset)
+                .withHour(9)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0),
+              AbsenceType.CLASS,
+              offset % 2 == 0,
+              student,
+              el1
+            )
+          );
+          if (matchingEls.size() > 1) {
+            Element el2 = matchingEls.get(1);
+            absences.add(
+              new Absence(
+                LocalDateTime.now()
+                  .minusDays(offset + 3)
+                  .withHour(14)
+                  .withMinute(0)
+                  .withSecond(0)
+                  .withNano(0),
+                AbsenceType.EXAM,
+                false,
+                student,
+                el2
+              )
+            );
+          }
+          offset++;
+        }
+      }
+    }
     return absenceRepository.saveAll(absences);
   }
 
