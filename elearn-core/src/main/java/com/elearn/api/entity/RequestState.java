@@ -2,6 +2,10 @@ package com.elearn.api.entity;
 
 public enum RequestState {
   PENDING,
+  IN_REVIEW,
   IN_PROGRESS,
-  COMPLETED
+  READY_FOR_PICKUP,
+  APPROVED,
+  COMPLETED,
+  REJECTED
 }
