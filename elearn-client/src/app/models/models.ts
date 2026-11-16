@@ -1,3 +1,47 @@
+export enum RequestState {
+  PENDING = 'PENDING',
+  IN_REVIEW = 'IN_REVIEW',
+  IN_PROGRESS = 'IN_PROGRESS',
+  READY_FOR_PICKUP = 'READY_FOR_PICKUP',
+  APPROVED = 'APPROVED',
+  COMPLETED = 'COMPLETED',
+  REJECTED = 'REJECTED'
+}
+
+export type UserInfo = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  role?: Role;
+  department?: Department;
+  year?: number;
+  semester?: number;
+  groupName?: string;
+};
+
+export type UserRequest = {
+  id: string;
+  title: string;
+  state: RequestState | string;
+  requestDate: string | Date;
+  forcastDate: string | Date | null;
+  student: UserInfo;
+};
+
+export type RequestCreatePayload = {
+  title: string;
+  userId?: string;
+  state?: RequestState | string;
+  forcastDate?: string | null;
+};
+
+export type RequestUpdatePayload = {
+  title?: string;
+  state?: RequestState | string;
+  forcastDate?: string | null;
+  userId?: string;
+};
+
 export type Absence = {
   id: string;
   dateTime: string;
@@ -19,16 +63,6 @@ export enum AbsenceStatus {
   WRITTEN_WARNING = 'WRITTEN_WARNING',
   DISCIPLINARY_HEARING = 'DISCIPLINARY_HEARING'
 }
-
-export type UserInfo = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  department?: Department;
-  year?: number;
-  semester?: number;
-  groupName?: string;
-};
 
 export enum AbsenceType {
   CLASS = 'CLASS',
@@ -128,15 +162,6 @@ export enum Role {
   TEACHER = 'TEACHER',
   ADMIN = 'ADMIN'
 }
-
-export type UserRequest = {
-  id: string;
-  title: string;
-  state: string;
-  requestDate: Date;
-  forcastDate: Date | null;
-  student: UserInfo;
-};
 
 export type AbsenceCreateRequest = {
   studentId: string;
