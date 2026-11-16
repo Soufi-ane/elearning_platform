@@ -7,7 +7,6 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class Schemas {
-
   public record RegisterRequest(
     String firstName,
     String lastName,
@@ -27,6 +26,7 @@ public class Schemas {
     String id,
     String firstName,
     String lastName,
+    Role role,
     DepartmentName department,
     int year,
     int semester,
@@ -37,6 +37,7 @@ public class Schemas {
         user.getId(),
         user.getFirstName(),
         user.getLastName(),
+        user.getRole(),
         user.getDepartment(),
         user.getYear(),
         user.getSemester(),
@@ -45,7 +46,7 @@ public class Schemas {
     }
 
     public UserBaseResponse(String id, String firstName, String lastName) {
-      this(id, firstName, lastName, null, 0, 0, null);
+      this(id, firstName, lastName, null, null, 0, 0, null);
     }
   }
 
@@ -225,7 +226,7 @@ public class Schemas {
   public record UserRequest(
     String id,
     String title,
-    String state,
+    RequestState state,
     Date requestDate,
     Date forcastDate,
     UserBaseResponse student
@@ -234,13 +235,27 @@ public class Schemas {
       this(
         r.getId(),
         r.getTitle(),
-        r.getState() != null ? r.getState().name() : null,
+        r.getState(),
         r.getRequestDate(),
         r.getForcastDate(),
-        new UserBaseResponse(r.getStudent())
+        r.getStudent() != null ? new UserBaseResponse(r.getStudent()) : null
       );
     }
   }
+
+  public record RequestCreateDto(
+    String title,
+    String userId,
+    RequestState state,
+    Date forcastDate
+  ) {}
+
+  public record RequestUpdateDto(
+    String title,
+    RequestState state,
+    Date forcastDate,
+    String userId
+  ) {}
 
   public record ModuleResponse(
     String id,
