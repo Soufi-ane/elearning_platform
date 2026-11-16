@@ -484,55 +484,52 @@ public class DataSeeder implements CommandLineRunner {
     User student1 = users.get(1);
     User student2 = users.get(2);
     User student3 = users.get(3);
+    User teacher1 = users.stream()
+      .filter(u -> u.getRole() == Role.TEACHER)
+      .findFirst()
+      .orElse(student1);
 
     List<Request> requests = List.of(
       new Request(
-        null, "Document Request A", RequestState.PENDING,
+        null, "Attestation de Scolarite", RequestState.PENDING,
         new Date(), null, student1
       ),
       new Request(
-        null, "Transcript Request", RequestState.IN_PROGRESS,
-        addDays(new Date(), -2), null, student1
+        null, "Official Transcript Request", RequestState.IN_REVIEW,
+        addDays(new Date(), -2), addDays(new Date(), 3), student1
       ),
       new Request(
-        null, "Absence Justification", RequestState.COMPLETED,
+        null, "Absence Justification Review", RequestState.COMPLETED,
         addDays(new Date(), -5), new Date(), student1
       ),
       new Request(
-        null, "Library Access", RequestState.PENDING,
-        new Date(), null, student1
+        null, "Internship Convention Signature", RequestState.READY_FOR_PICKUP,
+        addDays(new Date(), -3), addDays(new Date(), 1), student1
       ),
       new Request(
-        null, "Course Change", RequestState.IN_PROGRESS,
-        addDays(new Date(), -1), null, student1
+        null, "Course Group Transfer", RequestState.REJECTED,
+        addDays(new Date(), -6), addDays(new Date(), -4), student1
       ),
       new Request(
-        null, "Internship Convention", RequestState.PENDING,
-        new Date(), null, student1
-      ),
-      new Request(
-        null, "Exam Retake", RequestState.PENDING,
+        null, "Exam Retake Petition", RequestState.PENDING,
         new Date(), null, student2
       ),
       new Request(
-        null, "Medical Certificate", RequestState.COMPLETED,
-        addDays(new Date(), -10), addDays(new Date(), -8), student2
+        null, "Hardware Lab Equipment Loan", RequestState.IN_PROGRESS,
+        addDays(new Date(), -3), addDays(new Date(), 2), student2
       ),
       new Request(
-        null, "Hardware Loan", RequestState.IN_PROGRESS,
-        addDays(new Date(), -3), null, student2
+        null, "Releve de Notes S1", RequestState.APPROVED,
+        addDays(new Date(), -4), addDays(new Date(), 1), student3
       ),
       new Request(
-        null, "Study Abroad Inquiry", RequestState.PENDING,
-        new Date(), null, student2
+        null, "Projector & HDMI Kit Reservation - Amphi 1",
+        RequestState.PENDING, new Date(), null, teacher1
       ),
       new Request(
-        null, "Software License Request", RequestState.COMPLETED,
-        addDays(new Date(), -7), addDays(new Date(), -6), student2
-      ),
-      new Request(
-        null, "Releve de notes S1", RequestState.PENDING,
-        new Date(), null, student3
+        null, "Teaching Certification Attestation",
+        RequestState.IN_PROGRESS, addDays(new Date(), -2),
+        addDays(new Date(), 2), teacher1
       )
     );
     requestRepository.saveAll(requests);
