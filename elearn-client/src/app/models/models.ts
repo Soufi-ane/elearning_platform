@@ -170,6 +170,8 @@ export type User = {
   currentSemester: number;
   numSemesters: number;
   groupName?: string;
+  hasProfilePicture?: boolean;
+  rootAdmin?: boolean;
 };
 
 export enum StudyMode {

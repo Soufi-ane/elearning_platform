@@ -14,7 +14,7 @@ public class Schemas {
     String username,
     String email,
     String password,
-    @JsonFormat(pattern = "dd-MM-yyyy") LocalDate dateOfBirth,
+    LocalDate dateOfBirth,
     Role role,
     DepartmentName department,
     StudyMode studyMode,
@@ -65,7 +65,9 @@ public class Schemas {
     int semester,
     int currentSemester,
     int numSemesters,
-    String groupName
+    String groupName,
+    boolean hasProfilePicture,
+    boolean rootAdmin
   ) {
     public UserResponse(User user) {
       this(
@@ -82,10 +84,37 @@ public class Schemas {
         user.getSemester(),
         user.getSemester(),
         user.getNumSemesters(),
-        user.getGroupName()
+        user.getGroupName(),
+        user.getProfilePicture() != null && user.getProfilePicture().length > 0,
+        user.isRootAdmin()
       );
     }
   }
+
+  public record ProfileOptionsResponse(
+    List<String> roles,
+    List<String> departments,
+    List<String> studyModes
+  ) {}
+
+  public record UserUpdateRequest(
+    String firstName,
+    String lastName,
+    String username,
+    String email,
+    LocalDate dateOfBirth,
+    Role role,
+    DepartmentName department,
+    StudyMode studyMode,
+    Integer year,
+    Integer semester,
+    String groupName
+  ) {}
+
+  public record PasswordChangeRequest(
+    String currentPassword,
+    String newPassword
+  ) {}
 
   public record LoginRequest(String usernameOrEmail, String password) {}
 
