@@ -7,6 +7,9 @@ import com.elearn.api.entity.Element;
 
 @Repository
 public interface ElementRepository extends JpaRepository<Element, String> {
+  
     List<Element> findByModuleId(String moduleId);
     List<Element> findByModuleIdAndTeacherId(String moduleId, String teacherId);
+    List<Element> findByTeacher_Id(String teacherId);
+
 }
