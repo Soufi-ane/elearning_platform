@@ -1,89 +1,273 @@
-<div class="w-full py-6 pl-9 pr-28 text-left text-[#8FA68C] tracking-wide">
-
+<div class="w-full py-6 pl-9 pr-12 text-left text-[#8FA68C] tracking-wide">
   @if (currentUser()) {
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4 px-1">
+      <div class="flex items-center gap-4">
+        <h2 class="text-xs font-medium uppercase tracking-widest text-[#C8A96E]">
+          Grades
+        </h2>
+        @if (isStudent() && summary() && summary()!.totalElements > 0) {
+          <span class="text-xs font-mono text-white/80">
+            Avg: {{ formatGrade(summary()!.average) }}/20 ({{ summary()!.mention }})
+          </span>
+        }
+      </div>
 
-    <div class="flex items-center justify-between mb-4 px-1">
-      <h2 class="text-xs font-medium uppercase tracking-widest text-[#C8A96E]">
-        Grades
-      </h2>
+      @if (isStudent()) {
+        <select
+          [disabled]="availableSemesters().length === 0"
+          [value]="semester()"
+          (change)="onSemesterChange($event)"
+          class="bg-[#0E1A14] text-xs text-[#C8A96E] border border-[#1A302F]
+            px-3 py-1.5 rounded font-mono">
+          @for (sem of availableSemesters(); track sem) {
+            <option [value]="sem" [selected]="sem === semester()">
+              Semester {{ sem }}
+            </option>
+          } @empty {
+            <option>None Available</option>
+          }
+        </select>
+      } @else {
+        <button
+          (click)="openCreateModal()"
+          class="bg-[#1A302F] hover:bg-[#244240] text-xs text-[#C8A96E]
+            px-3 py-1.5 rounded uppercase tracking-wider cursor-pointer">
+          + Add Grade
+        </button>
+      }
+    </div>
 
-      <div class="flex items-center gap-3">
-        @if (availableSemesters().length > 0) {
+    @if (!isStudent()) {
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <input
+          type="text"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event); loadManagedGrades()"
+          placeholder="Search student or element..."
+          class="bg-[#0E1A14] text-xs text-white/90 border border-[#1A302F]
+            px-3 py-1.5 rounded w-56 focus:outline-none" />
+
+        @if (isAdmin()) {
           <select
-            id="semesterSelect"
-            [value]="semester()"
-            (change)="onSemesterChange($event)"
-            class="bg-[#0E1A14] text-xs text-[#C8A96E] border border-[#1A302F] px-3 py-1.5
-            rounded focus:outline-none focus:border-[#C8A96E]/40 cursor-pointer font-mono tracking-wide">
-
-            @for (sem of availableSemesters(); track sem) {
-              <option [value]="sem" [selected]="sem === semester()">
-                Semester {{ sem }}
-              </option>
+            [ngModel]="filterDepartment()"
+            (ngModelChange)="filterDepartment.set($event); loadManagedGrades()"
+            class="bg-[#0E1A14] text-xs text-[#C8A96E] border border-[#1A302F]
+              px-2.5 py-1.5 rounded">
+            <option value="">All Depts</option>
+            @for (d of departments; track d) {
+              <option [value]="d">{{ d }}</option>
             }
           </select>
-        } @else {
+
           <select
-            id="semesterSelect"
-            disabled
-            class="bg-[#0E1A14]/40 text-xs text-[#8FA68C]/40 border border-[#1A302F]/60 px-3 py-1.5 rounded cursor-not-allowed font-mono tracking-wide italic">
-            <option>None Available</option>
+            [ngModel]="filterYear()"
+            (ngModelChange)="filterYear.set($event); loadManagedGrades()"
+            class="bg-[#0E1A14] text-xs text-[#C8A96E] border border-[#1A302F]
+              px-2.5 py-1.5 rounded">
+            <option value="">All Years</option>
+            @for (y of [1, 2, 3]; track y) {
+              <option [value]="y">Year {{ y }}</option>
+            }
           </select>
         }
-      </div>
-    </div>
 
-    <div class="border border-[#1A302F] bg-[#0E1A14]/20">
-
-      <div class="grid grid-cols-12 bg-[#0E1A14] text-[10px] uppercase tracking-wider border-b border-[#1A302F] px-4 py-3 text-[#C8A96E] font-medium">
-        <div class="col-span-5">Module</div>
-        <div class="col-span-5">Element</div>
-        <div class="col-span-2 text-right">Grade</div>
-      </div>
-
-      <div class="flex flex-col">
-
-        @for(result of results(); track result.id) {
-          <div class="grid grid-cols-12 items-center px-4 py-3.5 border-b border-[#1A302F] last:border-none hover:bg-[#1A302F]/20 transition-colors duration-200">
-
-            <div class="col-span-5 pr-4 text-xs font-medium text-white/70">
-              {{ result.element.module.name }}
-            </div>
-
-            <div class="col-span-5 pr-4 text-sm text-white/90 font-normal tracking-normal">
-              {{ result.element.name }}
-            </div>
-
-            <div class="col-span-2 text-right text-sm font-mono text-[#C8A96E]">
-              {{ formatGrade(result.grade) }}
-            </div>
-
-          </div>
-        } @empty {
-          @if (!isLoading()) {
-            <div class="p-12 text-center text-xs opacity-40 uppercase tracking-widest">
-              @if (availableSemesters().length === 0) {
-                Not available yet. You are currently in Semester 1.
-              } @else {
-                None Available for semester {{ semester() }}.
-              }
-            </div>
+        <select
+          [ngModel]="filterSemester()"
+          (ngModelChange)="filterSemester.set($event); loadManagedGrades()"
+          class="bg-[#0E1A14] text-xs text-[#C8A96E] border border-[#1A302F]
+            px-2.5 py-1.5 rounded">
+          <option value="">All Semesters</option>
+          @for (s of [1, 2, 3, 4, 5, 6]; track s) {
+            <option [value]="s">S{{ s }}</option>
           }
-        }
+        </select>
 
-        @if (isLoading()) {
-          <div class="p-12 text-center text-xs opacity-50 animate-pulse tracking-widest">
-            Syncing marks ledger...
-          </div>
-        }
+        <select
+          [ngModel]="filterGroup()"
+          (ngModelChange)="filterGroup.set($event); loadManagedGrades()"
+          class="bg-[#0E1A14] text-xs text-[#C8A96E] border border-[#1A302F]
+            px-2.5 py-1.5 rounded">
+          <option value="">All Groups</option>
+          @for (g of groups; track g) {
+            <option [value]="g">Group {{ g }}</option>
+          }
+        </select>
 
+        <select
+          [ngModel]="filterElementId()"
+          (ngModelChange)="filterElementId.set($event); loadManagedGrades()"
+          class="bg-[#0E1A14] text-xs text-[#C8A96E] border border-[#1A302F]
+            px-2.5 py-1.5 rounded max-w-52">
+          <option value="">All Elements</option>
+          @for (el of elements(); track el.id) {
+            <option [value]="el.id">{{ el.name }}</option>
+          }
+        </select>
       </div>
+    }
 
-    </div>
-  } @else {
-    <div class="border border-[#1A302F] bg-[#0E1A14]/20 p-12 text-center text-xs opacity-50 uppercase tracking-widest animate-pulse">
-      Verifying profile credentials...
+    <div class="border border-[#1A302F] bg-[#0E1A14]/20 overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-[#0E1A14] text-[10px] uppercase tracking-wider
+            border-b border-[#1A302F] text-[#C8A96E]">
+            @if (!isStudent()) {
+              <th class="px-4 py-3">Student</th>
+            }
+            <th class="px-4 py-3">Module / Element</th>
+            @if (isAdmin()) {
+              <th class="px-4 py-3">Graded By</th>
+            }
+            <th class="px-4 py-3 text-right">Grade</th>
+            <th class="px-4 py-3 text-right">Status</th>
+            @if (!isStudent()) {
+              <th class="px-4 py-3 text-right">Actions</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of results(); track r.id) {
+            <tr class="border-b border-[#1A302F] last:border-none
+              hover:bg-[#1A302F]/20 text-xs">
+              @if (!isStudent()) {
+                <td class="px-4 py-3 text-white/90">
+                  {{ fullName(r.student) }}
+                  <span class="text-[10px] text-[#8FA68C]/70 ml-1">
+                    {{ r.student.department }}-{{ r.student.groupName }}
+                  </span>
+                </td>
+              }
+              <td class="px-4 py-3">
+                <div class="text-white/90">{{ r.element.name }}</div>
+                <div class="text-[10px] text-[#8FA68C]/70">
+                  {{ r.element.module.name }} (S{{ r.element.module.semester }})
+                </div>
+              </td>
+              @if (isAdmin()) {
+                <td class="px-4 py-3 text-white/75">
+                  <div>{{ fullName(r.gradedBy) }}</div>
+                  @if (
+                    r.lastModifiedBy &&
+                    r.gradedBy &&
+                    r.lastModifiedBy.id !== r.gradedBy.id
+                  ) {
+                    <div class="text-[10px] text-[#C8A96E]/80">
+                      Edited: {{ fullName(r.lastModifiedBy) }}
+                    </div>
+                  }
+                </td>
+              }
+              <td class="px-4 py-3 text-right font-mono text-sm text-[#C8A96E]">
+                {{ formatGrade(r.grade) }}
+              </td>
+              <td class="px-4 py-3 text-right text-[10px] uppercase tracking-wider">
+                {{ r.status ?? (r.grade >= 10 ? 'PASSED' : 'RETAKE') }}
+              </td>
+              @if (!isStudent()) {
+                <td class="px-4 py-3 text-right space-x-2">
+                  <button
+                    (click)="openEditModal(r)"
+                    class="text-[#C8A96E] hover:underline cursor-pointer">
+                    Edit
+                  </button>
+                  <button
+                    (click)="removeGrade(r)"
+                    class="text-red-400/80 hover:underline cursor-pointer">
+                    Delete
+                  </button>
+                </td>
+              }
+            </tr>
+          } @empty {
+            @if (!isLoading()) {
+              <tr>
+                <td colspan="6"
+                  class="p-10 text-center text-xs opacity-40 uppercase tracking-widest">
+                  @if (isStudent() && availableSemesters().length === 0) {
+                    No exams completed yet.
+                  } @else {
+                    No grades found.
+                  }
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
     </div>
   }
 </div>
 
+@if (showModal()) {
+  <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+    <div class="bg-[#0E1A14] border border-[#1A302F] p-5 w-full max-w-md
+      rounded space-y-3 text-xs">
+      <h3 class="uppercase tracking-widest text-[#C8A96E]">
+        {{ editingResult() ? 'Edit Grade' : 'Add Grade' }}
+      </h3>
+
+      @if (!editingResult()) {
+        <select
+          [ngModel]="formElementId()"
+          (ngModelChange)="formElementId.set($event)"
+          class="w-full bg-[#09120E] border border-[#1A302F] px-3 py-2
+            rounded text-white/90">
+          @for (el of elements(); track el.id) {
+            <option [value]="el.id">
+              {{ el.name }} ({{ el.module.department }} S{{ el.module.semester }})
+            </option>
+          }
+        </select>
+
+        <select
+          [ngModel]="formStudentId()"
+          (ngModelChange)="formStudentId.set($event)"
+          class="w-full bg-[#09120E] border border-[#1A302F] px-3 py-2
+            rounded text-white/90">
+          @for (st of students(); track st.id) {
+            <option [value]="st.id">
+              {{ st.firstName }} {{ st.lastName }}
+              ({{ st.department }}-{{ st.groupName }})
+            </option>
+          }
+        </select>
+      }
+
+      <input
+        type="number"
+        min="0"
+        max="20"
+        step="0.25"
+        [ngModel]="formGrade()"
+        (ngModelChange)="formGrade.set($event)"
+        placeholder="Grade (0 - 20)"
+        class="w-full bg-[#09120E] border border-[#1A302F] px-3 py-2
+          rounded text-white/90 font-mono" />
+
+      <input
+        type="text"
+        [ngModel]="formRemarks()"
+        (ngModelChange)="formRemarks.set($event)"
+        placeholder="Remarks (optional)"
+        class="w-full bg-[#09120E] border border-[#1A302F] px-3 py-2
+          rounded text-white/90" />
+
+      @if (errorMsg()) {
+        <div class="text-red-400 text-[11px]">{{ errorMsg() }}</div>
+      }
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button
+          (click)="showModal.set(false)"
+          class="px-3 py-1.5 border border-[#1A302F] rounded cursor-pointer">
+          Cancel
+        </button>
+        <button
+          (click)="saveGrade()"
+          class="px-3 py-1.5 bg-[#1A302F] text-[#C8A96E] rounded cursor-pointer">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+}
