@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.elearn.api.entity.Schemas.RegisterRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -40,9 +41,16 @@ public class User implements UserDetails {
   private String password;
   private LocalDate dateOfBirth;
 
+  @Column(name = "profile_picture", columnDefinition = "bytea")
+  private byte[] profilePicture;
+
+  private String profilePictureType;
+
   @Enumerated(EnumType.STRING)
   private StudyMode studyMode;
 
+  @Column(nullable = false, columnDefinition = "boolean default false")
+  private boolean rootAdmin = false;
   private int year;
   private int semester;
   private int numSemesters;

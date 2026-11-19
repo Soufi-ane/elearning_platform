@@ -93,6 +93,7 @@ public class DataSeeder implements CommandLineRunner {
       seedRequests(users);
       seedGrades();
     }
+    ensureRootAdmin();
   }
 
   private void seedGrades() {
@@ -177,13 +178,14 @@ public class DataSeeder implements CommandLineRunner {
     DepartmentName gi = DepartmentName.GENIE_INFORMATIQUE;
     DepartmentName ge = DepartmentName.GENIE_ELECTRIQUE;
     DepartmentName gc = DepartmentName.GENIE_CIVIL;
-
+    User root = new User(
+      "Admin", "System", "admin", null, "admin@univ-tech.ma",
+      passwordEncoder.encode("12341234"), LocalDate.of(1990, 5, 15),
+      Role.ADMIN, null, 0, 0, null
+    );
+    root.setRootAdmin(true);
     List<User> users = List.of(
-      new User(
-        "Admin", "System", "admin", null, "admin@univ-tech.ma",
-        passwordEncoder.encode("12341234"), LocalDate.of(1990, 5, 15),
-        Role.ADMIN, null, 0, 0, null
-      ),
+      root,
       new User(
         "Soufiane", "Jaber", "soufiane", gi,
         "soufianejb@mail.ma", passwordEncoder.encode("12341234"),
@@ -619,5 +621,15 @@ public class DataSeeder implements CommandLineRunner {
     cal.setTime(date);
     cal.add(Calendar.DAY_OF_YEAR, days);
     return cal.getTime();
+  }
+
+  private void ensureRootAdmin() {
+    List<User> admins = userRepository.findByRole(Role.ADMIN);
+    boolean hasRoot = admins.stream().anyMatch(User::isRootAdmin);
+    if (!hasRoot && !admins.isEmpty()) {
+      User root = admins.get(0);
+      root.setRootAdmin(true);
+      userRepository.save(root);
+    }
   }
 }
