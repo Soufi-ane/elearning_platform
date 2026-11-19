@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class Schemas {
@@ -210,18 +211,70 @@ public class Schemas {
   public record ResultResponse(
     String id,
     double grade,
+    String status,
+    String remarks,
+    LocalDateTime updatedAt,
     UserBaseResponse student,
-    ElementResponse element
+    ElementResponse element,
+    UserBaseResponse gradedBy,
+    UserBaseResponse lastModifiedBy
   ) {
     public ResultResponse(Result r) {
       this(
         r.getId(),
         r.getGrade(),
+        r.computeStatus(),
+        r.getRemarks(),
+        r.getUpdatedAt(),
         new UserBaseResponse(r.getStudent()),
-        new ElementResponse(r.getElement())
+        new ElementResponse(r.getElement()),
+        r.getGradedBy() != null ? new UserBaseResponse(r.getGradedBy()) : null,
+        r.getLastModifiedBy() != null
+          ? new UserBaseResponse(r.getLastModifiedBy())
+          : null
       );
     }
   }
+
+  public record ResultCreateRequest(
+    String studentId,
+    String elementId,
+    Double grade,
+    String remarks
+  ) {}
+
+  public record ResultUpdateRequest(
+    Double grade,
+    String remarks
+  ) {}
+
+  public record ModuleAverageResponse(
+    ModuleBaseResponse module,
+    double average,
+    String status,
+    int gradedElements
+  ) {}
+
+  public record SemesterSummaryResponse(
+    int semester,
+    double average,
+    String mention,
+    int totalElements,
+    int passedElements,
+    int retakeElements,
+    int failedElements,
+    List<ModuleAverageResponse> modules,
+    List<ResultResponse> results
+  ) {}
+
+  public record ElementGradeStatsResponse(
+    ElementResponse element,
+    int gradedCount,
+    double average,
+    double minGrade,
+    double maxGrade,
+    double passRate
+  ) {}
 
   public record UserRequest(
     String id,

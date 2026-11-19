@@ -119,8 +119,35 @@ export type PlanWithSpan = Plan & {
 export interface Result {
   id: string;
   grade: number;
-  student: UserInfo;
+  status?: 'PASSED' | 'RETAKE' | 'FAILED';
+  remarks?: string | null;
+  updatedAt?: string;
+  student: UserBase;
   element: Element;
+  gradedBy?: UserBase | null;
+  lastModifiedBy?: UserBase | null;
+}
+
+export interface UserBase {
+  id: string;
+  firstName: string;
+  lastName: string;
+  role?: string;
+  department?: string;
+  year?: number;
+  semester?: number;
+  groupName?: string;
+}
+
+export interface SemesterSummary {
+  semester: number;
+  average: number;
+  mention: string;
+  totalElements: number;
+  passedElements: number;
+  retakeElements: number;
+  failedElements: number;
+  results: Result[];
 }
 
 export type LoginRequest = {
