@@ -91,7 +91,86 @@ public class DataSeeder implements CommandLineRunner {
       seedTimeTables(elements, rooms);
       seedAbsence(users, elements);
       seedRequests(users);
+      seedGrades();
     }
+  }
+
+  private void seedGrades() {
+    if (resultRepository.count() > 0) {
+      return;
+    }
+
+    List<User> students = userRepository.findByRole(Role.STUDENT);
+    List<User> admins = userRepository.findByRole(Role.ADMIN);
+    List<Element> elements = elementRepository.findAll();
+
+    if (students.isEmpty() || elements.isEmpty()) {
+      return;
+    }
+
+    User primaryAdmin = admins.isEmpty() ? null : admins.get(0);
+    java.util.Random random = new java.util.Random(42L);
+    List<Result> batch = new java.util.ArrayList<>();
+    int counter = 0;
+
+    for (User student : students) {
+      int completedUpTo = student.getSemester() - 1;
+      if (completedUpTo < 1) {
+        continue;
+      }
+
+      double baseline = 9.5 + (random.nextDouble() * 7.5);
+
+      for (Element element : elements) {
+        if (element.getModule() == null) {
+          continue;
+        }
+        if (element.getModule().getDepartment() != student.getDepartment()) {
+          continue;
+        }
+        if (element.getModule().getSemester() > completedUpTo) {
+          continue;
+        }
+
+        double jitter = (random.nextDouble() * 5.0) - 2.5;
+        double raw = Math.max(3.5, Math.min(19.75, baseline + jitter));
+        double grade = Math.round(raw * 4.0) / 4.0;
+        Result result = new Result(
+          grade,
+          student,
+          element,
+          element.getTeacher(),
+          pickGradeRemark(grade)
+        );
+
+        if (primaryAdmin != null && counter % 11 == 0 && grade < 18.5) {
+          result.setGrade(Math.min(20.0, grade + 0.5));
+          result.setLastModifiedBy(primaryAdmin);
+          result.setRemarks("Re-evaluation approved");
+        }
+
+        batch.add(result);
+        counter++;
+      }
+    }
+
+    resultRepository.saveAll(batch);
+  }
+
+  private String pickGradeRemark(double grade) {
+    if (grade >= 16.0) {
+      return "Excellent mastery";
+    }
+    if (grade >= 14.0) {
+      return "Strong performance";
+    }
+    if (grade >= 10.0) {
+      return "Validated";
+    }
+    if (grade >= 7.0) {
+      return "Retake session required";
+    }
+    return "Insufficient score";
   }
 
   private List<User> seedUsers() {
