@@ -207,3 +207,46 @@ export type AbsenceUpdateRequest = {
   isJustified?: boolean;
   type?: AbsenceType | string;
 };
+
+export enum FileType {
+  PDF = 'PDF',
+  DOCX = 'DOCX',
+  PPTX = 'PPTX',
+  TXT = 'TXT',
+  IMAGE = 'IMAGE',
+  MP4 = 'MP4',
+  SOURCE_CODE = 'SOURCE_CODE',
+  ZIP = 'ZIP',
+  OTHER = 'OTHER'
+}
+
+export type MaterialFolder = {
+  id: string;
+  name: string;
+  parentId: string | null;
+  elementId: string;
+  createdAt: string;
+};
+
+export type MaterialItem = {
+  id: string;
+  title: string;
+  description?: string | null;
+  originalFileName?: string | null;
+  contentType?: string | null;
+  fileSize: number;
+  fileType: FileType;
+  assignment: boolean;
+  createdAt: string;
+  deadline?: string | null;
+  elementId: string;
+  folderId: string | null;
+  uploadedBy?: UserInfo | null;
+};
+
+export type ElementWorkspace = {
+  element: Element;
+  canManage: boolean;
+  folders: MaterialFolder[];
+  materials: MaterialItem[];
+};
