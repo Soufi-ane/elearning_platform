@@ -1,5 +1,8 @@
 package com.elearn.api.controller;
 
+import java.util.List;
+import com.elearn.api.entity.AssignmentSubmission;
+import com.elearn.api.entity.Schemas.AssignmentSubmissionResponse;
 import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ContentDisposition;
@@ -139,5 +142,63 @@ public class MaterialController {
       .contentType(mediaType)
       .header(HttpHeaders.CONTENT_DISPOSITION, disposition.toString())
       .body(material.getFileData());
+  }
+
+  @PostMapping(
+    value = "/materials/{materialId}/submissions",
+    consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+  )
+  @PreAuthorize("hasRole('STUDENT')")
+  public ResponseEntity<AssignmentSubmissionResponse> submitAssignment(
+    @PathVariable String materialId,
+    @RequestParam("file") MultipartFile file,
+    @RequestParam(value = "comment", required = false) String comment,
+    @AuthenticationPrincipal User user
+  ) {
+    return ResponseEntity.ok(
+      materialService.submitAssignment(materialId, file, comment, user)
+    );
+  }
+
+  @GetMapping("/materials/{materialId}/submissions")
+  @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+  public ResponseEntity<List<AssignmentSubmissionResponse>> getSubmissions(
+    @PathVariable String materialId,
+    @AuthenticationPrincipal User user
+  ) {
+    return ResponseEntity.ok(
+      materialService.getSubmissionsForAssignment(materialId, user)
+    );
+  }
+
+  @GetMapping("/submissions/{submissionId}/download")
+  public ResponseEntity<byte[]> downloadSubmission(
+    @PathVariable String submissionId,
+    @AuthenticationPrincipal User user
+  ) {
+    AssignmentSubmission sub = materialService.getSubmissionForDownload(
+      submissionId,
+      user
+    );
+    MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
+    if (sub.getContentType() != null) {
+      try {
+        mediaType = MediaType.parseMediaType(sub.getContentType());
+      } catch (Exception ignored) {
+        mediaType = MediaType.APPLICATION_OCTET_STREAM;
+      }
+    }
+    String fileName = sub.getOriginalFileName() != null
+      ? sub.getOriginalFileName()
+      : "submission";
+    ContentDisposition disposition = ContentDisposition
+      .attachment()
+      .filename(fileName)
+      .build();
+
+    return ResponseEntity.ok()
+      .contentType(mediaType)
+      .header(HttpHeaders.CONTENT_DISPOSITION, disposition.toString())
+      .body(sub.getFileData());
   }
 }

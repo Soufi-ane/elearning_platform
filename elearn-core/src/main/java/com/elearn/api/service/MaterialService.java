@@ -8,37 +8,45 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import com.elearn.api.entity.AssignmentSubmission;
 import com.elearn.api.entity.Element;
 import com.elearn.api.entity.FileType;
 import com.elearn.api.entity.Material;
 import com.elearn.api.entity.MaterialFolder;
 import com.elearn.api.entity.Role;
 import com.elearn.api.entity.User;
+import com.elearn.api.entity.Schemas.AssignmentSubmissionResponse;
 import com.elearn.api.entity.Schemas.ElementResponse;
 import com.elearn.api.entity.Schemas.ElementWorkspaceResponse;
 import com.elearn.api.entity.Schemas.FolderCreateRequest;
 import com.elearn.api.entity.Schemas.FolderResponse;
 import com.elearn.api.entity.Schemas.MaterialResponse;
+import com.elearn.api.repository.AssignmentSubmissionRepository;
 import com.elearn.api.repository.ElementRepository;
 import com.elearn.api.repository.MaterialFolderRepository;
 import com.elearn.api.repository.MaterialRepository;
 
 @Service
 public class MaterialService {
+  private static final long MAX_LATE_HOURS = 24L;
+
   private final ElementRepository elementRepository;
   private final MaterialFolderRepository folderRepository;
   private final MaterialRepository materialRepository;
+  private final AssignmentSubmissionRepository submissionRepository;
   private final ModuleService moduleService;
 
   public MaterialService(
     ElementRepository elementRepository,
     MaterialFolderRepository folderRepository,
     MaterialRepository materialRepository,
+    AssignmentSubmissionRepository submissionRepository,
     ModuleService moduleService
   ) {
     this.elementRepository = elementRepository;
     this.folderRepository = folderRepository;
     this.materialRepository = materialRepository;
+    this.submissionRepository = submissionRepository;
     this.moduleService = moduleService;
   }
 
@@ -94,11 +102,21 @@ public class MaterialService {
       .map(MaterialResponse::new)
       .toList();
 
+    List<AssignmentSubmissionResponse> mySubmissions =
+      user.getRole() == Role.STUDENT
+        ? submissionRepository
+            .findByAssignmentElementIdAndStudentId(elementId, user.getId())
+            .stream()
+            .map(AssignmentSubmissionResponse::new)
+            .toList()
+        : List.of();
+
     return new ElementWorkspaceResponse(
       new ElementResponse(element),
       canManage(user, element),
       folders,
-      materials
+      materials,
+      mySubmissions
     );
   }
 
@@ -245,6 +263,116 @@ public class MaterialService {
     return material;
   }
 
+  @Transactional
+  public AssignmentSubmissionResponse submitAssignment(
+    String materialId,
+    MultipartFile file,
+    String comment,
+    User user
+  ) {
+    if (user.getRole() != Role.STUDENT) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
+    if (file == null || file.isEmpty()) {
+      throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST,
+        "Submission file is required"
+      );
+    }
+
+    Material assignment = materialRepository.findById(materialId)
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    if (!assignment.isAssignment()) {
+      throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST,
+        "Target material is not an assignment"
+      );
+    }
+    assertCanView(user, assignment.getElement());
+
+    LocalDateTime now = LocalDateTime.now();
+    boolean late = false;
+    if (assignment.getDeadline() != null) {
+      LocalDateTime cutoff = assignment.getDeadline().plusHours(MAX_LATE_HOURS);
+      if (now.isAfter(cutoff)) {
+        throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          "Submission closed: 24h late window has expired"
+        );
+      }
+      late = now.isAfter(assignment.getDeadline());
+    }
+
+    AssignmentSubmission sub = submissionRepository
+      .findByAssignmentIdAndStudentId(materialId, user.getId())
+      .orElseGet(AssignmentSubmission::new);
+
+    String origName = file.getOriginalFilename() != null
+      ? file.getOriginalFilename()
+      : "submission";
+    String contentType = file.getContentType() != null
+      ? file.getContentType()
+      : "application/octet-stream";
+
+    try {
+      sub.setFileData(file.getBytes());
+    } catch (IOException ex) {
+      throw new ResponseStatusException(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "Failed to read submission file"
+      );
+    }
+
+    sub.setAssignment(assignment);
+    sub.setStudent(user);
+    sub.setOriginalFileName(origName);
+    sub.setContentType(contentType);
+    sub.setFileSize(file.getSize());
+    sub.setSubmittedAt(now);
+    sub.setLate(late);
+    sub.setComment(comment != null ? comment.trim() : null);
+
+    return new AssignmentSubmissionResponse(submissionRepository.save(sub));
+  }
+
+  public List<AssignmentSubmissionResponse> getSubmissionsForAssignment(
+    String materialId,
+    User user
+  ) {
+    Material assignment = materialRepository.findById(materialId)
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    if (!assignment.isAssignment()) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
+    assertCanManage(user, assignment.getElement());
+
+    return submissionRepository
+      .findByAssignmentIdOrderBySubmittedAtDesc(materialId)
+      .stream()
+      .map(AssignmentSubmissionResponse::new)
+      .toList();
+  }
+
+  public AssignmentSubmission getSubmissionForDownload(
+    String submissionId,
+    User user
+  ) {
+    AssignmentSubmission sub = submissionRepository.findById(submissionId)
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    boolean isOwner = sub.getStudent() != null &&
+      sub.getStudent().getId().equals(user.getId());
+    boolean isManager = canManage(user, sub.getAssignment().getElement());
+
+    if (!isOwner && !isManager) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
+    if (sub.getFileData() == null || sub.getFileData().length == 0) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
+    return sub;
+  }
+
   private FileType resolveFileType(String fileName, String contentType) {
     String lower = fileName.toLowerCase();
     String ct = contentType.toLowerCase();
@@ -274,7 +402,7 @@ public class MaterialService {
       return FileType.ZIP;
     }
     if (lower.endsWith(".java") || lower.endsWith(".c") ||
-        lower.endsWith(".php") || lower.endsWith(".py") ||
+        lower.endsWith(".cpp") || lower.endsWith(".py") ||
         lower.endsWith(".ts") || lower.endsWith(".js") ||
         lower.endsWith(".sql") || lower.endsWith(".html") ||
         lower.endsWith(".css")) {
