@@ -419,4 +419,71 @@ public class Schemas {
     String elementId,
     String roomId
   ) {}
+
+  public record FolderCreateRequest(
+    String name,
+    String parentId
+  ) {}
+
+  public record FolderResponse(
+    String id,
+    String name,
+    String parentId,
+    String elementId,
+    LocalDateTime createdAt
+  ) {
+    public FolderResponse(MaterialFolder folder) {
+      this(
+        folder.getId(),
+        folder.getName(),
+        folder.getParent() != null ? folder.getParent().getId() : null,
+        folder.getElement() != null ? folder.getElement().getId() : null,
+        folder.getCreatedAt()
+      );
+    }
+  }
+
+  public record MaterialResponse(
+    String id,
+    String title,
+    String description,
+    String originalFileName,
+    String contentType,
+    long fileSize,
+    FileType fileType,
+    boolean assignment,
+    LocalDateTime createdAt,
+    LocalDateTime deadline,
+    String elementId,
+    String folderId,
+    UserBaseResponse uploadedBy
+  ) {
+    public MaterialResponse(Material m) {
+      this(
+        m.getId(),
+        m.getTitle(),
+        m.getDescription(),
+        m.getOriginalFileName(),
+        m.getContentType(),
+        m.getFileSize(),
+        m.getFileType(),
+        m.isAssignment(),
+        m.getCreatedAt(),
+        m.getDeadline(),
+        m.getElement() != null ? m.getElement().getId() : null,
+        m.getFolder() != null ? m.getFolder().getId() : null,
+        m.getUploadedBy() != null
+          ? new UserBaseResponse(m.getUploadedBy())
+          : null
+      );
+    }
+  }
+
+  public record ElementWorkspaceResponse(
+    ElementResponse element,
+    boolean canManage,
+    List<FolderResponse> folders,
+    List<MaterialResponse> materials
+  ) {}
+
 }
