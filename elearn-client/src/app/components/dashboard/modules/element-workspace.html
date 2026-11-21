@@ -1,0 +1,403 @@
+<div class="w-full px-4 md:px-8 lg:px-10 pt-2 pb-10">
+  <div
+    class="flex flex-col md:flex-row md:items-center justify-between
+      gap-4 mb-6">
+    <div>
+      <a
+        [routerLink]="['/dashboard/modules', moduleId(), 'elements']"
+        class="text-[10px] tracking-[0.25em] uppercase text-[#C8A96E]
+          hover:underline block mb-1">
+        &larr; Back to Elements
+      </a>
+      <h2 class="text-[#EAE3D5] text-xl font-light">
+        {{ workspace()?.element?.name || 'Course Workspace' }}
+      </h2>
+      @if (workspace()?.element?.teacher; as t) {
+        <p class="text-xs text-[#8FA68C] mt-0.5">
+          Instructor: {{ t.firstName }} {{ t.lastName }}
+        </p>
+      }
+    </div>
+
+    @if (workspace()?.canManage) {
+      <div class="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          (click)="openFolderModal()"
+          class="px-3.5 py-2 bg-[#14261C] border border-[#2A3D30]
+            text-[#EAE3D5] text-xs uppercase tracking-wider rounded-sm
+            hover:border-[#C8A96E] hover:text-[#C8A96E]
+            cursor-pointer transition-colors">
+          New Folder
+        </button>
+        <button
+          type="button"
+          (click)="openUploadModal(false)"
+          class="px-3.5 py-2 bg-[#1A3025] border border-[#C8A96E]/50
+            text-[#C8A96E] text-xs uppercase tracking-wider rounded-sm
+            hover:bg-[#C8A96E] hover:text-[#0E1A14]
+            cursor-pointer transition-colors">
+          Upload File
+        </button>
+        <button
+          type="button"
+          (click)="openUploadModal(true)"
+          class="px-3.5 py-2 bg-[#C8A96E] text-[#0E1A14] font-semibold
+            text-xs uppercase tracking-wider rounded-sm
+            hover:bg-[#DFC18A] cursor-pointer transition-colors">
+          Add Assignment
+        </button>
+      </div>
+    }
+  </div>
+
+  <div
+    class="flex items-center flex-wrap gap-1.5 px-4 py-2.5 mb-6
+      bg-[#0B1610] border border-[#2A3D30] rounded-sm text-xs">
+    <button
+      type="button"
+      (click)="openFolder(null)"
+      class="text-[#C8A96E] hover:underline cursor-pointer">
+      Root
+    </button>
+    @for (crumb of breadcrumbs(); track crumb.id) {
+      <span class="text-[#8FA68C]">/</span>
+      <button
+        type="button"
+        (click)="openFolder(crumb.id)"
+        class="text-[#EAE3D5] hover:text-[#C8A96E] cursor-pointer">
+        {{ crumb.name }}
+      </button>
+    }
+  </div>
+
+  @if (loading()) {
+    <div
+      class="border border-[#2A3D30] bg-[#0B1610] p-10 text-center
+        text-xs text-[#8FA68C] uppercase tracking-widest">
+      Loading workspace...
+    </div>
+  } @else if (error()) {
+    <div
+      class="border border-rose-500/40 bg-rose-950/20 p-6 text-center
+        text-xs text-rose-300">
+      {{ error() }}
+    </div>
+  } @else {
+    @if (currentFolders().length > 0) {
+      <p
+        class="text-[10px] tracking-[0.25em] uppercase text-[#8FA68C]
+          mb-3">
+        Folders
+      </p>
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-7">
+        @for (f of currentFolders(); track f.id) {
+          <div
+            (click)="openFolder(f.id)"
+            class="px-4 py-3.5 bg-[#0B1610] border border-[#2A3D30]
+              rounded-sm hover:border-[#C8A96E] hover:bg-[#14261C]/60
+              cursor-pointer flex items-center justify-between gap-2
+              transition-colors">
+            <div class="flex items-center gap-3 min-w-0">
+              <svg
+                class="w-4 h-4 text-[#C8A96E] shrink-0"
+                viewBox="0 0 16 16"
+                fill="none">
+                <path
+                  d="M1.5 3.5h4.5l1.5 1.5h7v8h-13v-9.5z"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linejoin="round"/>
+              </svg>
+              <span class="text-sm text-[#EAE3D5] truncate">
+                {{ f.name }}
+              </span>
+            </div>
+            @if (workspace()?.canManage) {
+              <button
+                type="button"
+                (click)="deleteFolder($event, f)"
+                class="text-[10px] text-[#8FA68C] hover:text-rose-400
+                  uppercase tracking-wider cursor-pointer shrink-0">
+                Delete
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <p
+      class="text-[10px] tracking-[0.25em] uppercase text-[#8FA68C] mb-3">
+      Files &amp; Assignments
+    </p>
+
+    <div class="space-y-3">
+      @for (m of currentMaterials(); track m.id) {
+        <div
+          class="p-4 bg-[#0B1610] border border-[#2A3D30] rounded-sm
+            flex flex-col md:flex-row md:items-center justify-between
+            gap-4 hover:border-[#C8A96E]/60 transition-colors">
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <span
+                class="px-2 py-0.5 text-[10px] font-mono uppercase
+                  bg-[#1A3025] text-[#C8A96E] border border-[#2A3D30]">
+                {{ m.fileType }}
+              </span>
+              @if (m.assignment) {
+                <span
+                  class="px-2 py-0.5 text-[10px] font-mono uppercase
+                    border"
+                  [class]="isOverdue(m)
+                    ? 'bg-rose-950/40 text-rose-300 border-rose-500/40'
+                    : 'bg-amber-950/40 text-amber-300 border-amber-500/40'">
+                  Assignment
+                </span>
+              }
+              <h3 class="text-sm font-medium text-[#EAE3D5] truncate">
+                {{ m.title }}
+              </h3>
+            </div>
+
+            @if (m.description) {
+              <p class="text-xs text-[#8FA68C] mb-1.5">
+                {{ m.description }}
+              </p>
+            }
+
+            <div class="flex flex-wrap items-center gap-3 text-[11px]
+              text-[#8FA68C]">
+              @if (m.originalFileName) {
+                <span>{{ m.originalFileName }}</span>
+                <span>&bull;</span>
+                <span>{{ formatSize(m.fileSize) }}</span>
+              }
+              @if (m.deadline) {
+                <span>&bull;</span>
+                <span
+                  [class]="isOverdue(m)
+                    ? 'text-rose-400'
+                    : 'text-[#C8A96E]'">
+                  Due: {{ m.deadline | date:'medium' }}
+                </span>
+              }
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0">
+            @if (isImage(m) && m.fileSize > 0) {
+              <button
+                type="button"
+                (click)="previewImage.set(m)"
+                class="px-3 py-1.5 bg-[#14261C] border border-[#2A3D30]
+                  text-[#EAE3D5] text-[10px] uppercase tracking-wider
+                  hover:border-[#C8A96E] hover:text-[#C8A96E]
+                  cursor-pointer">
+                Preview
+              </button>
+            }
+            @if (m.fileSize > 0) {
+              <a
+                [href]="downloadUrl(m)"
+                class="px-3 py-1.5 bg-[#1A3025] border border-[#C8A96E]/50
+                  text-[#C8A96E] text-[10px] uppercase tracking-wider
+                  hover:bg-[#C8A96E] hover:text-[#0E1A14]
+                  transition-colors">
+                Download
+              </a>
+            }
+            @if (workspace()?.canManage) {
+              <button
+                type="button"
+                (click)="deleteMaterial(m)"
+                class="px-3 py-1.5 bg-[#14261C] border border-[#2A3D30]
+                  text-[#8FA68C] text-[10px] uppercase tracking-wider
+                  hover:text-rose-400 hover:border-rose-500/50
+                  cursor-pointer">
+                Delete
+              </button>
+            }
+          </div>
+        </div>
+      } @empty {
+        <div
+          class="border border-[#2A3D30] bg-[#0B1610] p-10 text-center
+            text-xs text-[#8FA68C] uppercase tracking-widest">
+          No files or assignments in this folder.
+        </div>
+      }
+    </div>
+  }
+
+  @if (showFolderModal()) {
+    <div
+      (click)="showFolderModal.set(false)"
+      class="fixed inset-0 z-50 flex items-center justify-center
+        bg-black/75 backdrop-blur-sm p-4">
+      <div
+        (click)="$event.stopPropagation()"
+        class="w-full max-w-md border border-[#C8A96E]/40 bg-[#0B1610]
+          rounded-sm overflow-hidden">
+        <div class="px-6 py-4 bg-[#14261C] border-b border-[#2A3D30]">
+          <h3 class="text-sm font-medium text-[#EAE3D5]">Create Folder</h3>
+        </div>
+        <div class="p-6 space-y-4">
+          <input
+            type="text"
+            [ngModel]="folderName()"
+            (ngModelChange)="folderName.set($event)"
+            placeholder="e.g. Chapter 3"
+            class="w-full bg-[#0E1A14] border border-[#2A3D30]
+              text-[#EAE3D5] px-3.5 py-2.5 text-sm rounded-sm
+              focus:border-[#C8A96E] focus:outline-none"/>
+          <div class="flex justify-end gap-2">
+            <button
+              type="button"
+              (click)="showFolderModal.set(false)"
+              class="px-4 py-2 border border-[#2A3D30] text-xs uppercase
+                text-[#8FA68C] cursor-pointer">
+              Cancel
+            </button>
+            <button
+              type="button"
+              (click)="createFolder()"
+              class="px-4 py-2 bg-[#C8A96E] text-[#0E1A14] font-semibold
+                text-xs uppercase cursor-pointer">
+              Create
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (showUploadModal()) {
+    <div
+      (click)="showUploadModal.set(false)"
+      class="fixed inset-0 z-50 flex items-center justify-center
+        bg-black/75 backdrop-blur-sm p-4">
+      <div
+        (click)="$event.stopPropagation()"
+        class="w-full max-w-lg border border-[#C8A96E]/40 bg-[#0B1610]
+          rounded-sm overflow-hidden">
+        <div class="px-6 py-4 bg-[#14261C] border-b border-[#2A3D30]">
+          <h3 class="text-sm font-medium text-[#EAE3D5]">
+            {{ uploadIsAssignment() ? 'Create Assignment' : 'Upload File' }}
+          </h3>
+        </div>
+        <div class="p-6 space-y-4">
+          <div>
+            <label
+              class="block text-[11px] uppercase tracking-wider
+                text-[#8FA68C] mb-1.5">
+              Title
+            </label>
+            <input
+              type="text"
+              [ngModel]="uploadTitle()"
+              (ngModelChange)="uploadTitle.set($event)"
+              placeholder="e.g. Part 1 - Introduction"
+              class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                text-[#EAE3D5] px-3.5 py-2 text-sm rounded-sm
+                focus:border-[#C8A96E] focus:outline-none"/>
+          </div>
+
+          <div>
+            <label
+              class="block text-[11px] uppercase tracking-wider
+                text-[#8FA68C] mb-1.5">
+              Description
+            </label>
+            <textarea
+              rows="2"
+              [ngModel]="uploadDescription()"
+              (ngModelChange)="uploadDescription.set($event)"
+              placeholder="Optional notes or instructions"
+              class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                text-[#EAE3D5] px-3.5 py-2 text-sm rounded-sm
+                focus:border-[#C8A96E] focus:outline-none"></textarea>
+          </div>
+
+          @if (uploadIsAssignment()) {
+            <div>
+              <label
+                class="block text-[11px] uppercase tracking-wider
+                  text-[#8FA68C] mb-1.5">
+                Deadline
+              </label>
+              <input
+                type="datetime-local"
+                [ngModel]="uploadDeadline()"
+                (ngModelChange)="uploadDeadline.set($event)"
+                class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                  text-[#EAE3D5] px-3.5 py-2 text-sm rounded-sm
+                  focus:border-[#C8A96E] focus:outline-none"/>
+            </div>
+          }
+
+          <div>
+            <label
+              class="block text-[11px] uppercase tracking-wider
+                text-[#8FA68C] mb-1.5">
+              File (PDF, DOCX, PPTX, Image, ZIP, Code)
+            </label>
+            <input
+              type="file"
+              (change)="onFileSelected($event)"
+              class="w-full text-xs text-[#8FA68C] file:mr-3 file:py-1.5
+                file:px-3 file:border file:border-[#2A3D30]
+                file:bg-[#14261C] file:text-[#EAE3D5]
+                file:cursor-pointer"/>
+          </div>
+
+          <div class="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              (click)="showUploadModal.set(false)"
+              class="px-4 py-2 border border-[#2A3D30] text-xs uppercase
+                text-[#8FA68C] cursor-pointer">
+              Cancel
+            </button>
+            <button
+              type="button"
+              [disabled]="uploading()"
+              (click)="submitUpload()"
+              class="px-4 py-2 bg-[#C8A96E] text-[#0E1A14] font-semibold
+                text-xs uppercase cursor-pointer disabled:opacity-40">
+              {{ uploading() ? 'Saving...' : 'Save' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (previewImage(); as img) {
+    <div
+      (click)="previewImage.set(null)"
+      class="fixed inset-0 z-50 flex items-center justify-center
+        bg-black/80 backdrop-blur-sm p-6">
+      <div
+        (click)="$event.stopPropagation()"
+        class="max-w-3xl w-full bg-[#0B1610] border border-[#2A3D30]
+          p-4 rounded-sm">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs text-[#EAE3D5]">{{ img.title }}</span>
+          <button
+            type="button"
+            (click)="previewImage.set(null)"
+            class="text-xs text-[#8FA68C] hover:text-[#EAE3D5]
+              cursor-pointer">
+            Close
+          </button>
+        </div>
+        <img
+          [src]="downloadUrl(img, true)"
+          [alt]="img.title"
+          class="max-h-[70vh] mx-auto object-contain"/>
+      </div>
+    </div>
+  }
+</div>
