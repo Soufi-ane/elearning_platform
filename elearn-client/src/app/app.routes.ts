@@ -13,6 +13,7 @@ import { roleGuard } from './components/login/auth.guard';
 import { Attendance } from './components/dashboard/attendance/attendance';
 import { AbsenceView } from './components/dashboard/attendance/absence-view';
 import { AdminAbsence } from './components/dashboard/attendance/admin-absence';
+import { ElementWorkspaceView } from './components/dashboard/modules/element-workspace';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -35,7 +36,8 @@ export const routes: Routes = [
       { path: 'grades', component: Grades },
       { path: 'requests', component: Requests },
       { path: 'modules', component: ModuleList },
-      { path: 'modules/:id/elements', component: ElementDetail }
+      { path: 'modules/:id/elements', component: ElementDetail },
+      { path: 'modules/:id/elements/:elementId', component: ElementWorkspaceView }
     ]
   },
   { path: '**', redirectTo: '/' },
