@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ModuleService } from './modules.service';
 import {
+  AssignmentSubmission,
   ElementWorkspace,
   FileType,
   MaterialFolder,
@@ -39,6 +40,16 @@ export class ElementWorkspaceView implements OnInit {
   uploading = signal(false);
 
   previewImage = signal<MaterialItem | null>(null);
+
+  submitTarget = signal<MaterialItem | null>(null);
+  submitFile = signal<File | null>(null);
+  submitComment = signal('');
+  submitting = signal(false);
+  submitError = signal<string | null>(null);
+
+  submissionsTarget = signal<MaterialItem | null>(null);
+  submissionsList = signal<AssignmentSubmission[]>([]);
+  loadingSubmissions = signal(false);
 
   currentFolders = computed(() => {
     const ws = this.workspace();
@@ -186,17 +197,88 @@ export class ElementWorkspaceView implements OnInit {
     });
   }
 
+  getMySubmission(materialId: string): AssignmentSubmission | undefined {
+    return this.workspace()?.mySubmissions?.find(
+      s => s.assignmentId === materialId
+    );
+  }
+
+  getDeadlineState(m: MaterialItem): 'OPEN' | 'GRACE' | 'CLOSED' {
+    if (!m.deadline) return 'OPEN';
+    const now = Date.now();
+    const due = new Date(m.deadline).getTime();
+    const cutoff = due + 24 * 60 * 60 * 1000;
+    if (now <= due) return 'OPEN';
+    if (now <= cutoff) return 'GRACE';
+    return 'CLOSED';
+  }
+
+  openSubmitModal(m: MaterialItem): void {
+    const existing = this.getMySubmission(m.id);
+    this.submitTarget.set(m);
+    this.submitFile.set(null);
+    this.submitComment.set(existing?.comment || '');
+    this.submitError.set(null);
+  }
+
+  onSubmitFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.submitFile.set(input.files?.[0] || null);
+  }
+
+  sendSubmission(): void {
+    const target = this.submitTarget();
+    const file = this.submitFile();
+    if (!target || !file) return;
+
+    const fd = new FormData();
+    fd.append('file', file);
+    if (this.submitComment().trim()) {
+      fd.append('comment', this.submitComment().trim());
+    }
+
+    this.submitting.set(true);
+    this.submitError.set(null);
+    this.svc.submitAssignment(target.id, fd).subscribe({
+      next: () => {
+        this.submitting.set(false);
+        this.submitTarget.set(null);
+        this.load();
+      },
+      error: (err) => {
+        this.submitting.set(false);
+        this.submitError.set(
+          err?.error?.message || 'Submission failed or window has closed.'
+        );
+      }
+    });
+  }
+
+  openSubmissionsModal(m: MaterialItem): void {
+    this.submissionsTarget.set(m);
+    this.submissionsList.set([]);
+    this.loadingSubmissions.set(true);
+    this.svc.getAssignmentSubmissions(m.id).subscribe({
+      next: (list) => {
+        this.submissionsList.set(list);
+        this.loadingSubmissions.set(false);
+      },
+      error: () => {
+        this.loadingSubmissions.set(false);
+      }
+    });
+  }
+
   downloadUrl(m: MaterialItem, inline = false): string {
     return this.svc.getDownloadUrl(m.id, inline);
   }
 
-  isImage(m: MaterialItem): boolean {
-    return m.fileType === FileType.IMAGE;
+  submissionDownloadUrl(s: AssignmentSubmission): string {
+    return this.svc.getSubmissionDownloadUrl(s.id);
   }
 
-  isOverdue(m: MaterialItem): boolean {
-    if (!m.deadline) return false;
-    return new Date(m.deadline).getTime() < Date.now();
+  isImage(m: MaterialItem): boolean {
+    return m.fileType === FileType.IMAGE;
   }
 
   formatSize(bytes: number): string {

@@ -147,13 +147,21 @@
                 {{ m.fileType }}
               </span>
               @if (m.assignment) {
+                @let state = getDeadlineState(m);
                 <span
                   class="px-2 py-0.5 text-[10px] font-mono uppercase
                     border"
-                  [class]="isOverdue(m)
+                  [class]="state === 'CLOSED'
                     ? 'bg-rose-950/40 text-rose-300 border-rose-500/40'
-                    : 'bg-amber-950/40 text-amber-300 border-amber-500/40'">
-                  Assignment
+                    : state === 'GRACE'
+                    ? 'bg-amber-950/40 text-amber-300 border-amber-500/40'
+                    : 'bg-emerald-950/40 text-emerald-300
+                       border-emerald-500/40'">
+                  {{ state === 'CLOSED'
+                    ? 'Closed'
+                    : state === 'GRACE'
+                    ? 'Late Window (24h)'
+                    : 'Assignment' }}
                 </span>
               }
               <h3 class="text-sm font-medium text-[#EAE3D5] truncate">
@@ -177,16 +185,43 @@
               @if (m.deadline) {
                 <span>&bull;</span>
                 <span
-                  [class]="isOverdue(m)
+                  [class]="getDeadlineState(m) === 'CLOSED'
                     ? 'text-rose-400'
+                    : getDeadlineState(m) === 'GRACE'
+                    ? 'text-amber-300'
                     : 'text-[#C8A96E]'">
                   Due: {{ m.deadline | date:'medium' }}
                 </span>
               }
             </div>
+
+            @if (m.assignment && !workspace()?.canManage) {
+              @if (getMySubmission(m.id); as sub) {
+                <div
+                  class="mt-2 flex flex-wrap items-center gap-2 text-[11px]">
+                  <span
+                    class="px-2 py-0.5 font-mono uppercase text-[10px]
+                      border"
+                    [class]="sub.late
+                      ? 'bg-amber-950/40 text-amber-300 border-amber-500/40'
+                      : 'bg-emerald-950/40 text-emerald-300
+                         border-emerald-500/40'">
+                    {{ sub.late ? 'Submitted Late' : 'Submitted' }}
+                  </span>
+                  <a
+                    [href]="submissionDownloadUrl(sub)"
+                    class="text-[#C8A96E] hover:underline">
+                    {{ sub.originalFileName }}
+                  </a>
+                  <span class="text-[#8FA68C]">
+                    ({{ sub.submittedAt | date:'short' }})
+                  </span>
+                </div>
+              }
+            }
           </div>
 
-          <div class="flex items-center gap-2 shrink-0">
+          <div class="flex flex-wrap items-center gap-2 shrink-0">
             @if (isImage(m) && m.fileSize > 0) {
               <button
                 type="button"
@@ -207,6 +242,27 @@
                   transition-colors">
                 Download
               </a>
+            }
+            @if (m.assignment && !workspace()?.canManage &&
+                 getDeadlineState(m) !== 'CLOSED') {
+              <button
+                type="button"
+                (click)="openSubmitModal(m)"
+                class="px-3 py-1.5 bg-[#C8A96E] text-[#0E1A14] font-semibold
+                  text-[10px] uppercase tracking-wider hover:bg-[#DFC18A]
+                  cursor-pointer">
+                {{ getMySubmission(m.id) ? 'Resubmit' : 'Submit' }}
+              </button>
+            }
+            @if (m.assignment && workspace()?.canManage) {
+              <button
+                type="button"
+                (click)="openSubmissionsModal(m)"
+                class="px-3 py-1.5 bg-[#14261C] border border-[#C8A96E]/50
+                  text-[#C8A96E] text-[10px] uppercase tracking-wider
+                  hover:bg-[#C8A96E] hover:text-[#0E1A14] cursor-pointer">
+                Submissions
+              </button>
             }
             @if (workspace()?.canManage) {
               <button
@@ -325,7 +381,7 @@
               <label
                 class="block text-[11px] uppercase tracking-wider
                   text-[#8FA68C] mb-1.5">
-                Deadline
+                Deadline (24h late grace period applies automatically)
               </label>
               <input
                 type="datetime-local"
@@ -369,6 +425,172 @@
               {{ uploading() ? 'Saving...' : 'Save' }}
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (submitTarget(); as target) {
+    <div
+      (click)="submitTarget.set(null)"
+      class="fixed inset-0 z-50 flex items-center justify-center
+        bg-black/75 backdrop-blur-sm p-4">
+      <div
+        (click)="$event.stopPropagation()"
+        class="w-full max-w-lg border border-[#C8A96E]/40 bg-[#0B1610]
+          rounded-sm overflow-hidden">
+        <div class="px-6 py-4 bg-[#14261C] border-b border-[#2A3D30]">
+          <h3 class="text-sm font-medium text-[#EAE3D5]">
+            Submit: {{ target.title }}
+          </h3>
+        </div>
+        <div class="p-6 space-y-4">
+          @if (getDeadlineState(target) === 'GRACE') {
+            <div
+              class="px-3.5 py-2.5 bg-amber-950/40 border
+                border-amber-500/40 text-xs text-amber-200">
+              The deadline has passed. Your upload will be marked as late
+              (within the 24-hour grace window).
+            </div>
+          }
+
+          @if (submitError()) {
+            <div
+              class="px-3.5 py-2.5 bg-rose-950/40 border border-rose-500/40
+                text-xs text-rose-300">
+              {{ submitError() }}
+            </div>
+          }
+
+          <div>
+            <label
+              class="block text-[11px] uppercase tracking-wider
+                text-[#8FA68C] mb-1.5">
+              Your Submission File
+            </label>
+            <input
+              type="file"
+              (change)="onSubmitFileSelected($event)"
+              class="w-full text-xs text-[#8FA68C] file:mr-3 file:py-1.5
+                file:px-3 file:border file:border-[#2A3D30]
+                file:bg-[#14261C] file:text-[#EAE3D5]
+                file:cursor-pointer"/>
+          </div>
+
+          <div>
+            <label
+              class="block text-[11px] uppercase tracking-wider
+                text-[#8FA68C] mb-1.5">
+              Comment (Optional)
+            </label>
+            <textarea
+              rows="2"
+              [ngModel]="submitComment()"
+              (ngModelChange)="submitComment.set($event)"
+              placeholder="Optional note for the instructor"
+              class="w-full bg-[#0E1A14] border border-[#2A3D30]
+                text-[#EAE3D5] px-3.5 py-2 text-sm rounded-sm
+                focus:border-[#C8A96E] focus:outline-none"></textarea>
+          </div>
+
+          <div class="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              (click)="submitTarget.set(null)"
+              class="px-4 py-2 border border-[#2A3D30] text-xs uppercase
+                text-[#8FA68C] cursor-pointer">
+              Cancel
+            </button>
+            <button
+              type="button"
+              [disabled]="submitting() || !submitFile()"
+              (click)="sendSubmission()"
+              class="px-4 py-2 bg-[#C8A96E] text-[#0E1A14] font-semibold
+                text-xs uppercase cursor-pointer disabled:opacity-40">
+              {{ submitting() ? 'Uploading...' : 'Submit Assignment' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (submissionsTarget(); as target) {
+    <div
+      (click)="submissionsTarget.set(null)"
+      class="fixed inset-0 z-50 flex items-center justify-center
+        bg-black/75 backdrop-blur-sm p-4">
+      <div
+        (click)="$event.stopPropagation()"
+        class="w-full max-w-2xl border border-[#C8A96E]/40 bg-[#0B1610]
+          rounded-sm overflow-hidden">
+        <div
+          class="px-6 py-4 bg-[#14261C] border-b border-[#2A3D30]
+            flex items-center justify-between">
+          <h3 class="text-sm font-medium text-[#EAE3D5]">
+            Submissions &mdash; {{ target.title }}
+          </h3>
+          <button
+            type="button"
+            (click)="submissionsTarget.set(null)"
+            class="text-xs text-[#8FA68C] hover:text-[#EAE3D5]
+              cursor-pointer">
+            Close
+          </button>
+        </div>
+
+        <div class="p-6 max-h-[70vh] overflow-y-auto space-y-3">
+          @if (loadingSubmissions()) {
+            <p class="text-xs text-[#8FA68C] text-center py-6">
+              Loading submissions...
+            </p>
+          } @else {
+            @for (s of submissionsList(); track s.id) {
+              <div
+                class="p-3.5 bg-[#0E1A14] border border-[#2A3D30]
+                  rounded-sm flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm text-[#EAE3D5] font-medium">
+                      {{ s.student?.firstName }} {{ s.student?.lastName }}
+                    </span>
+                    <span
+                      class="px-2 py-0.5 text-[10px] font-mono uppercase
+                        border"
+                      [class]="s.late
+                        ? 'bg-amber-950/40 text-amber-300
+                           border-amber-500/40'
+                        : 'bg-emerald-950/40 text-emerald-300
+                           border-emerald-500/40'">
+                      {{ s.late ? 'Late' : 'On Time' }}
+                    </span>
+                  </div>
+                  <p class="text-xs text-[#8FA68C] mt-0.5">
+                    {{ s.originalFileName }} &bull;
+                    {{ formatSize(s.fileSize) }} &bull;
+                    {{ s.submittedAt | date:'medium' }}
+                  </p>
+                  @if (s.comment) {
+                    <p class="text-xs text-[#EAE3D5]/80 mt-1">
+                      {{ s.comment }}
+                    </p>
+                  }
+                </div>
+                <a
+                  [href]="submissionDownloadUrl(s)"
+                  class="px-3 py-1.5 bg-[#1A3025] border
+                    border-[#C8A96E]/50 text-[#C8A96E] text-[10px]
+                    uppercase tracking-wider hover:bg-[#C8A96E]
+                    hover:text-[#0E1A14] shrink-0">
+                  Download
+                </a>
+              </div>
+            } @empty {
+              <p class="text-xs text-[#8FA68C] text-center py-6">
+                No student submissions yet.
+              </p>
+            }
+          }
         </div>
       </div>
     </div>
