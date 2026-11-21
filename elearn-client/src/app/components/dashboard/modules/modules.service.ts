@@ -1,7 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Module, Element } from '../../../models/models';
+import {
+  Module,
+  Element,
+  ElementWorkspace,
+  MaterialFolder,
+  MaterialItem
+} from '../../../models/models';
 
 @Injectable({ providedIn: 'root' })
 export class ModuleService {
@@ -88,5 +94,55 @@ export class ModuleService {
     return this.http.delete<void>(`${this.url}/elements/${id}`, {
       withCredentials: true
     });
+  }
+
+  getElementWorkspace(elementId: string): Observable<ElementWorkspace> {
+    return this.http.get<ElementWorkspace>(
+      `/api/elements/${elementId}/workspace`,
+      { withCredentials: true }
+    );
+  }
+
+  createFolder(
+    elementId: string,
+    name: string,
+    parentId: string | null
+  ): Observable<MaterialFolder> {
+    return this.http.post<MaterialFolder>(
+      `/api/elements/${elementId}/folders`,
+      { name, parentId },
+      { withCredentials: true }
+    );
+  }
+
+  deleteFolder(elementId: string, folderId: string): Observable<void> {
+    return this.http.delete<void>(
+      `/api/elements/${elementId}/folders/${folderId}`,
+      { withCredentials: true }
+    );
+  }
+
+  uploadMaterial(
+    elementId: string,
+    formData: FormData
+  ): Observable<MaterialItem> {
+    return this.http.post<MaterialItem>(
+      `/api/elements/${elementId}/materials`,
+      formData,
+      { withCredentials: true }
+    );
+  }
+
+  deleteMaterial(elementId: string, materialId: string): Observable<void> {
+    return this.http.delete<void>(
+      `/api/elements/${elementId}/materials/${materialId}`,
+      { withCredentials: true }
+    );
+  }
+
+  getDownloadUrl(materialId: string, inline = false): string {
+    return `/api/materials/${materialId}/download${
+      inline ? '?inline=true' : ''
+    }`;
   }
 }
