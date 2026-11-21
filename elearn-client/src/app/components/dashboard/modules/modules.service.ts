@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AssignmentSubmission } from '../../../models/models';
 import {
   Module,
   Element,
@@ -144,5 +145,29 @@ export class ModuleService {
     return `/api/materials/${materialId}/download${
       inline ? '?inline=true' : ''
     }`;
+  }
+
+  submitAssignment(
+    materialId: string,
+    formData: FormData
+  ): Observable<AssignmentSubmission> {
+    return this.http.post<AssignmentSubmission>(
+      `/api/materials/${materialId}/submissions`,
+      formData,
+      { withCredentials: true }
+    );
+  }
+
+  getAssignmentSubmissions(
+    materialId: string
+  ): Observable<AssignmentSubmission[]> {
+    return this.http.get<AssignmentSubmission[]>(
+      `/api/materials/${materialId}/submissions`,
+      { withCredentials: true }
+    );
+  }
+
+  getSubmissionDownloadUrl(submissionId: string): string {
+    return `/api/submissions/${submissionId}/download`;
   }
 }
