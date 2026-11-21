@@ -37,6 +37,7 @@ import com.elearn.api.repository.RequestRepository;
 import com.elearn.api.repository.ResultRepository;
 import com.elearn.api.repository.RoomRepository;
 import com.elearn.api.repository.UserRepository;
+import com.elearn.api.repository.AssignmentSubmissionRepository;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import com.elearn.api.entity.FileType;
@@ -62,6 +63,7 @@ public class DataSeeder implements CommandLineRunner {
   private final RequestRepository requestRepository;
   private final MaterialFolderRepository materialFolderRepository;
   private final MaterialRepository materialRepository;
+  private final AssignmentSubmissionRepository assignmentSubmissionRepository;
 
   @Value("${ENVIRONMENT}")
   private String environment;
@@ -83,6 +85,7 @@ public class DataSeeder implements CommandLineRunner {
       dayPlanRepository.deleteAllInBatch();
       absenceRepository.deleteAllInBatch();
       resultRepository.deleteAllInBatch();
+      assignmentSubmissionRepository.deleteAllInBatch();
       materialRepository.deleteAllInBatch();
       materialFolderRepository.deleteAllInBatch();
       elementRepository.deleteAllInBatch();
