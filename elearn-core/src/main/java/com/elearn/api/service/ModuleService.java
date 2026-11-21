@@ -35,6 +35,17 @@ public class ModuleService {
     this.userRepository = userRepository;
   }
 
+  public boolean canStudentAccessModule(User user, Module module) {
+    if (user.getDepartment() != module.getDepartment()) {
+      return false;
+    }
+    if (module.getYear() < user.getYear()) {
+      return true;
+    }
+    return module.getYear() == user.getYear() &&
+      module.getSemester() <= user.getSemester();
+  }
+
   public List<ModuleResponse> getModulesForUser(
     User user,
     DepartmentName department,
@@ -43,7 +54,10 @@ public class ModuleService {
   ) {
     List<Module> modules = switch (user.getRole()) {
       case ADMIN, TEACHER -> moduleRepository.findAll();
-      default -> moduleRepository.findByDepartment(user.getDepartment());
+      default -> moduleRepository.findByDepartment(user.getDepartment())
+        .stream()
+        .filter(m -> canStudentAccessModule(user, m))
+        .toList();
     };
 
     return modules.stream()
@@ -60,6 +74,13 @@ public class ModuleService {
     String moduleId,
     User user
   ) {
+    if (user.getRole() == Role.STUDENT) {
+      Module module = moduleRepository.findById(moduleId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+      if (!canStudentAccessModule(user, module)) {
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+      }
+    }
     List<Element> elements = (user.getRole() == Role.TEACHER)
       ? elementRepository.findByModuleIdAndTeacherId(moduleId, user.getId())
       : elementRepository.findByModuleId(moduleId);
