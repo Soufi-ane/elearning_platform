@@ -244,9 +244,22 @@ export type MaterialItem = {
   uploadedBy?: UserInfo | null;
 };
 
+export type AssignmentSubmission = {
+  id: string;
+  assignmentId: string;
+  originalFileName: string;
+  contentType: string;
+  fileSize: number;
+  submittedAt: string;
+  late: boolean;
+  comment?: string | null;
+  student?: UserInfo | null;
+};
+
 export type ElementWorkspace = {
   element: Element;
   canManage: boolean;
   folders: MaterialFolder[];
   materials: MaterialItem[];
+  mySubmissions: AssignmentSubmission[];
 };

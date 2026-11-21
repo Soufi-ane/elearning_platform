@@ -479,11 +479,38 @@ public class Schemas {
     }
   }
 
+  public record AssignmentSubmissionResponse(
+    String id,
+    String assignmentId,
+    String originalFileName,
+    String contentType,
+    long fileSize,
+    LocalDateTime submittedAt,
+    boolean late,
+    String comment,
+    UserBaseResponse student
+  ) {
+    public AssignmentSubmissionResponse(AssignmentSubmission s) {
+      this(
+        s.getId(),
+        s.getAssignment() != null ? s.getAssignment().getId() : null,
+        s.getOriginalFileName(),
+        s.getContentType(),
+        s.getFileSize(),
+        s.getSubmittedAt(),
+        s.isLate(),
+        s.getComment(),
+        s.getStudent() != null ? new UserBaseResponse(s.getStudent()) : null
+      );
+    }
+  }
+
   public record ElementWorkspaceResponse(
     ElementResponse element,
     boolean canManage,
     List<FolderResponse> folders,
-    List<MaterialResponse> materials
+    List<MaterialResponse> materials,
+    List<AssignmentSubmissionResponse> mySubmissions
   ) {}
 
 }
