@@ -31,7 +31,8 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
     @for (e of elements(); track e.id) {
       <div
-        class="p-5 border border-[#2A3D30] rounded-sm bg-[#0B1610]
+        (click)="openElement(e)"
+        class="p-5 border cursor-pointer border-[#2A3D30] rounded-sm bg-[#0B1610]
           hover:border-[#C8A96E] transition-all flex flex-col
           justify-between group">
         <div>
@@ -56,7 +57,7 @@
               justify-end gap-2">
             <button
               type="button"
-              (click)="onEdit(e)"
+              (click)="onEdit($event, e)"
               class="px-3 py-1 bg-[#14261C] text-[#EAE3D5] text-[10px]
                 border border-[#2A3D30] hover:text-[#C8A96E]
                 hover:border-[#C8A96E] cursor-pointer uppercase
@@ -65,7 +66,7 @@
             </button>
             <button
               type="button"
-              (click)="openDeleteModal(e)"
+              (click)="openDeleteModal($event, e)"
               class="px-3 py-1 bg-[#14261C] text-[#8FA68C] text-[10px]
                 border border-[#2A3D30] hover:text-rose-400
                 hover:border-rose-500/60 cursor-pointer uppercase

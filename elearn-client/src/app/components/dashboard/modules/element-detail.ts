@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { ModuleService } from './modules.service';
 import { LoginService } from '../../login/login.service';
 import { Element, Role, User } from '../../../models/models';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-element-detail',
@@ -18,6 +19,7 @@ export class ElementDetail implements OnInit {
   private loginService = inject(LoginService);
   private http = inject(HttpClient);
   private fb = inject(FormBuilder);
+  private router = inject(Router);
 
   user = this.loginService.userProfile()!;
   moduleId = signal<string>('');
@@ -32,6 +34,15 @@ export class ElementDetail implements OnInit {
     moduleId: ['', Validators.required],
     teacherId: ['', Validators.required]
   });
+
+  openElement(e: Element): void {
+    this.router.navigate([
+      '/dashboard/modules',
+      this.moduleId(),
+      'elements',
+      e.id
+    ]);
+  }
 
   get isAdmin(): boolean {
     return this.user?.role === Role.ADMIN ||
@@ -73,7 +84,7 @@ export class ElementDetail implements OnInit {
     this.editId.set(null);
   }
 
-  onEdit(e: Element): void {
+  onEdit(event: Event, e: Element): void {
     this.editId.set(e.id);
     this.form.patchValue({
       name: e.name,
@@ -81,10 +92,12 @@ export class ElementDetail implements OnInit {
       teacherId: e.teacher.id
     });
     this.showForm.set(true);
+    event.stopPropagation()
   }
 
-  openDeleteModal(e: Element): void {
+  openDeleteModal(event: Event, e: Element): void {
     this.deleteTarget.set(e);
+    event.stopPropagation()
   }
 
   closeDeleteModal(): void {
