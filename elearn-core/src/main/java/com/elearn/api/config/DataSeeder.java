@@ -37,7 +37,13 @@ import com.elearn.api.repository.RequestRepository;
 import com.elearn.api.repository.ResultRepository;
 import com.elearn.api.repository.RoomRepository;
 import com.elearn.api.repository.UserRepository;
-
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import com.elearn.api.entity.FileType;
+import com.elearn.api.entity.Material;
+import com.elearn.api.entity.MaterialFolder;
+import com.elearn.api.repository.MaterialFolderRepository;
+import com.elearn.api.repository.MaterialRepository;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -54,6 +60,8 @@ public class DataSeeder implements CommandLineRunner {
   private final AbsenceRepository absenceRepository;
   private final ResultRepository resultRepository;
   private final RequestRepository requestRepository;
+  private final MaterialFolderRepository materialFolderRepository;
+  private final MaterialRepository materialRepository;
 
   @Value("${ENVIRONMENT}")
   private String environment;
@@ -75,6 +83,8 @@ public class DataSeeder implements CommandLineRunner {
       dayPlanRepository.deleteAllInBatch();
       absenceRepository.deleteAllInBatch();
       resultRepository.deleteAllInBatch();
+      materialRepository.deleteAllInBatch();
+      materialFolderRepository.deleteAllInBatch();
       elementRepository.deleteAllInBatch();
       requestRepository.deleteAllInBatch();
       roomRepository.deleteAllInBatch();
@@ -92,6 +102,7 @@ public class DataSeeder implements CommandLineRunner {
       seedAbsence(users, elements);
       seedRequests(users);
       seedGrades();
+      seedMaterials(elements);
     }
     ensureRootAdmin();
   }
@@ -614,6 +625,226 @@ public class DataSeeder implements CommandLineRunner {
       )
     );
     requestRepository.saveAll(requests);
+  }
+
+  private void seedMaterials(List<Element> elements) {
+    if (elements.isEmpty()) {
+      return;
+    }
+
+    byte[] samplePng = Base64.getDecoder().decode(
+      "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAFUlEQVQYV2Nk" +
+      "YGD4z4AHMDFiAwwMAAAZ+QEF4x8tGQAAAABJRU5ErkJggg=="
+    );
+
+    List<Material> materials = new ArrayList<>();
+    LocalDateTime now = LocalDateTime.now();
+
+    for (int i = 0; i < elements.size(); i++) {
+      Element el = elements.get(i);
+      User teacher = el.getTeacher();
+      String baseName = el.getName().replaceAll("[^a-zA-Z0-9]+", "_");
+
+      MaterialFolder coursDir = materialFolderRepository.save(
+        new MaterialFolder("Cours", el, null)
+      );
+      MaterialFolder chapDir = materialFolderRepository.save(
+        new MaterialFolder("Chapitres", el, coursDir)
+      );
+      MaterialFolder tdDir = materialFolderRepository.save(
+        new MaterialFolder("TD & TP", el, null)
+      );
+      MaterialFolder solDir = materialFolderRepository.save(
+        new MaterialFolder("Corrections", el, tdDir)
+      );
+      MaterialFolder assignDir = materialFolderRepository.save(
+        new MaterialFolder("Devoirs", el, null)
+      );
+      MaterialFolder mediaDir = materialFolderRepository.save(
+        new MaterialFolder("Schemas & Images", el, null)
+      );
+
+      materials.add(buildMaterial(
+        "Syllabus - " + el.getName(),
+        "Course outline, grading weights, and bibliography.",
+        baseName + "_syllabus.pdf",
+        "application/pdf",
+        FileType.PDF,
+        ("Syllabus for " + el.getName()).getBytes(StandardCharsets.UTF_8),
+        false,
+        null,
+        el,
+        null,
+        teacher,
+        now.minusDays(20)
+      ));
+
+      materials.add(buildMaterial(
+        "Part 1 - Foundations",
+        "Core theory and introductory slides.",
+        "part1.pdf",
+        "application/pdf",
+        FileType.PDF,
+        ("Part 1 lecture notes: " + el.getName())
+          .getBytes(StandardCharsets.UTF_8),
+        false,
+        null,
+        el,
+        chapDir,
+        teacher,
+        now.minusDays(15)
+      ));
+
+      materials.add(buildMaterial(
+        "Part 2 - Architecture & Case Study",
+        "Detailed presentation deck.",
+        "part2.pptx",
+        "application/vnd.openxmlformats-officedocument" +
+          ".presentationml.presentation",
+        FileType.PPTX,
+        ("Part 2 slides: " + el.getName()).getBytes(StandardCharsets.UTF_8),
+        false,
+        null,
+        el,
+        chapDir,
+        teacher,
+        now.minusDays(10)
+      ));
+
+      materials.add(buildMaterial(
+        "Lab Sheet 1",
+        "Guided practical exercises.",
+        "tp1_guide.docx",
+        "application/vnd.openxmlformats-officedocument" +
+          ".wordprocessingml.document",
+        FileType.DOCX,
+        ("Lab 1 instructions for " + el.getName())
+          .getBytes(StandardCharsets.UTF_8),
+        false,
+        null,
+        el,
+        tdDir,
+        teacher,
+        now.minusDays(8)
+      ));
+
+      materials.add(buildMaterial(
+        "TP1 Starter Code",
+        "Reference source template.",
+        "starter.txt",
+        "text/plain",
+        FileType.SOURCE_CODE,
+        ("Starter template for " + el.getName())
+          .getBytes(StandardCharsets.UTF_8),
+        false,
+        null,
+        el,
+        solDir,
+        teacher,
+        now.minusDays(6)
+      ));
+
+      materials.add(buildMaterial(
+        "Architecture Diagram",
+        "High-level visual reference.",
+        "diagram.png",
+        "image/png",
+        FileType.IMAGE,
+        samplePng,
+        false,
+        null,
+        el,
+        mediaDir,
+        teacher,
+        now.minusDays(5)
+      ));
+
+      materials.add(buildMaterial(
+        "Assignment 1 - Mini Project",
+        "Submit your report and source archive before the deadline.",
+        "assignment1_brief.pdf",
+        "application/pdf",
+        FileType.PDF,
+        ("Assignment 1 brief for " + el.getName())
+          .getBytes(StandardCharsets.UTF_8),
+        true,
+        now.plusDays(4 + (i % 10)).withHour(23).withMinute(59),
+        el,
+        assignDir,
+        teacher,
+        now.minusDays(3)
+      ));
+
+      if (i % 2 == 0) {
+        materials.add(buildMaterial(
+          "Assignment 2 - Lab Report",
+          "Past submission brief for reference.",
+          "lab_report_template.docx",
+          "application/vnd.openxmlformats-officedocument" +
+            ".wordprocessingml.document",
+          FileType.DOCX,
+          ("Assignment 2 template for " + el.getName())
+            .getBytes(StandardCharsets.UTF_8),
+          true,
+          now.minusDays(2).withHour(23).withMinute(59),
+          el,
+          assignDir,
+          teacher,
+          now.minusDays(12)
+        ));
+      }
+
+      if (i % 3 == 0) {
+        materials.add(buildMaterial(
+          "Dataset & Archive Bundle",
+          "Compressed resources for lab sessions.",
+          "resources_bundle.zip",
+          "application/zip",
+          FileType.ZIP,
+          ("Archive placeholder for " + el.getName())
+            .getBytes(StandardCharsets.UTF_8),
+          false,
+          null,
+          el,
+          tdDir,
+          teacher,
+          now.minusDays(4)
+        ));
+      }
+    }
+
+    materialRepository.saveAll(materials);
+  }
+
+  private Material buildMaterial(
+    String title,
+    String description,
+    String fileName,
+    String contentType,
+    FileType fileType,
+    byte[] data,
+    boolean assignment,
+    LocalDateTime deadline,
+    Element element,
+    MaterialFolder folder,
+    User uploadedBy,
+    LocalDateTime createdAt
+  ) {
+    Material m = new Material();
+    m.setTitle(title);
+    m.setDescription(description);
+    m.setOriginalFileName(fileName);
+    m.setContentType(contentType);
+    m.setFileType(fileType);
+    m.setFileData(data);
+    m.setFileSize(data != null ? data.length : 0L);
+    m.setAssignment(assignment);
+    m.setDeadline(deadline);
+    m.setElement(element);
+    m.setFolder(folder);
+    m.setUploadedBy(uploadedBy);
+    m.setCreatedAt(createdAt);
+    return m;
   }
 
   private Date addDays(Date date, int days) {
